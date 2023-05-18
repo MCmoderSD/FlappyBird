@@ -8,7 +8,6 @@ public class GameLogic {
         System.out.println("Timer tick");
     }
     public void handleBounce() {
-
     }
     public void handleCollision() {
 
