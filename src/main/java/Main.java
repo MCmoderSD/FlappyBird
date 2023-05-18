@@ -7,7 +7,7 @@ public class Main {
 
 
     public static void main(String[] args) {
-        new GameUI();
+        new GameLogic();
     }
 
     public static int getTPS() {

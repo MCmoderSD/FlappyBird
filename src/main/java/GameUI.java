@@ -4,8 +4,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class GameUI extends JFrame {
-
-    public static Timer t = new Timer(Main.getTPS(), e -> GameLogic.handleTimerTick());
+    static GameLogic logic = new GameLogic();
+    public static Timer t = new Timer(Main.getTPS(), e -> logic.handleTimerTick());
     public GameUI(){
         this.setTitle("Flappy Bird");
         this.setSize(800, 800);
@@ -15,9 +15,9 @@ public class GameUI extends JFrame {
         this.setResizable(false);
         this.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyTyped(KeyEvent e) {
-                super.keyTyped(e);
-                if (e.getKeyChar() == ' ') GameLogic.handleSpaceKeyPress();
+            public void keyPressed(KeyEvent e) {
+                super.keyPressed(e);
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) GameLogic.handleSpaceKeyPress();
             }
         });
         JLabel player = new JLabel();
@@ -28,15 +28,27 @@ public class GameUI extends JFrame {
         generateObstacles();
     }
 
-    public void movePlayer() {
+    public void moveObstacles() {
+        Component[] components = this.getContentPane().getComponents();
+        for (Component component : components) {
+            if (component instanceof JLabel && ((JLabel) component).getIcon() != null) {
+                JLabel obstacle = (JLabel) component;
+                int x = obstacle.getX();
+                int newX = x - 1;
+                obstacle.setLocation(newX, obstacle.getY());
+            }
+        }
+    }
 
+    public void movePlayer() {
+        //TODO Player Movement
     }
 
     private void generateObstacles() {
         int initialX = 800; // Startposition der Hindernisse (außerhalb des sichtbaren Bereichs)
         int minY = 200; // Mindesthöhe des ersten Hindernisses
         int maxY = 600; // Maximale Höhe des ersten Hindernisses
-        int verticalGap = 100; // Vertikaler Abstand zwischen den Hindernissen
+        int verticalGap = 200; // Vertikaler Abstand zwischen den Hindernissen
 
         for (int i = 0; i < 8; i++) {
             JLabel obstacleTop = new JLabel();
@@ -54,20 +66,9 @@ public class GameUI extends JFrame {
             obstacleTop.setSize(64, yTop);
             obstacleBottom.setSize(64, 800 - yBottom); // Gesamthöhe des Fensters abzüglich der Höhe des oberen Hindernisses und des vertikalen Abstands
 
-            int x = initialX + i * 200;
+            int x = initialX + i * 400;
             obstacleTop.setLocation(x, 0);
             obstacleBottom.setLocation(x, yBottom);
-        }
-    }
-    public void moveObstacles() {
-        Component[] components = this.getContentPane().getComponents();
-        for (Component component : components) {
-            if (component instanceof JLabel && ((JLabel) component).getIcon() != null) {
-                JLabel obstacle = (JLabel) component;
-                int x = obstacle.getX();
-                int newX = x - 1;
-                obstacle.setLocation(newX, obstacle.getY());
-            }
         }
     }
 
