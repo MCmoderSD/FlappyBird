@@ -1,5 +1,8 @@
+import java.util.concurrent.ForkJoinPool;
+
 public class GameLogic {
     public static GameLogic instance;
+    private final boolean gameStateRunnig = false;
     GameUI ui;
     private int debugTimerTick;
     public GameLogic() {
@@ -14,6 +17,8 @@ public class GameLogic {
     public void handleTimerTick() {
         debugTimerTick();
         ui.moveObstacles();
+        ui.generateObstacles();
+        ui.removeObstacles();
         // ui.checkCollision(player, obstacle);
     }
     public void handleBounce() {
