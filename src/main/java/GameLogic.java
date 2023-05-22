@@ -1,16 +1,20 @@
 public class GameLogic {
-    GameUI ui = new GameUI();
+    public static GameLogic instance;
+    GameUI ui;
+    private int debugTimerTick;
     public GameLogic() {
+        instance = this;
         ui = new GameUI();
     }
-    public static void handleSpaceKeyPress() {
+    public void handleSpaceKeyPress() {
         System.out.println("Space pressed");
         // TODO: Add code to handle space key press
         if (!GameUI.t.isRunning()) GameUI.t.start();
     }
     public void handleTimerTick() {
-        System.out.println("Timer tick");
+        debugTimerTick();
         ui.moveObstacles();
+        // ui.checkCollision(player, obstacle);
     }
     public void handleBounce() {
     }
@@ -19,5 +23,14 @@ public class GameLogic {
     }
     private int calculateGravity( int x) {
         return -3*x+4;
+    }
+
+
+    private void debugTimerTick() {
+        debugTimerTick++;
+        if (debugTimerTick == 50) {
+            System.out.println("Timer tick 50");
+            debugTimerTick = 0;
+        }
     }
 }

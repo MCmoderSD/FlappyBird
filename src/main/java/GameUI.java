@@ -1,12 +1,13 @@
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 public class GameUI extends JFrame {
-    static GameLogic logic = new GameLogic();
-    public static Timer t = new Timer(Main.getTPS(), e -> logic.handleTimerTick());
-    public GameUI(){
+    public static Timer t = new Timer(Main.getTPS(), e -> GameLogic.instance.handleTimerTick());
+    ArrayList<JLabel> obstacles = new ArrayList<>();
+
+    public GameUI() {
         this.setTitle("Flappy Bird");
         this.setSize(800, 800);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -17,11 +18,11 @@ public class GameUI extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) GameLogic.handleSpaceKeyPress();
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) GameLogic.instance.handleSpaceKeyPress();
             }
         });
         JLabel player = new JLabel();
-        this.add(player);
+        add(player);
         player.setSize(32, 32);
         player.setIcon(new ImageIcon(Main.Player));
         player.setLocation(250, 400);
@@ -29,34 +30,31 @@ public class GameUI extends JFrame {
     }
 
     public void moveObstacles() {
-        Component[] components = this.getContentPane().getComponents();
-        for (Component component : components) {
-            if (component instanceof JLabel && ((JLabel) component).getIcon() != null) {
-                JLabel obstacle = (JLabel) component;
-                int x = obstacle.getX();
+        for (JLabel component : obstacles) {
+            if (component != null && component.getIcon() != null) {
+                int x = component.getX();
                 int newX = x - 1;
-                obstacle.setLocation(newX, obstacle.getY());
+                component.setLocation(newX, component.getY());
             }
         }
     }
 
     public void movePlayer() {
-        //TODO Player Movement
+
     }
 
-    private void generateObstacles() {
+
+    public void generateObstacles() {
         int initialX = 800; // Startposition der Hindernisse (außerhalb des sichtbaren Bereichs)
         int minY = 200; // Mindesthöhe des ersten Hindernisses
         int maxY = 600; // Maximale Höhe des ersten Hindernisses
         int verticalGap = 200; // Vertikaler Abstand zwischen den Hindernissen
-
-        for (int i = 0; i < 8; i++) {
+        while (obstacles.size() < 9) {
             JLabel obstacleTop = new JLabel();
             JLabel obstacleBottom = new JLabel();
 
-            this.add(obstacleTop);
-            this.add(obstacleBottom);
-
+            add(obstacleTop);
+            add(obstacleBottom);
             obstacleTop.setIcon(new ImageIcon(Main.Obstacle));
             obstacleBottom.setIcon(new ImageIcon(Main.Obstacle));
 
@@ -66,12 +64,32 @@ public class GameUI extends JFrame {
             obstacleTop.setSize(64, yTop);
             obstacleBottom.setSize(64, 800 - yBottom); // Gesamthöhe des Fensters abzüglich der Höhe des oberen Hindernisses und des vertikalen Abstands
 
-            int x = initialX + i * 400;
+            int x = initialX + (obstacles.size() * 100);
             obstacleTop.setLocation(x, 0);
             obstacleBottom.setLocation(x, yBottom);
+            obstacles.add(obstacleTop);
+            obstacles.add(obstacleBottom);
+
+            System.out.println("Obstacle generated at " + x + " " + yTop + " " + yBottom + "in Position " + obstacles.size());
+            removeObstacles();
         }
     }
 
+    public void removeObstacles() {
+        for (JLabel component : obstacles) {
+            int x = component.getX();
+            if (x < -64) {
+                remove(component);
+                obstacles.remove(component);
+                System.out.println("Obstacle removed");
+            }
+        }
+    }
 
-
+    public void checkCollision(JLabel player, JLabel obstacle) {
+        if (player.getBounds().intersects(obstacle.getBounds())) {
+            System.out.println("Collision detected");
+            GameLogic.instance.handleCollision();
+        }
+    }
 }
