@@ -4,8 +4,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class GameUI extends JFrame {
-    static GameLogic logic = new GameLogic();
-    public static Timer t = new Timer(Main.getTPS(), e -> logic.handleTimerTick());
+
+    public static Timer t = new Timer(Main.getTPS(), e -> GameLogic.instance.handleTimerTick());
     public GameUI(){
         this.setTitle("Flappy Bird");
         this.setSize(800, 800);
@@ -17,7 +17,7 @@ public class GameUI extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) GameLogic.handleSpaceKeyPress();
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) GameLogic.instance.handleSpaceKeyPress();
             }
         });
         JLabel player = new JLabel();

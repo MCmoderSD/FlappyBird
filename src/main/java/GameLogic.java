@@ -1,9 +1,10 @@
 public class GameLogic {
-    GameUI ui = new GameUI();
+    public static GameLogic instance;
+    private final GameUI ui;
     public GameLogic() {
         ui = new GameUI();
     }
-    public static void handleSpaceKeyPress() {
+    public void handleSpaceKeyPress() {
         System.out.println("Space pressed");
         // TODO: Add code to handle space key press
         if (!GameUI.t.isRunning()) GameUI.t.start();
