@@ -1,19 +1,31 @@
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 
 public class GameUI extends JFrame {
 
     public static int xposition = -5;
     private int yposition;
     public JLabel player;
-    public static Timer t = new Timer(Main.getTPS(), e -> GameLogic.instance.handleTimerTick());
+    public static Timer t = new Timer(Main.getTPS(), e -> {
+        try {
+            GameLogic.instance.handleTimerTick();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    });
     ArrayList<JLabel> obstacles = new ArrayList<>();
     private int playerMoveInt;
 
-    public GameUI() {
+    public GameUI() throws IOException {
         this.setTitle("Flappy Bird");
         this.setSize(800, 800);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -30,7 +42,8 @@ public class GameUI extends JFrame {
         player = new JLabel();
         add(player);
         player.setSize(32, 32);
-        player.setIcon(new ImageIcon(Main.Player));
+        BufferedImage playerImage = ImageIO.read(Objects.requireNonNull(getClass().getResource(Main.Player)));
+        player.setIcon(new ImageIcon(playerImage));
         player.setLocation(250, 400);
         generateObstacles();
     }
@@ -56,7 +69,7 @@ public class GameUI extends JFrame {
         }
     }
 
-    public void generateObstacles() {
+    public void generateObstacles() throws IOException {
         int initialX = 800; // Startposition der Hindernisse (außerhalb des sichtbaren Bereichs)
         int minY = 200; // Mindesthöhe des ersten Hindernisses
         int maxY = 600; // Maximale Höhe des ersten Hindernisses
@@ -66,8 +79,11 @@ public class GameUI extends JFrame {
             JLabel obstacleBottom = new JLabel();
             add(obstacleTop);
             add(obstacleBottom);
-            obstacleTop.setIcon(new ImageIcon(Main.Obstacle));
-            obstacleBottom.setIcon(new ImageIcon(Main.Obstacle));
+
+            BufferedImage obstacle = ImageIO.read(Objects.requireNonNull(getClass().getResource(Main.Obstacle)));
+
+            obstacleTop.setIcon(new ImageIcon(obstacle));
+            obstacleBottom.setIcon(new ImageIcon(obstacle));
             int yTop = (int) (Math.random() * (maxY - minY + 1)) + minY;
             int yBottom = yTop + verticalGap;
             obstacleTop.setSize(64, yTop);

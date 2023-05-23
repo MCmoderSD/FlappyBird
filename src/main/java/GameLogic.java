@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.concurrent.ForkJoinPool;
 
 public class GameLogic {
@@ -7,7 +8,7 @@ public class GameLogic {
     private final boolean gameStateRunnig = false;
     GameUI ui;
     private int debugTimerTick;
-    public GameLogic() {
+    public GameLogic() throws IOException {
         instance = this;
         ui = new GameUI();
     }
@@ -17,7 +18,7 @@ public class GameLogic {
         if (!GameUI.t.isRunning()) GameUI.t.start();
         GameUI.xposition = -5;
     }
-    public void handleTimerTick() {
+    public void handleTimerTick() throws IOException {
         debugTimerTick();
         ui.MovePlayer();
         ui.moveObstacles();
