@@ -1,19 +1,16 @@
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
 
 public class GameUI extends JFrame {
 
-    public static int xposition = -5;
-    private int yposition;
+    public static int xPosition = -5;
     public JLabel player;
     public static Timer t = new Timer(Main.getTPS(), e -> {
         try {
@@ -50,9 +47,9 @@ public class GameUI extends JFrame {
 
     public void MovePlayer(){
         if (playerMoveInt == 10) {
-            xposition = xposition + 1;
-            yposition = (player.getY() - GameLogic.instance.calculateGravity(xposition));
-            player.setLocation(250, yposition);
+            xPosition = xPosition + 1;
+            int yPosition = (player.getY() - GameLogic.instance.calculateGravity(xPosition));
+            player.setLocation(250, yPosition);
             playerMoveInt = 0;
         }
         playerMoveInt = playerMoveInt +1;

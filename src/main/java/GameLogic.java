@@ -1,11 +1,10 @@
 import java.io.IOException;
-import java.util.concurrent.ForkJoinPool;
 
 public class GameLogic {
 
 
     public static GameLogic instance;
-    private final boolean gameStateRunnig = false;
+    private boolean gameStateRunning = false;
     GameUI ui;
     private int debugTimerTick;
     public GameLogic() throws IOException {
@@ -16,7 +15,7 @@ public class GameLogic {
         System.out.println("Space pressed");
         // TODO: Add code to handle space key press
         if (!GameUI.t.isRunning()) GameUI.t.start();
-        GameUI.xposition = -5;
+        GameUI.xPosition = -5;
     }
     public void handleTimerTick() throws IOException {
         debugTimerTick();
