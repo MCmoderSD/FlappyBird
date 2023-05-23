@@ -5,6 +5,8 @@ public class Main {
     public static String Obstacle = ("ObstaclePlaceHolder.png");
     public static String Background = ("background.png");
 
+    public static int JumpHeight = 7;
+
 
     public static void main(String[] args) throws IOException {
         new GameLogic();

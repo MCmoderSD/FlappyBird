@@ -10,8 +10,7 @@ import java.util.Objects;
 
 public class GameUI extends JFrame {
 
-    public static int xPosition = -5;
-    public JLabel player;
+    public static int xPosition = - Main.JumpHeight;
     public static Timer t = new Timer(Main.getTPS(), e -> {
         try {
             GameLogic.instance.handleTimerTick();
@@ -19,6 +18,7 @@ public class GameUI extends JFrame {
             throw new RuntimeException(ex);
         }
     });
+    public JLabel player;
     ArrayList<JLabel> obstacles = new ArrayList<>();
     private int playerMoveInt;
 
@@ -46,7 +46,7 @@ public class GameUI extends JFrame {
     }
 
     public void MovePlayer(){
-        if (playerMoveInt == 10) {
+        if (playerMoveInt == 3) {
             xPosition = xPosition + 1;
             int yPosition = (player.getY() - GameLogic.instance.calculateGravity(xPosition));
             player.setLocation(250, yPosition);
@@ -76,11 +76,10 @@ public class GameUI extends JFrame {
             JLabel obstacleBottom = new JLabel();
             add(obstacleTop);
             add(obstacleBottom);
-
-            BufferedImage obstacle = ImageIO.read(Objects.requireNonNull(getClass().getResource(Main.Obstacle)));
-
-            obstacleTop.setIcon(new ImageIcon(obstacle));
-            obstacleBottom.setIcon(new ImageIcon(obstacle));
+            BufferedImage obstacleTopImage = ImageIO.read(Objects.requireNonNull(getClass().getResource(Main.Obstacle)));
+            BufferedImage obstacleBottomImage = ImageIO.read(Objects.requireNonNull(getClass().getResource(Main.Obstacle)));
+            obstacleTop.setIcon(new ImageIcon(obstacleTopImage));
+            obstacleBottom.setIcon(new ImageIcon(obstacleBottomImage));
             int yTop = (int) (Math.random() * (maxY - minY + 1)) + minY;
             int yBottom = yTop + verticalGap;
             obstacleTop.setSize(64, yTop);

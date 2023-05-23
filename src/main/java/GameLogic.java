@@ -4,7 +4,7 @@ public class GameLogic {
 
 
     public static GameLogic instance;
-    private boolean gameStateRunning = false;
+    private final boolean gameStateRunning = false;
     GameUI ui;
     private int debugTimerTick;
     public GameLogic() throws IOException {
@@ -15,7 +15,7 @@ public class GameLogic {
         System.out.println("Space pressed");
         // TODO: Add code to handle space key press
         if (!GameUI.t.isRunning()) GameUI.t.start();
-        GameUI.xPosition = -5;
+        GameUI.xPosition = - Main.JumpHeight;
     }
     public void handleTimerTick() throws IOException {
         debugTimerTick();
@@ -26,6 +26,7 @@ public class GameLogic {
         // ui.checkCollision(player, obstacle);
     }
     public void handleBounce() {
+
     }
     public void handleCollision() {
 
