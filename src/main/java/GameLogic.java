@@ -1,6 +1,8 @@
 import java.util.concurrent.ForkJoinPool;
 
 public class GameLogic {
+
+
     public static GameLogic instance;
     private final boolean gameStateRunnig = false;
     GameUI ui;
@@ -13,9 +15,11 @@ public class GameLogic {
         System.out.println("Space pressed");
         // TODO: Add code to handle space key press
         if (!GameUI.t.isRunning()) GameUI.t.start();
+        GameUI.xposition = -5;
     }
     public void handleTimerTick() {
         debugTimerTick();
+        ui.MovePlayer();
         ui.moveObstacles();
         ui.generateObstacles();
         ui.removeObstacles();
@@ -26,7 +30,7 @@ public class GameLogic {
     public void handleCollision() {
 
     }
-    private int calculateGravity( int x) {
+    public int calculateGravity( int x) {
         return -3*x+4;
     }
 

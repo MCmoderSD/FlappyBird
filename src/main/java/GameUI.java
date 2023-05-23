@@ -5,8 +5,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class GameUI extends JFrame {
+
+    public static int xposition = -5;
+    private int yposition;
+    public JLabel player;
     public static Timer t = new Timer(Main.getTPS(), e -> GameLogic.instance.handleTimerTick());
     ArrayList<JLabel> obstacles = new ArrayList<>();
+    private int playerMoveInt;
 
     public GameUI() {
         this.setTitle("Flappy Bird");
@@ -22,13 +27,24 @@ public class GameUI extends JFrame {
                 if (e.getKeyCode() == KeyEvent.VK_SPACE) GameLogic.instance.handleSpaceKeyPress();
             }
         });
-        JLabel player = new JLabel();
+        player = new JLabel();
         add(player);
         player.setSize(32, 32);
         player.setIcon(new ImageIcon(Main.Player));
         player.setLocation(250, 400);
         generateObstacles();
     }
+
+    public void MovePlayer(){
+        if (playerMoveInt == 10) {
+            xposition = xposition + 1;
+            yposition = (player.getY() - GameLogic.instance.calculateGravity(xposition));
+            player.setLocation(250, yposition);
+            playerMoveInt = 0;
+        }
+        playerMoveInt = playerMoveInt +1;
+    }
+
 
     public void moveObstacles() {
         for (JLabel component : obstacles) {
@@ -39,9 +55,7 @@ public class GameUI extends JFrame {
             }
         }
     }
-    public void movePlayer() {
 
-    }
     public void generateObstacles() {
         int initialX = 800; // Startposition der Hindernisse (außerhalb des sichtbaren Bereichs)
         int minY = 200; // Mindesthöhe des ersten Hindernisses
@@ -66,6 +80,7 @@ public class GameUI extends JFrame {
             System.out.println("Obstacle generated at " + x + " " + yTop + " " + yBottom + " in Position " + obstacles.size());
         }
     }
+
 
     public void removeObstacles() {
         Iterator<JLabel> iterator = obstacles.iterator();
