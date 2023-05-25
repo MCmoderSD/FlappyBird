@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
+import java.awt.Component;
+import java.awt.Rectangle;
 
 public class GameUI extends JFrame {
 
@@ -18,13 +20,13 @@ public class GameUI extends JFrame {
             throw new RuntimeException(ex);
         }
     });
-    public JLabel player;
-    ArrayList<JLabel> obstacles = new ArrayList<>();
+    public static JLabel player;
+    public static ArrayList<JLabel> obstacles = new ArrayList<>();
     private int playerMoveInt;
 
     public GameUI() throws IOException {
         this.setTitle("Flappy Bird");
-        this.setSize(800, 800);
+        this.setSize(3000, 800);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(null);
         this.setVisible(true);
@@ -39,10 +41,11 @@ public class GameUI extends JFrame {
         player = new JLabel();
         add(player);
         player.setSize(32, 32);
+        player.setBounds(250, player.getY(), 32, 32);
         BufferedImage playerImage = ImageIO.read(Objects.requireNonNull(getClass().getResource(Main.Player)));
         player.setIcon(new ImageIcon(playerImage));
         player.setLocation(250, 400);
-        generateObstacles();
+        generateObstacles(800);
     }
 
     public void MovePlayer(){
@@ -66,12 +69,12 @@ public class GameUI extends JFrame {
         }
     }
 
-    public void generateObstacles() throws IOException {
+    public void generateObstacles(int initial) throws IOException {
         int initialX = 800; // Startposition der Hindernisse (außerhalb des sichtbaren Bereichs)
         int minY = 200; // Mindesthöhe des ersten Hindernisses
         int maxY = 600; // Maximale Höhe des ersten Hindernisses
         int verticalGap = 200; // Vertikaler Abstand zwischen den Hindernissen
-        while (obstacles.size() < 20) {
+        while (obstacles.size() <= 20) {
             JLabel obstacleTop = new JLabel();
             JLabel obstacleBottom = new JLabel();
             add(obstacleTop);
@@ -84,8 +87,10 @@ public class GameUI extends JFrame {
             int yBottom = yTop + verticalGap;
             obstacleTop.setSize(64, yTop);
             obstacleBottom.setSize(64, 800 - yBottom); // Gesamthöhe des Fensters abzüglich der Höhe des oberen Hindernisses und des vertikalen Abstands
-            int x = initialX + (obstacles.size() * 100);
+            int x = initial + (obstacles.size() * 100);
             obstacleTop.setLocation(x, 0);
+            obstacleTop.setBounds(x, 0,64, yTop);
+            obstacleBottom.setBounds(x, yBottom,64, 800 - yBottom);
             obstacleBottom.setLocation(x, yBottom);
             obstacles.add(obstacleTop);
             obstacles.add(obstacleBottom);
@@ -102,10 +107,11 @@ public class GameUI extends JFrame {
             if (x < -64) {
                 remove(component);
                 iterator.remove();
-                System.out.println("Obstacle removed at " + x + " in Position " + obstacles.size());
+                System.out.println("Obstacle removed at " + x);
             }
         }
     }
+
 
 
     public void checkCollision(JLabel player, JLabel obstacle) {
