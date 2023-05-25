@@ -7,8 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
-import java.awt.Component;
-import java.awt.Rectangle;
+
 
 public class GameUI extends JFrame {
 
@@ -70,7 +69,6 @@ public class GameUI extends JFrame {
     }
 
     public void generateObstacles(int initial) throws IOException {
-        int initialX = 800; // Startposition der Hindernisse (außerhalb des sichtbaren Bereichs)
         int minY = 200; // Mindesthöhe des ersten Hindernisses
         int maxY = 600; // Maximale Höhe des ersten Hindernisses
         int verticalGap = 200; // Vertikaler Abstand zwischen den Hindernissen
