@@ -9,22 +9,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
 
-
 public class GameUI extends JFrame {
-    public static GameUI instance;
-
-    public static int xPosition = - Main.JumpHeight;
-    public static JLabel player;
-    public static JLabel gameOver;
-    public static ArrayList<JLabel> obstacles = new ArrayList<>();
+    public int xPosition = -Main.JumpHeight;
+    public JLabel player, gameOver;
+    public Rectangle rPlayer, rTubeTop1, rTubeBottom1,rTubeTop2, rTubeBottom2,rTubeTop3, rTubeBottom3;
+    public ArrayList<JLabel> obstacles = new ArrayList<>();
     private int playerMoveInt;
-    public GameUI() throws IOException {
-        this.setTitle("Flappy Bird");
-        this.setSize(Main.WindowSizeX,Main.WindowsSizeY);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setLayout(null);
-        this.setVisible(true);
-        this.setResizable(false);
+    public GameUI() {
+        initFrame();
+        initPlayer();
+        generateObstacles(Main.WindowSizeX);
+        initRectangles();
+        initGameOver();
         this.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -32,36 +28,51 @@ public class GameUI extends JFrame {
                 if (e.getKeyCode() == KeyEvent.VK_SPACE) GameLogic.instance.handleSpaceKeyPress();
             }
         });
+    }
+
+    private void initFrame() {
+        this.setTitle(Main.Title);
+        this.setSize(Main.WindowSizeX, Main.WindowsSizeY);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setLayout(null);
+        this.setVisible(true);
+        this.setResizable(false);
+    }
+    private void initPlayer() {
         player = new JLabel();
         add(player);
         player.setSize(32, 32);
         player.setBounds(250, player.getY(), 32, 32);
-        BufferedImage playerImage = ImageIO.read(Objects.requireNonNull(getClass().getResource(Main.Player)));
-        player.setIcon(new ImageIcon(playerImage));
+        player.setIcon(new ImageIcon(reader(Main.Player)));
         player.setLocation(250, 400);
-        generateObstacles(Main.WindowSizeX);
-        initGameOver();
     }
-
-    public void MovePlayer(){
+    private void initRectangles() {
+        rPlayer =new Rectangle(player.getBounds());
+        rTubeTop1 = new Rectangle(obstacles.get(0).getBounds());
+        rTubeBottom1 = new Rectangle(obstacles.get(1).getBounds());
+        rTubeTop2 = new Rectangle(obstacles.get(2).getBounds());
+        rTubeBottom2 = new Rectangle(obstacles.get(3).getBounds());
+        rTubeTop3 = new Rectangle(obstacles.get(4).getBounds());
+        rTubeBottom3 = new Rectangle(obstacles.get(5).getBounds());
+    }
+    private void initGameOver() {
+        gameOver = new JLabel();
+        add(gameOver);
+        gameOver.setVisible(false);
+        gameOver.setSize(Main.WindowSizeX, Main.WindowsSizeY);
+        gameOver.setLocation(0, 0);
+        gameOver.setIcon(new ImageIcon(reader(Main.GameOver)));
+    }
+    public void movePlayer() {
         if (playerMoveInt == 3) {
             xPosition = xPosition + 1;
-            int yPosition = (player.getY() - GameLogic.instance.calculateGravity(xPosition));
+            int yPosition = (player.getY() - calculateGravity(xPosition));
             player.setLocation(250, yPosition);
             playerMoveInt = 0;
         }
-        playerMoveInt = playerMoveInt +1;
+        playerMoveInt = playerMoveInt + 1;
     }
-    public void moveObstacles() {
-        for (JLabel component : obstacles) {
-            if (component != null && component.getIcon() != null) {
-                int x = component.getX();
-                int newX = x - 1;
-                component.setLocation(newX, component.getY());
-            }
-        }
-    }
-    public void generateObstacles(int initial) throws IOException {
+    public void generateObstacles(int initial) {
         int minY = 200; // Mindesthöhe des ersten Hindernisses
         int maxY = 600; // Maximale Höhe des ersten Hindernisses
         int verticalGap = 200; // Vertikaler Abstand zwischen den Hindernissen
@@ -70,10 +81,8 @@ public class GameUI extends JFrame {
             JLabel obstacleBottom = new JLabel();
             add(obstacleTop);
             add(obstacleBottom);
-            BufferedImage obstacleTopImage = ImageIO.read(Objects.requireNonNull(getClass().getResource(Main.Obstacle)));
-            BufferedImage obstacleBottomImage = ImageIO.read(Objects.requireNonNull(getClass().getResource(Main.Obstacle)));
-            obstacleTop.setIcon(new ImageIcon(obstacleTopImage));
-            obstacleBottom.setIcon(new ImageIcon(obstacleBottomImage));
+            obstacleTop.setIcon(new ImageIcon(reader(Main.Obstacle)));
+            obstacleBottom.setIcon(new ImageIcon(reader(Main.Obstacle)));
             int x = initial + (obstacles.size() * 100);
             int yTop = (int) (Math.random() * (maxY - minY + 1)) + minY;
             obstacleTop.setSize(32, yTop);
@@ -88,6 +97,15 @@ public class GameUI extends JFrame {
             System.out.println("Obstacle generated at " + x + " " + yTop + " " + yBottom + " in Position " + obstacles.size());
         }
     }
+    public void moveObstacles() {
+        for (JLabel component : obstacles) {
+            if (component != null && component.getIcon() != null) {
+                int x = component.getX();
+                int newX = x - 1;
+                component.setLocation(newX, component.getY());
+            }
+        }
+    }
     public void removeObstacles() {
         Iterator<JLabel> iterator = obstacles.iterator();
         while (iterator.hasNext()) {
@@ -100,48 +118,31 @@ public class GameUI extends JFrame {
             }
         }
     }
-    public void checkCollision(JLabel player, JLabel obstacle) {
-        if (player.getBounds().intersects(obstacle.getBounds())) {
-            System.out.println("Collision detected");
-            GameLogic.instance.handleCollision();
-        }
+    public void checkCollision() {
+        rPlayer.setLocation(player.getX(), player.getY());
+        rTubeTop1.setLocation(obstacles.get(0).getX(), obstacles.get(0).getY());
+        rTubeBottom1.setLocation(obstacles.get(1).getX(), obstacles.get(1).getY());
+        rTubeTop2.setLocation(obstacles.get(2).getX(), obstacles.get(2).getY());
+        rTubeBottom2.setLocation(obstacles.get(3).getX(), obstacles.get(3).getY());
+        rTubeTop3.setLocation(obstacles.get(4).getX(), obstacles.get(4).getY());
+        rTubeBottom3.setLocation(obstacles.get(5).getX(), obstacles.get(5).getY());
+        if (player.getY() > 800 ||
+                rPlayer.intersects(rTubeTop1) || rPlayer.intersects(rTubeBottom1) ||
+                rPlayer.intersects(rTubeTop2) || rPlayer.intersects(rTubeBottom2) ||
+                rPlayer.intersects(rTubeTop3) || rPlayer.intersects(rTubeBottom3)) GameLogic.instance.handleCollision();
     }
-
-    public void initGameOver() throws IOException {
-        gameOver = new JLabel();
-        add(gameOver);
-        gameOver.setVisible(false);
-        gameOver.setSize(Main.WindowSizeX,Main.WindowsSizeY);
-        gameOver.setLocation(0, 0);
-        BufferedImage GameOver = ImageIO.read(Objects.requireNonNull(getClass().getResource(Main.GameOver)));
-        gameOver.setIcon(new ImageIcon (GameOver));
-    }
-
-
-    public static Timer t = new Timer(Main.getTPS(), e -> {
+    private BufferedImage reader(String ressource) {
         try {
-            GameLogic.instance.handleTimerTick();
-            if(System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            return ImageIO.read(Objects.requireNonNull(getClass().getResource(ressource)));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+    }
+    public int calculateGravity(int x) {
+        //return (int) (0.5 * 9.81 * Math.pow(x, 2));
+        return -3*x+4;
+    }public Timer t = new Timer(Main.getTPS(), e -> {
+        GameLogic.instance.handleTimerTick();
+        if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
