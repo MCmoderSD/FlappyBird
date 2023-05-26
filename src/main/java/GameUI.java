@@ -1,5 +1,6 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -12,20 +13,13 @@ import java.util.Objects;
 public class GameUI extends JFrame {
 
     public static int xPosition = - Main.JumpHeight;
-    public static Timer t = new Timer(Main.getTPS(), e -> {
-        try {
-            GameLogic.instance.handleTimerTick();
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    });
     public static JLabel player;
+    public static JTextField gameOver;
     public static ArrayList<JLabel> obstacles = new ArrayList<>();
     private int playerMoveInt;
-
     public GameUI() throws IOException {
         this.setTitle("Flappy Bird");
-        this.setSize(3000, 800);
+        this.setSize(800, 800);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(null);
         this.setVisible(true);
@@ -45,6 +39,17 @@ public class GameUI extends JFrame {
         player.setIcon(new ImageIcon(playerImage));
         player.setLocation(250, 400);
         generateObstacles(800);
+
+        gameOver = new JTextField();
+        add(gameOver);
+        gameOver.setSize(400,400);
+        gameOver.setLocation(400,400);
+        gameOver.setText("GameOver");
+        gameOver.setFont(new Font("Arial",Font.PLAIN,40));
+        gameOver.setForeground(Color.RED);
+        gameOver.setEditable(false);
+        gameOver.setBackground(null);
+        gameOver.setBorder(BorderFactory.createEmptyBorder());
     }
 
     public void MovePlayer(){
@@ -56,8 +61,6 @@ public class GameUI extends JFrame {
         }
         playerMoveInt = playerMoveInt +1;
     }
-
-
     public void moveObstacles() {
         for (JLabel component : obstacles) {
             if (component != null && component.getIcon() != null) {
@@ -67,7 +70,6 @@ public class GameUI extends JFrame {
             }
         }
     }
-
     public void generateObstacles(int initial) throws IOException {
         int minY = 200; // Mindesthöhe des ersten Hindernisses
         int maxY = 600; // Maximale Höhe des ersten Hindernisses
@@ -95,8 +97,6 @@ public class GameUI extends JFrame {
             System.out.println("Obstacle generated at " + x + " " + yTop + " " + yBottom + " in Position " + obstacles.size());
         }
     }
-
-
     public void removeObstacles() {
         Iterator<JLabel> iterator = obstacles.iterator();
         while (iterator.hasNext()) {
@@ -109,13 +109,36 @@ public class GameUI extends JFrame {
             }
         }
     }
-
-
-
     public void checkCollision(JLabel player, JLabel obstacle) {
         if (player.getBounds().intersects(obstacle.getBounds())) {
             System.out.println("Collision detected");
             GameLogic.instance.handleCollision();
         }
-    }
+    }public static Timer t = new Timer(Main.getTPS(), e -> {
+        try {
+            GameLogic.instance.handleTimerTick();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

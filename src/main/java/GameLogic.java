@@ -3,10 +3,10 @@ import java.awt.Rectangle;
 
 public class GameLogic {
 
-    Rectangle rPlayer, rTubeTop1, rTubeBottom1,rTubeTop2, rTubeBottom2,rTubeTop3, rTubeBottom3;
-
     public static GameLogic instance;
+    Rectangle rPlayer, rTubeTop1, rTubeBottom1,rTubeTop2, rTubeBottom2,rTubeTop3, rTubeBottom3;
     GameUI ui;
+    private boolean gameState = true;
     private int debugTimerTick;
 
     public GameLogic() throws IOException {
@@ -23,9 +23,17 @@ public class GameLogic {
 
     public void handleSpaceKeyPress() {
         System.out.println("Space pressed");
-        if (!GameUI.t.isRunning()) GameUI.t.start();
-        GameUI.xPosition = - Main.JumpHeight;
+        if (!GameUI.t.isRunning() && gameState) {
+            GameUI.t.start();
+            GameUI.gameOver.setVisible(false);
+        }
+        if (!GameUI.t.isRunning() && !gameState) {
+            GameUI.t.restart();
+        }
+
+        GameUI.xPosition = -Main.JumpHeight;
     }
+
 
     public void handleTimerTick() throws IOException {
         debugTimerTick();
@@ -61,6 +69,10 @@ public class GameLogic {
         rTubeBottom3.setLocation(GameUI.obstacles.get(5).getX(), GameUI.obstacles.get(5).getY());
         if (rPlayer.intersects(rTubeTop1) || rPlayer.intersects(rTubeBottom1) || rPlayer.intersects(rTubeTop2) || rPlayer.intersects(rTubeBottom2) || rPlayer.intersects(rTubeTop3) || rPlayer.intersects(rTubeBottom3)) {
             System.out.println("Collision");
+            GameUI.t.stop();
+            GameUI.gameOver.setVisible(true);
+            gameState = false;
+            GameUI.gameOver.requestFocus();
         }
     }
 }
