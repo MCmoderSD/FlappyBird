@@ -3,7 +3,7 @@ import java.io.IOException;
 public class Main {
     public static String Player = ("BirdPlaceHolder.png");
     public static String Obstacle = ("ObstaclePlaceHolder.png");
-    public static String Background = ("background.png");
+    public static String Background = ("Images/Background.png");
     public static String GameOver = ("GameOver.png");
     public static int WindowSizeX = 800, WindowsSizeY = 800;
     public static int JumpHeight = 7;
