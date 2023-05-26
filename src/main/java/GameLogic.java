@@ -10,6 +10,7 @@ public class GameLogic {
         ui = new GameUI();
     }
 
+    // Behandelt das Drücken der Leertaste
     public void handleSpaceKeyPress() {
         System.out.println("Space pressed");
         if (!ui.t.isRunning() && !gameState && !gameOver) {
@@ -25,15 +26,18 @@ public class GameLogic {
         handleBounce();
     }
 
+    // Behandelt das Timer-Tick-Ereignis
     public void handleTimerTick() {
         debugTimerTick();
         ui.movePlayer();
         ui.moveObstacles();
+        ui.moveBackground();
         ui.generateObstacles(0);
         ui.removeObstacles();
         ui.checkCollision();
     }
 
+    // Behandelt die Kollision
     public void handleCollision() {
         System.out.println("Collision");
         ui.t.stop();
@@ -42,12 +46,14 @@ public class GameLogic {
         gameOver = true;
     }
 
+    // Behandelt das Abprallen des Spielers
     public void handleBounce() {
         if (ui.player.getY() > 32) {
             ui.xPosition = -Main.JumpHeight;
         }
     }
 
+    // Hilfsmethode zur Debug-Ausgabe des Timer-Ticks
     private void debugTimerTick() {
         debugTimerTick++;
         if (debugTimerTick == 50) {
