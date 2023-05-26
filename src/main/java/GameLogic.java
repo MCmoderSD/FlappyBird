@@ -73,6 +73,7 @@ public class GameLogic {
             GameUI.gameOver.setVisible(true);
             gameState = false;
             GameUI.gameOver.requestFocus();
+        
         }
     }
 }

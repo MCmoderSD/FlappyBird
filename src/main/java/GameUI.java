@@ -85,12 +85,12 @@ public class GameUI extends JFrame {
             obstacleBottom.setIcon(new ImageIcon(obstacleBottomImage));
             int yTop = (int) (Math.random() * (maxY - minY + 1)) + minY;
             int yBottom = yTop + verticalGap;
-            obstacleTop.setSize(64, yTop);
-            obstacleBottom.setSize(64, 800 - yBottom); // Gesamthöhe des Fensters abzüglich der Höhe des oberen Hindernisses und des vertikalen Abstands
+            obstacleTop.setSize(32, yTop);
+            obstacleBottom.setSize(32, 800 - yBottom); // Gesamthöhe des Fensters abzüglich der Höhe des oberen Hindernisses und des vertikalen Abstands
             int x = initial + (obstacles.size() * 100);
             obstacleTop.setLocation(x, 0);
-            obstacleTop.setBounds(x, 0,64, yTop);
-            obstacleBottom.setBounds(x, yBottom,64, 800 - yBottom);
+            obstacleTop.setBounds(x, 0,32, yTop);
+            obstacleBottom.setBounds(x, yBottom,32, 800 - yBottom);
             obstacleBottom.setLocation(x, yBottom);
             obstacles.add(obstacleTop);
             obstacles.add(obstacleBottom);
@@ -102,7 +102,7 @@ public class GameUI extends JFrame {
         while (iterator.hasNext()) {
             JLabel component = iterator.next();
             int x = component.getX();
-            if (x < -64) {
+            if (x < -10) {
                 remove(component);
                 iterator.remove();
                 System.out.println("Obstacle removed at " + x);
