@@ -72,8 +72,13 @@ public class GameLogic {
             GameUI.t.stop();
             GameUI.gameOver.setVisible(true);
             gameState = false;
-            GameUI.gameOver.requestFocus();
         
+        }
+        if (GameUI.player.getY() > 800 || GameUI.player.getY() < 32) {
+            System.out.println("Collision");
+            GameUI.t.stop();
+            GameUI.gameOver.setVisible(true);
+            gameState = false;
         }
     }
 }

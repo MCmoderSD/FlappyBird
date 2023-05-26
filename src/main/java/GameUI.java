@@ -83,15 +83,15 @@ public class GameUI extends JFrame {
             BufferedImage obstacleBottomImage = ImageIO.read(Objects.requireNonNull(getClass().getResource(Main.Obstacle)));
             obstacleTop.setIcon(new ImageIcon(obstacleTopImage));
             obstacleBottom.setIcon(new ImageIcon(obstacleBottomImage));
-            int yTop = (int) (Math.random() * (maxY - minY + 1)) + minY;
-            int yBottom = yTop + verticalGap;
-            obstacleTop.setSize(32, yTop);
-            obstacleBottom.setSize(32, 800 - yBottom); // Gesamthöhe des Fensters abzüglich der Höhe des oberen Hindernisses und des vertikalen Abstands
             int x = initial + (obstacles.size() * 100);
+            int yTop = (int) (Math.random() * (maxY - minY + 1)) + minY;
+            obstacleTop.setSize(32, yTop);
             obstacleTop.setLocation(x, 0);
             obstacleTop.setBounds(x, 0,32, yTop);
-            obstacleBottom.setBounds(x, yBottom,32, 800 - yBottom);
+            int yBottom = yTop + verticalGap;
+            obstacleBottom.setSize(32, 800 - yBottom);
             obstacleBottom.setLocation(x, yBottom);
+            obstacleBottom.setBounds(x, yBottom,32, 800 - yBottom);
             obstacles.add(obstacleTop);
             obstacles.add(obstacleBottom);
             System.out.println("Obstacle generated at " + x + " " + yTop + " " + yBottom + " in Position " + obstacles.size());
