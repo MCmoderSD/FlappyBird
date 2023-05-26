@@ -182,9 +182,9 @@ public class GameUI extends JFrame {
         }*/
     }
 
-    private BufferedImage reader(String ressource) {
+    private BufferedImage reader(String resource) {
         try {
-            return ImageIO.read(Objects.requireNonNull(getClass().getResource(ressource)));
+            return ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
