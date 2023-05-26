@@ -11,15 +11,16 @@ import java.util.Objects;
 
 
 public class GameUI extends JFrame {
+    public static GameUI instance;
 
     public static int xPosition = - Main.JumpHeight;
     public static JLabel player;
-    public static JTextField gameOver;
+    public static JLabel gameOver;
     public static ArrayList<JLabel> obstacles = new ArrayList<>();
     private int playerMoveInt;
     public GameUI() throws IOException {
         this.setTitle("Flappy Bird");
-        this.setSize(800, 800);
+        this.setSize(Main.WindowSizeX,Main.WindowsSizeY);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(null);
         this.setVisible(true);
@@ -38,18 +39,8 @@ public class GameUI extends JFrame {
         BufferedImage playerImage = ImageIO.read(Objects.requireNonNull(getClass().getResource(Main.Player)));
         player.setIcon(new ImageIcon(playerImage));
         player.setLocation(250, 400);
-        generateObstacles(800);
-
-        gameOver = new JTextField();
-        add(gameOver);
-        gameOver.setSize(400,400);
-        gameOver.setLocation(400,400);
-        gameOver.setText("GameOver");
-        gameOver.setFont(new Font("Arial",Font.PLAIN,40));
-        gameOver.setForeground(Color.RED);
-        gameOver.setEditable(false);
-        gameOver.setBackground(null);
-        gameOver.setBorder(BorderFactory.createEmptyBorder());
+        generateObstacles(Main.WindowSizeX);
+        initGameOver();
     }
 
     public void MovePlayer(){
@@ -114,15 +105,27 @@ public class GameUI extends JFrame {
             System.out.println("Collision detected");
             GameLogic.instance.handleCollision();
         }
-    }public static Timer t = new Timer(Main.getTPS(), e -> {
+    }
+
+    public void initGameOver() throws IOException {
+        gameOver = new JLabel();
+        add(gameOver);
+        gameOver.setVisible(false);
+        gameOver.setSize(Main.WindowSizeX,Main.WindowsSizeY);
+        gameOver.setLocation(0, 0);
+        BufferedImage GameOver = ImageIO.read(Objects.requireNonNull(getClass().getResource(Main.GameOver)));
+        gameOver.setIcon(new ImageIcon (GameOver));
+    }
+
+
+    public static Timer t = new Timer(Main.getTPS(), e -> {
         try {
             GameLogic.instance.handleTimerTick();
+            if(System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
     });
-
-
 
 
 
