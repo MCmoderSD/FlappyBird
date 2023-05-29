@@ -42,8 +42,7 @@ public class Main {
     // Die main-Methode, die das Spiel startet
     public static void main(String[] args) {
         // Erstellt eine neue Instanz der GameLogic-Klasse, um das Spiel zu starten
-        new GameLogic(
-                WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, PlayerPositionX, playerWidth, playerHeight, Background, Player,25, 200, obstacleWidth, obstacleHeight, ObstacleTop, ObstacleBottom, GameOver, dieSound, flapSound, hitSound, pointSound, getTPS());
+        new GameLogic(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, PlayerPositionX, playerWidth, playerHeight, Background, Player,25, 200, obstacleWidth, obstacleHeight, ObstacleTop, ObstacleBottom, GameOver, dieSound, flapSound, hitSound, pointSound, getTPS());
     }
 
     // Gibt die Anzahl der Aktualisierungen pro Sekunde (TPS) zurück

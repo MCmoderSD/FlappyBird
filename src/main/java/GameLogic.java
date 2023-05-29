@@ -1,16 +1,15 @@
+import java.awt.*;
+
 public class GameLogic { // Die GameLogic-Klasse, die die Spiellogik enthält
     public static GameLogic instance; // Die Instanz der GameLogic-Klasse
     private static GameUI ui; // Die Instanz der GameUI-Klasse
     private boolean gameState = false, gameOver = false; // Die Variablen, die den Spielzustand speichern
-    private int debugTimerTick; // Die Variable, die den Timer-Tick zählt
-
     public GameLogic(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate) { // Der Konstruktor der GameLogic-Klasse
         instance = this; // Setzt die Instanz der GameLogic-Klassenvariable auf die aktuelle Instanz
         ui = new GameUI(width, height, title, icon, resizable, playerPosition, playerWidth, playerHeight, backgroundImage, playerImage, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, gameOverImage, dieSound, flapSound, hitSound, pointSound, Tickrate); // Erstellt eine neue Instanz der GameUI-Klasse
     } // Ende des
 
     public void handleSpaceKeyPress(String flapSound) { // Behandelt das Leertaste-Drücken
-        System.out.println("Space pressed"); // Gibt in der Konsole aus, dass die Leertaste gedrückt wurde
         if (!ui.tickrate.isRunning() && !gameState && !gameOver) { // Wenn das Spiel nicht läuft und nicht im Game-Over-Zustand ist
             ui.tickrate.start(); // Startet den Timer
             ui.gameOver.setVisible(false); // Setzt das Game-Over-Bild auf unsichtbar
@@ -24,12 +23,11 @@ public class GameLogic { // Die GameLogic-Klasse, die die Spiellogik enthält
         handleBounce(flapSound); // Behandelt das Abprallen des Spielers
     } // Ende der Methode
 
-    public void handleTimerTick(int width, int height , int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String dieSound, String flapSound, String hitSound, String pointSound) { // Behandelt den Timer-Tick
-        debugTimerTick(); // Gibt den Timer-Tick in der Konsole aus
+    public void handleTimerTick(int width, int height , int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String dieSound, String hitSound, String pointSound) { // Behandelt den Timer-Tick
         ui.movePlayer(); // Bewegt den Spieler
         ui.moveObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage); // Bewegt die Hindernisse
         ui.removeObstacles(); // Entfernt die Hindernisse
-        ui.checkCollision(width, dieSound, hitSound); // Überprüft die Kollision
+        ui.checkCollision(width, dieSound, hitSound, pointSound); // Überprüft die Kollision
     } // Ende der Methode
 
     public void handleCollision(String dieSound) { // Behandelt die Kollision
@@ -48,12 +46,9 @@ public class GameLogic { // Die GameLogic-Klasse, die die Spiellogik enthält
         } // Ende der Bedingung
     } // Ende der Methode
 
-    private void debugTimerTick() { // Gibt den Timer-Tick in der Konsole aus
-        debugTimerTick++; // Erhöht die Variable um 1
-        if (debugTimerTick == 100) { // Wenn die Variable 100 ist
-            System.out.println("Timer tick 100"); // Gibt in der Konsole aus, dass der Timer-Tick 100 ist
-            debugTimerTick = 0; // Setzt die Variable auf 0
-        } // Ende der Bedingung
+    public void handlePoint(String pointSound) { // Behandelt das Punkte-Erhöhen
+        ui.audioPlayer(pointSound); // Spielt den Punkt-Sound ab
+        ui.points++; // Erhöht die Punkte um 1
+        System.out.println("Point! du hast jetzt " + ui.points); // Gibt in der Konsole aus, dass ein Punkt erzielt wurde
     } // Ende der Methode
-
 } // Ende der Klasse
