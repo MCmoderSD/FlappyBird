@@ -31,7 +31,6 @@ public class GameLogic {
         debugTimerTick();
         ui.movePlayer();
         ui.moveObstacles();
-        ui.generateObstacles(0);
         ui.removeObstacles();
         ui.checkCollision();
     }

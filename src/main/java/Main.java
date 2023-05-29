@@ -4,7 +4,7 @@ public class Main {
     // Dateiname des Bildes für den Spieler
     public static final String Player = ("BirdPlaceHolder.png");
     // Dateiname des Bildes für das Hindernis
-    public static final String Obstacle = ("ObstaclePlaceHolder.png");
+    public static final String ObstacleTop = ("ObstaclePlaceHolderGreen.png"), ObstacleBottom = ("ObstaclePlaceHolderRed.png");
     // Dateiname des Hintergrundbildes
     public static final String Background = ("Images/Background.png");
 

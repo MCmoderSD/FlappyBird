@@ -14,13 +14,12 @@ public class GameUI extends JFrame {
     public int xPosition = -Main.JumpHeight;
     public JLabel player, gameOver, background;
     public JPanel mainPanel, backgroundPanel;
-    public Rectangle rPlayer, rTubeTop1, rTubeBottom1,rTubeTop2, rTubeBottom2,rTubeTop3, rTubeBottom3;
+    public Rectangle rPlayer;
     public ArrayList<JLabel> obstacles = new ArrayList<>();
-    private int playerMoveInt;
+    private int playerMoveInt = 0, obstacleMoveInt = 200;
     public GameUI() {
         initFrame(Main.WindowSizeX, Main.WindowsSizeY);
         initPlayer();
-        generateObstacles(Main.WindowSizeX);
         initRectangles();
         initGameOver();
         this.addKeyListener(new KeyAdapter() {
@@ -31,7 +30,6 @@ public class GameUI extends JFrame {
             }
         });
     }
-
     private void initFrame(int width, int height) {
         setTitle(Main.Title);
         setSize(width, height);
@@ -43,7 +41,6 @@ public class GameUI extends JFrame {
         initBackground(width, height);
         initMainPanel(width, height);
     }
-
     private void initMainPanel(int width, int height) {
         mainPanel = new JPanel();
         mainPanel.setSize(width, height);
@@ -51,7 +48,6 @@ public class GameUI extends JFrame {
         mainPanel.setOpaque(false);
         setContentPane(mainPanel);
     }
-
     private void initBackground(int width, int height) {
         backgroundPanel = new JPanel();
         backgroundPanel.setSize(width, height);
@@ -61,16 +57,17 @@ public class GameUI extends JFrame {
         background.setIcon(new ImageIcon(reader(Main.Background)));
         setContentPane(backgroundPanel);
     }
-
     private void initPlayer() {
         player = new JLabel();
         mainPanel.add(player);
         player.setSize(32, 32);
         player.setBounds(250, player.getY(), 32, 32);
+        rPlayer = new Rectangle(player.getBounds());
         player.setIcon(new ImageIcon(reader(Main.Player)));
         player.setLocation(250, 400);
     }
     private void initRectangles() {
+        /*
         rPlayer =new Rectangle(player.getBounds());
         rTubeTop1 = new Rectangle(obstacles.get(0).getBounds());
         rTubeBottom1 = new Rectangle(obstacles.get(1).getBounds());
@@ -78,6 +75,7 @@ public class GameUI extends JFrame {
         rTubeBottom2 = new Rectangle(obstacles.get(3).getBounds());
         rTubeTop3 = new Rectangle(obstacles.get(4).getBounds());
         rTubeBottom3 = new Rectangle(obstacles.get(5).getBounds());
+         */
     }
     private void initGameOver() {
         gameOver = new JLabel();
@@ -86,7 +84,11 @@ public class GameUI extends JFrame {
         gameOver.setSize(Main.WindowSizeX, Main.WindowsSizeY);
         gameOver.setLocation(0, 0);
         gameOver.setIcon(new ImageIcon(reader(Main.GameOver)));
-    }
+    }public Timer tickrate = new Timer(Main.getTPS(), e -> {
+        GameLogic.instance.handleTimerTick();
+        if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
+    });
+
     public void movePlayer() {
         if (playerMoveInt == 3) {
             xPosition = xPosition + 1;
@@ -97,31 +99,30 @@ public class GameUI extends JFrame {
         playerMoveInt = playerMoveInt + 1;
     }
 
-    public void generateObstacles(int initial) {
-        int minY = 200; // Mindesthöhe des ersten Hindernisses
-        int maxY = 600; // Maximale Höhe des ersten Hindernisses
+    public void generateObstacles(int width, int height, int percentage) {
+        int minY = ((height * percentage) / 100); // Mindesthöhe des ersten Hindernisses
+        int maxY = height - ((height * percentage) / 100); // Maximale Höhe des ersten Hindernisses
         int verticalGap = 200; // Vertikaler Abstand zwischen den Hindernissen
-        while (obstacles.size() <= 20) {
-            JLabel obstacleTop = new JLabel();
-            JLabel obstacleBottom = new JLabel();
-            mainPanel.add(obstacleTop);
-            mainPanel.add(obstacleBottom);
-            obstacleTop.setIcon(new ImageIcon(reader(Main.Obstacle)));
-            obstacleBottom.setIcon(new ImageIcon(reader(Main.Obstacle)));
-            int x = initial + (obstacles.size() * 100);
-            int yTop = (int) (Math.random() * (maxY - minY + 1)) + minY;
-            obstacleTop.setSize(32, yTop);
-            obstacleTop.setLocation(x, 0);
-            obstacleTop.setBounds(x, 0,32, yTop);
-            int yBottom = yTop + verticalGap;
-            obstacleBottom.setSize(32, 800 - yBottom);
-            obstacleBottom.setLocation(x, yBottom);
-            obstacleBottom.setBounds(x, yBottom,32, 800 - yBottom);
-            obstacles.add(obstacleTop);
-            obstacles.add(obstacleBottom);
-            System.out.println("Obstacle generated at " + x + " " + yTop + " " + yBottom + " in Position " + obstacles.size());
-        }
+        int obstacleWidth = 32, obstacleHeight = 1024; // Breite und Höhe der Hindernisse
+        JLabel obstacleTop = new JLabel(), obstacleBottom = new JLabel(); // Erstelle die Hindernisse
+        mainPanel.add(obstacleTop); // Füge die Hindernisse dem Fenster hinzu
+        mainPanel.add(obstacleBottom); // Füge die Hindernisse dem Fenster hinzu
+        obstacleTop.setIcon(new ImageIcon(reader(Main.ObstacleTop))); // Setze das Bild des Hindernisses
+        obstacleBottom.setIcon(new ImageIcon(reader(Main.ObstacleBottom))); // Setze das Bild des Hindernisses
+        int yTop = (int) (Math.random() * (maxY - minY + 1) + minY) - obstacleHeight; // Zufällige Höhe des ersten Hindernisses
+        int yBottom = yTop + verticalGap + obstacleHeight; // Berechne die Höhe des zweiten Hindernisses
+        obstacleTop.setBounds(width, yTop, obstacleWidth, obstacleHeight); // Setze die Position des ersten Hindernisses
+        obstacleTop.setLocation(width, yTop); // Setze die Position des ersten Hindernisses
+        obstacleBottom.setSize(obstacleWidth, obstacleHeight); // Setze die Größe des zweiten Hindernisses
+        obstacleBottom.setBounds(width, yBottom, obstacleWidth, obstacleHeight); // Setze die Position des zweiten Hindernisses
+        obstacleBottom.setLocation(width, yBottom); // Setze die Position des zweiten Hindernisses
+        obstacles.add(obstacleTop); // Füge das erste Hindernis der Liste hinzu
+        obstacles.add(obstacleBottom); // Füge das zweite Hindernis der Liste hinzu
+        Rectangle rObstacleTop = new Rectangle(obstacleTop.getBounds()); // Erstelle ein Rechteck für das erste Hindernis
+        Rectangle rObstacleBottom = new Rectangle(obstacleBottom.getBounds()); // Erstelle ein Rechteck für das zweite Hindernis
+
     }
+
     public void moveObstacles() {
         for (JLabel component : obstacles) {
             if (component != null && component.getIcon() != null) {
@@ -130,31 +131,29 @@ public class GameUI extends JFrame {
                 component.setLocation(newX, component.getY());
             }
         }
+        obstacleMoveInt = obstacleMoveInt + 1;
+        if (obstacleMoveInt >= 200) {
+            generateObstacles(Main.WindowSizeX, Main.WindowsSizeY, 25);
+            obstacleMoveInt = 0;
+        }
     }
+
     public void removeObstacles() {
         Iterator<JLabel> iterator = obstacles.iterator();
         while (iterator.hasNext()) {
             JLabel component = iterator.next();
             int x = component.getX();
-            if (x < -10) {
+            if (x < -64) {
                 remove(component);
                 iterator.remove();
                 System.out.println("Obstacle removed at " + x);
             }
         }
     }
+
     public void checkCollision() {
         rPlayer.setLocation(player.getX(), player.getY());
-        rTubeTop1.setLocation(obstacles.get(0).getX(), obstacles.get(0).getY());
-        rTubeBottom1.setLocation(obstacles.get(1).getX(), obstacles.get(1).getY());
-        rTubeTop2.setLocation(obstacles.get(2).getX(), obstacles.get(2).getY());
-        rTubeBottom2.setLocation(obstacles.get(3).getX(), obstacles.get(3).getY());
-        rTubeTop3.setLocation(obstacles.get(4).getX(), obstacles.get(4).getY());
-        rTubeBottom3.setLocation(obstacles.get(5).getX(), obstacles.get(5).getY());
-        if (player.getY() > 800 ||
-                rPlayer.intersects(rTubeTop1) || rPlayer.intersects(rTubeBottom1) ||
-                rPlayer.intersects(rTubeTop2) || rPlayer.intersects(rTubeBottom2) ||
-                rPlayer.intersects(rTubeTop3) || rPlayer.intersects(rTubeBottom3)) GameLogic.instance.handleCollision();
+        if (player.getY() > Main.WindowsSizeY) GameLogic.instance.handleCollision();
     }
 
     private BufferedImage reader(String resource) {
@@ -164,13 +163,23 @@ public class GameUI extends JFrame {
             throw new RuntimeException(e);
         }
     }
+
     public int calculateGravity(int x) {
         //return (int) (0.5 * 9.81 * Math.pow(x, 2));
         return -3*x+4;
     }
 
-    public Timer tickrate = new Timer(Main.getTPS(), e -> {
-        GameLogic.instance.handleTimerTick();
-        if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
-    });
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
