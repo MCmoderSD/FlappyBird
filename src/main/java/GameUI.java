@@ -1,4 +1,7 @@
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -8,6 +11,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
@@ -20,26 +24,27 @@ public class GameUI extends JFrame {
     private JPanel mainPanel;
     private Rectangle rPlayer;
     private int playerMoveInt = 0, obstacleMoveInt = 200;
-    public GameUI(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, int Tickrate) {
+    public GameUI(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate) {
         initFrame(width, height, title, icon, resizable);
         initMainPanel(width, height);
         initPlayer(height, playerPosition, playerWidth, playerHeight, playerImage);
         initGameOver(width, height, gameOverImage);
         tickrate = new Timer(Tickrate, e -> {
             if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
-            GameLogic.instance.handleTimerTick(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage);
+            GameLogic.instance.handleTimerTick(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, dieSound, flapSound, hitSound, pointSound);
         });
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) GameLogic.instance.handleSpaceKeyPress();
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) GameLogic.instance.handleSpaceKeyPress(flapSound);
             }
         });
+
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                GameLogic.instance.handleSpaceKeyPress();
+                GameLogic.instance.handleSpaceKeyPress(flapSound);
             }
             @Override
             public void mousePressed(MouseEvent e) {}
@@ -145,7 +150,7 @@ public class GameUI extends JFrame {
         }
         obstacleMoveInt = obstacleMoveInt + 1;
         if (obstacleMoveInt >= 200) {
-            generateObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage );
+            generateObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage);
             obstacleMoveInt = 0;
         }
     }
@@ -161,11 +166,14 @@ public class GameUI extends JFrame {
             }
         }
     }
-    public void checkCollision(int width) {
+    public void checkCollision(int width, String dieSound, String flapSound, String hitSound, String pointSound) {
         rPlayer.setLocation(player.getX(), player.getY());
-        if (player.getY() > width) GameLogic.instance.handleCollision();
+        if (player.getY() > width) GameLogic.instance.handleCollision(dieSound);
         for (Rectangle component : rObstacles) {
-            if (component != null) if (rPlayer.intersects(component)) GameLogic.instance.handleCollision();
+            if (component != null) if (rPlayer.intersects(component)) {
+                audioPlayer(hitSound);
+                GameLogic.instance.handleCollision(dieSound);
+            }
         }
     }
     private BufferedImage reader(String resource) {
@@ -178,5 +186,23 @@ public class GameUI extends JFrame {
     public int calculateGravity(int x) {
         //return (int) (0.5 * 9.81 * Math.pow(x, 2));
         return -3*x+4;
+    }
+    public void audioPlayer(String audioFilePath) {
+        Thread thread = new Thread(() -> {
+        try {
+            ClassLoader classLoader = getClass().getClassLoader();
+            URL audioFileUrl = classLoader.getResource(audioFilePath);
+            if (audioFileUrl == null) throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(audioFileUrl);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.start();
+            System.out.println("Audio wird abgespielt... " + audioFilePath);
+            Thread.sleep(clip.getMicrosecondLength() / 1000);
+            clip.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }});
+        thread.start();
     }
 }
