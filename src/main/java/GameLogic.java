@@ -1,13 +1,13 @@
 public class GameLogic {
 
     public static GameLogic instance;
-    public boolean gameState = false, gameOver = false;
-    GameUI ui;
+    private static GameUI ui;
+    private boolean gameState = false, gameOver = false;
     private int debugTimerTick;
 
-    public GameLogic() {
+    public GameLogic(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, int Tickrate) {
         instance = this;
-        ui = new GameUI();
+        ui = new GameUI(width, height, title, icon, resizable, playerPosition, playerWidth, playerHeight, playerImage, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, gameOverImage,Tickrate);
     }
 
     // Behandelt das Drücken der Leertaste
@@ -27,12 +27,12 @@ public class GameLogic {
     }
 
     // Behandelt das Timer-Tick-Ereignis
-    public void handleTimerTick() {
+    public void handleTimerTick(int width, int height , int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage) {
         debugTimerTick();
         ui.movePlayer();
-        ui.moveObstacles();
+        ui.moveObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage);
         ui.removeObstacles();
-        ui.checkCollision();
+        ui.checkCollision(width);
     }
 
     // Behandelt die Kollision
