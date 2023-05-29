@@ -1,21 +1,23 @@
 public class Main {
-    private static final int TPS = 100;
     // Definiert den Titel des Spiels
-    public static String Title = ("Flappy Bird");
+    public static final String Title = ("Flappy Bird");
     // Dateiname des Bildes für den Spieler
-    public static String Player = ("BirdPlaceHolder.png");
+    public static final String Player = ("BirdPlaceHolder.png");
     // Dateiname des Bildes für das Hindernis
-    public static String Obstacle = ("ObstaclePlaceHolder.png");
+    public static final String Obstacle = ("ObstaclePlaceHolder.png");
     // Dateiname des Hintergrundbildes
-    public static String Background = ("Images/Background.png");
+    public static final String Background = ("Images/Background.png");
+
+    public static final String Icon =("Images/Icon.png");
     // Dateiname des Game-Over-Bildes
-    public static String GameOver = ("GameOver.png");
+    public static final String GameOver = ("GameOver.png");
     // Größe des Spielfensters in der horizontalen Richtung
-    public static int WindowSizeX = 800;
+    public static final int WindowSizeX = 800;
     // Größe des Spielfensters in der vertikalen Richtung
-    public static int WindowsSizeY = 800;
+    public static final int WindowsSizeY = 800;
     // Höhe, um die der Spieler springt
-    public static int JumpHeight = 7;
+    public static final int JumpHeight = 7;
+    private static final int TPS = 100;
 
     // Die main-Methode, die das Spiel startet
     public static void main(String[] args) {

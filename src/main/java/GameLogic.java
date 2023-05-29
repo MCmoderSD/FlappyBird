@@ -13,12 +13,12 @@ public class GameLogic {
     // Behandelt das Drücken der Leertaste
     public void handleSpaceKeyPress() {
         System.out.println("Space pressed");
-        if (!ui.t.isRunning() && !gameState && !gameOver) {
-            ui.t.start();
+        if (!ui.tickrate.isRunning() && !gameState && !gameOver) {
+            ui.tickrate.start();
             ui.gameOver.setVisible(false);
             gameState = true;
         }
-        if (!ui.t.isRunning() && !gameState && gameOver) {
+        if (!ui.tickrate.isRunning() && !gameState && gameOver) {
             //ToDo ui.restart();
             System.exit(0);
             gameOver = false;
@@ -31,7 +31,6 @@ public class GameLogic {
         debugTimerTick();
         ui.movePlayer();
         ui.moveObstacles();
-        ui.moveBackground();
         ui.generateObstacles(0);
         ui.removeObstacles();
         ui.checkCollision();
@@ -40,7 +39,7 @@ public class GameLogic {
     // Behandelt die Kollision
     public void handleCollision() {
         System.out.println("Collision");
-        ui.t.stop();
+        ui.tickrate.stop();
         ui.gameOver.setVisible(true);
         gameState = false;
         gameOver = true;

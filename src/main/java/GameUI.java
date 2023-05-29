@@ -9,15 +9,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
 
+@SuppressWarnings("SameParameterValue")
 public class GameUI extends JFrame {
     public int xPosition = -Main.JumpHeight;
     public JLabel player, gameOver, background;
+    public JPanel mainPanel, backgroundPanel;
     public Rectangle rPlayer, rTubeTop1, rTubeBottom1,rTubeTop2, rTubeBottom2,rTubeTop3, rTubeBottom3;
     public ArrayList<JLabel> obstacles = new ArrayList<>();
     private int playerMoveInt;
     public GameUI() {
         initFrame(Main.WindowSizeX, Main.WindowsSizeY);
-        //initBackground(Main.WindowSizeX, Main.WindowsSizeY);
         initPlayer();
         generateObstacles(Main.WindowSizeX);
         initRectangles();
@@ -32,25 +33,38 @@ public class GameUI extends JFrame {
     }
 
     private void initFrame(int width, int height) {
-        this.setTitle(Main.Title);
-        this.setSize(width, height);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setLayout(null);
-        this.setVisible(true);
-        this.setResizable(false);
+        setTitle(Main.Title);
+        setSize(width, height);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(null);
+        setVisible(true);
+        setResizable(false);
+        setIconImage((reader(Main.Icon)));
+        initBackground(width, height);
+        initMainPanel(width, height);
+    }
+
+    private void initMainPanel(int width, int height) {
+        mainPanel = new JPanel();
+        mainPanel.setSize(width, height);
+        mainPanel.setLayout(null);
+        mainPanel.setOpaque(false);
+        setContentPane(mainPanel);
     }
 
     private void initBackground(int width, int height) {
+        backgroundPanel = new JPanel();
+        backgroundPanel.setSize(width, height);
         background = new JLabel();
-        add(background);
         background.setSize(width, height);
-        background.setLocation(0, 0);
+        backgroundPanel.add(background);
         background.setIcon(new ImageIcon(reader(Main.Background)));
+        setContentPane(backgroundPanel);
     }
 
     private void initPlayer() {
         player = new JLabel();
-        add(player);
+        mainPanel.add(player);
         player.setSize(32, 32);
         player.setBounds(250, player.getY(), 32, 32);
         player.setIcon(new ImageIcon(reader(Main.Player)));
@@ -67,7 +81,7 @@ public class GameUI extends JFrame {
     }
     private void initGameOver() {
         gameOver = new JLabel();
-        add(gameOver);
+        mainPanel.add(gameOver);
         gameOver.setVisible(false);
         gameOver.setSize(Main.WindowSizeX, Main.WindowsSizeY);
         gameOver.setLocation(0, 0);
@@ -83,35 +97,6 @@ public class GameUI extends JFrame {
         playerMoveInt = playerMoveInt + 1;
     }
 
-    public void moveBackground() {
-        /*int backgroundX = background.getX();
-        int backgroundWidth = background.getWidth();
-
-        // Hintergrund um 1 Pixel nach links bewegen
-        background.setLocation(backgroundX - 1, 0);
-
-        // Überprüfen, ob der Hintergrund das JFrame vollständig verlassen hat
-        if (backgroundX + backgroundWidth <= 0) {
-            generateNewBackground();
-        }*/
-    }
-
-    private void generateNewBackground() {
-        // Neuen Hintergrund generieren
-        JLabel newBackground = new JLabel();
-        newBackground.setSize(background.getWidth(), background.getHeight());
-        newBackground.setLocation(background.getX() + background.getWidth(), 0);
-        newBackground.setIcon(new ImageIcon(reader(Main.Background)));
-
-        // Alten Hintergrund entfernen und neuen Hintergrund hinzufügen
-        remove(background);
-        background = newBackground;
-        add(background);
-        refreshLayers();
-        repaint();  // JFrame neu zeichnen
-    }
-
-
     public void generateObstacles(int initial) {
         int minY = 200; // Mindesthöhe des ersten Hindernisses
         int maxY = 600; // Maximale Höhe des ersten Hindernisses
@@ -119,8 +104,8 @@ public class GameUI extends JFrame {
         while (obstacles.size() <= 20) {
             JLabel obstacleTop = new JLabel();
             JLabel obstacleBottom = new JLabel();
-            add(obstacleTop);
-            add(obstacleBottom);
+            mainPanel.add(obstacleTop);
+            mainPanel.add(obstacleBottom);
             obstacleTop.setIcon(new ImageIcon(reader(Main.Obstacle)));
             obstacleBottom.setIcon(new ImageIcon(reader(Main.Obstacle)));
             int x = initial + (obstacles.size() * 100);
@@ -134,7 +119,6 @@ public class GameUI extends JFrame {
             obstacleBottom.setBounds(x, yBottom,32, 800 - yBottom);
             obstacles.add(obstacleTop);
             obstacles.add(obstacleBottom);
-            refreshLayers();
             System.out.println("Obstacle generated at " + x + " " + yTop + " " + yBottom + " in Position " + obstacles.size());
         }
     }
@@ -173,15 +157,6 @@ public class GameUI extends JFrame {
                 rPlayer.intersects(rTubeTop3) || rPlayer.intersects(rTubeBottom3)) GameLogic.instance.handleCollision();
     }
 
-    public void refreshLayers() {
-        /*setComponentZOrder(player, 2);
-        setComponentZOrder(gameOver, 0);
-        setComponentZOrder(background, 3);
-        for (JLabel obstacle : obstacles) {
-            setComponentZOrder(obstacle, 1);
-        }*/
-    }
-
     private BufferedImage reader(String resource) {
         try {
             return ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)));
@@ -192,7 +167,9 @@ public class GameUI extends JFrame {
     public int calculateGravity(int x) {
         //return (int) (0.5 * 9.81 * Math.pow(x, 2));
         return -3*x+4;
-    }public Timer t = new Timer(Main.getTPS(), e -> {
+    }
+
+    public Timer tickrate = new Timer(Main.getTPS(), e -> {
         GameLogic.instance.handleTimerTick();
         if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
     });
