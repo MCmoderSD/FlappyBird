@@ -16,11 +16,11 @@ public class GameUI extends JFrame {
     public JPanel mainPanel, backgroundPanel;
     public Rectangle rPlayer;
     public ArrayList<JLabel> obstacles = new ArrayList<>();
+    public ArrayList<Rectangle> rObstacles = new ArrayList<>();
     private int playerMoveInt = 0, obstacleMoveInt = 200;
     public GameUI() {
         initFrame(Main.WindowSizeX, Main.WindowsSizeY);
         initPlayer();
-        initRectangles();
         initGameOver();
         this.addKeyListener(new KeyAdapter() {
             @Override
@@ -66,17 +66,7 @@ public class GameUI extends JFrame {
         player.setIcon(new ImageIcon(reader(Main.Player)));
         player.setLocation(250, 400);
     }
-    private void initRectangles() {
-        /*
-        rPlayer =new Rectangle(player.getBounds());
-        rTubeTop1 = new Rectangle(obstacles.get(0).getBounds());
-        rTubeBottom1 = new Rectangle(obstacles.get(1).getBounds());
-        rTubeTop2 = new Rectangle(obstacles.get(2).getBounds());
-        rTubeBottom2 = new Rectangle(obstacles.get(3).getBounds());
-        rTubeTop3 = new Rectangle(obstacles.get(4).getBounds());
-        rTubeBottom3 = new Rectangle(obstacles.get(5).getBounds());
-         */
-    }
+
     private void initGameOver() {
         gameOver = new JLabel();
         mainPanel.add(gameOver);
@@ -84,11 +74,7 @@ public class GameUI extends JFrame {
         gameOver.setSize(Main.WindowSizeX, Main.WindowsSizeY);
         gameOver.setLocation(0, 0);
         gameOver.setIcon(new ImageIcon(reader(Main.GameOver)));
-    }public Timer tickrate = new Timer(Main.getTPS(), e -> {
-        GameLogic.instance.handleTimerTick();
-        if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
-    });
-
+    }
     public void movePlayer() {
         if (playerMoveInt == 3) {
             xPosition = xPosition + 1;
@@ -98,7 +84,6 @@ public class GameUI extends JFrame {
         }
         playerMoveInt = playerMoveInt + 1;
     }
-
     public void generateObstacles(int width, int height, int percentage) {
         int minY = ((height * percentage) / 100); // Mindesthöhe des ersten Hindernisses
         int maxY = height - ((height * percentage) / 100); // Maximale Höhe des ersten Hindernisses
@@ -119,8 +104,11 @@ public class GameUI extends JFrame {
         obstacles.add(obstacleTop); // Füge das erste Hindernis der Liste hinzu
         obstacles.add(obstacleBottom); // Füge das zweite Hindernis der Liste hinzu
         Rectangle rObstacleTop = new Rectangle(obstacleTop.getBounds()); // Erstelle ein Rechteck für das erste Hindernis
+        rObstacleTop.setBounds(obstacleTop.getBounds()); // Erstelle ein Rechteck für das erste Hindernis
         Rectangle rObstacleBottom = new Rectangle(obstacleBottom.getBounds()); // Erstelle ein Rechteck für das zweite Hindernis
-
+        rObstacleBottom.setBounds(obstacleBottom.getBounds()); // Erstelle ein Rechteck für das zweite Hindernis
+        rObstacles.add(rObstacleTop); // Füge das erste Rechteck der Liste hinzu
+        rObstacles.add(rObstacleBottom); // Füge das zweite Rechteck der Liste hinzu
     }
 
     public void moveObstacles() {
@@ -131,13 +119,20 @@ public class GameUI extends JFrame {
                 component.setLocation(newX, component.getY());
             }
         }
+        for (Rectangle component : rObstacles) {
+            if (component != null) {
+                component.getBounds();
+                int x =  (int) component.getX();
+                int newX = x - 1;
+                component.setLocation(newX, (int) component.getY());
+            }
+        }
         obstacleMoveInt = obstacleMoveInt + 1;
         if (obstacleMoveInt >= 200) {
             generateObstacles(Main.WindowSizeX, Main.WindowsSizeY, 25);
             obstacleMoveInt = 0;
         }
     }
-
     public void removeObstacles() {
         Iterator<JLabel> iterator = obstacles.iterator();
         while (iterator.hasNext()) {
@@ -149,6 +144,16 @@ public class GameUI extends JFrame {
                 System.out.println("Obstacle removed at " + x);
             }
         }
+        /*Iterator<Rectangle> rIterator = rObstacles.iterator();
+        while (rIterator.hasNext()) {
+            JLabel component = iterator.next();
+            int x = component.getX();
+            if (x < -64) {
+                remove(component);
+                iterator.remove();
+                System.out.println(" removed at " + x);
+            }
+        }*/
     }
 
     public void checkCollision() {
@@ -168,6 +173,16 @@ public class GameUI extends JFrame {
         //return (int) (0.5 * 9.81 * Math.pow(x, 2));
         return -3*x+4;
     }
+
+
+
+
+
+
+
+
+
+
 
 
 
