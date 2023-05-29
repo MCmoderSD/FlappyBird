@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,9 +25,10 @@ public class GameUI extends JFrame { // Klasse für die Benutzeroberfläche
     private JPanel mainPanel; // JPanel für das Spiel
     private Rectangle rPlayer; // Rechteck für den Spieler
     private int playerMoveInt = 0, obstacleMoveInt = 200;
-    public GameUI(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate) { // Konstruktor
+
+    public GameUI(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate) { // Konstruktor
         initFrame(width, height, title, icon, resizable); // Initialisiert das Fenster
-        initMainPanel(width, height); // Initialisiert das Hauptpanel
+        initMainPanel(width, height, backgroundImage); // Initialisiert das Hauptpanel
         initPlayer(height, playerPosition, playerWidth, playerHeight, playerImage); // Initialisiert den Spieler
         initGameOver(width, height, gameOverImage); // Initialisiert das Game-Over-Bild
         tickrate = new Timer(Tickrate, e -> { // Initialisiert den Timer
@@ -53,6 +55,7 @@ public class GameUI extends JFrame { // Klasse für die Benutzeroberfläche
             public void mouseExited(MouseEvent e) {}
         }); // Ende des MouseListener-Blocks
     } // Ende des Konstruktors
+
     public void audioPlayer(String audioFilePath) { // Methode zum Abspielen von Audiodateien
         Thread thread = new Thread(() -> { // Erstellt einen neuen Thread
             try { // Versucht die Audiodatei abzuspielen
@@ -74,6 +77,7 @@ public class GameUI extends JFrame { // Klasse für die Benutzeroberfläche
         }); // Ende des Thread-Blocks
         thread.start(); // Startet den Thread
     } // Ende der Methode audioPlayer()
+
     private void initFrame(int width, int height, String title, String icon, boolean resizable) { // Initialisiert das Fenster
         setTitle(title); // Setzt den Titel des Fensters
         setSize(width, height); // Setzt die Größe des Fensters
@@ -83,14 +87,14 @@ public class GameUI extends JFrame { // Klasse für die Benutzeroberfläche
         setResizable(resizable); // Setzt die Größe des Fensters
         setIconImage((reader(icon))); // Setzt das Icon des Fensters
     } // Ende der Methode initFrame()
-    private void initMainPanel(int width, int height) { // Initialisiert das Hauptpanel
+
+    private void initMainPanel(int width, int height, String backgroundImage) { // Initialisiert das Hauptpanel
         mainPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                File imFile = new File("C:\\Users\\MCmoderSD\\Desktop\\Background.png");
-                Image im = Toolkit.getDefaultToolkit().getImage(imFile.getAbsolutePath());
-                g.drawImage(im, 0, 0, getWidth(), getHeight(), this);
+                    g.drawImage(reader(backgroundImage), 0, 0, getWidth(), getHeight(), this);
+
             }
         };
         mainPanel.setSize(width, height); // Setzt die Größe des Hauptpanels
@@ -108,6 +112,7 @@ public class GameUI extends JFrame { // Klasse für die Benutzeroberfläche
         player.setIcon(new ImageIcon(reader(playerImage))); // Setzt das Bild des JLabels
         player.setLocation(playerPosition, height/2); // Setzt die Position des JLabels
     } // Ende der Methode initPlayer()
+
     private void initGameOver(int width, int height, String gameOverImage) { // Initialisiert das GameOver-Label
         gameOver = new JLabel(); // Erstellt einen neuen JLabel
         mainPanel.add(gameOver); // Fügt den JLabel zum Hauptpanel hinzu
@@ -126,6 +131,7 @@ public class GameUI extends JFrame { // Klasse für die Benutzeroberfläche
         } // Ende der if-Abfrage
         playerMoveInt = playerMoveInt + 1; // Zählt den Zähler hoch
     } // Ende der Methode movePlayer()
+
     public void generateObstacles(int width, int height, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage) { // Generiert die Hindernisse
         int minY = ((height * percentage) / 100); // Mindesthöhe des ersten Hindernisses
         int maxY = height - ((height * percentage) / 100); // Maximale Höhe des ersten Hindernisses
@@ -149,9 +155,10 @@ public class GameUI extends JFrame { // Klasse für die Benutzeroberfläche
         rObstacleBottom.setBounds(obstacleBottom.getBounds()); // Erstelle ein Rechteck für das zweite Hindernis
         rObstacles.add(rObstacleTop); // Füge das erste Rechteck der Liste hinzu
         rObstacles.add(rObstacleBottom); // Füge das zweite Rechteck der Liste hinzu
-        System.out.println("Obstacles: " + obstacles.size());
-        System.out.println("Rectangles: " + rObstacles.size());
+        System.out.println("Obstacles: " + obstacles.size()); // Gibt die Anzahl der Hindernisse aus
+        System.out.println("Rectangles: " + rObstacles.size()); // Gibt die Anzahl der Rechtecke aus
     } // Ende der Methode generateObstacles()
+
     public void moveObstacles(int width, int height, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage) { // Bewegt die Hindernisse
         for (JLabel component : obstacles) { // Geht alle Hindernisse durch
             if (component != null && component.getIcon() != null) { // Wenn das Hindernis nicht null ist
@@ -174,6 +181,7 @@ public class GameUI extends JFrame { // Klasse für die Benutzeroberfläche
             obstacleMoveInt = 0; // Setze den Zähler zurück
         } // Ende der if-Abfrage
     } // Ende der Methode moveObstacles()
+
     public void removeObstacles() { // Entfernt die Hindernisse
         Iterator<JLabel> iterator = obstacles.iterator(); // Erstellt einen Iterator für die Hindernisse
         while (iterator.hasNext()) { // Geht alle Hindernisse durch
@@ -186,6 +194,7 @@ public class GameUI extends JFrame { // Klasse für die Benutzeroberfläche
             } // Ende der if-Abfrage
         } // Ende der while-Schleife
     } // Ende der Methode removeObstacles()
+
     public void checkCollision(int width, String dieSound, String hitSound) { // Überprüft, ob der Spieler mit einem Hindernis kollidiert
         rPlayer.setLocation(player.getX(), player.getY()); // Setzt die Position des Rechtecks auf die Position des Spielers
         if (player.getY() > width) GameLogic.instance.handleCollision(dieSound); // Wenn der Spieler außerhalb des Fensters ist
@@ -206,7 +215,7 @@ public class GameUI extends JFrame { // Klasse für die Benutzeroberfläche
     } // Ende der Methode reader()
 
     public int calculateGravity(int x) { // Berechnet die Schwerkraft
-        //return (int) (0.5 * 9.81 * Math.pow(x, 2)); // Berechnet die Schwerkraft
+        //return (int) (0.5 * 9.81 * Math.pow(x, 2));
         return -3*x+4; // Berechnet die Schwerkraft
     } // Ende der Methode calculateGravity()
 } // Ende der Klasse GameUI
