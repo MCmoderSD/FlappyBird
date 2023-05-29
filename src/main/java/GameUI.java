@@ -11,41 +11,38 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
-public class GameUI extends JFrame {
-    private final ArrayList<JLabel> obstacles = new ArrayList<>();
-    private final ArrayList<Rectangle> rObstacles = new ArrayList<>();
+public class GameUI extends JFrame { // Klasse für die Benutzeroberfläche
+    private final ArrayList<JLabel> obstacles = new ArrayList<>(); // Liste der Hindernisse
+    private final ArrayList<Rectangle> rObstacles = new ArrayList<>(); // Liste der Rechtecke der Hindernisse
     public int xPosition = - Main.JumpHeight;
-    public JLabel player, gameOver;
-    public Timer tickrate;
-    private JPanel mainPanel;
-    private Rectangle rPlayer;
+    public JLabel player, gameOver; // JLabels für den Spieler und das Game-Over-Bild
+    public Timer tickrate; // Timer für die Aktualisierungen
+    private JPanel mainPanel; // JPanel für das Spiel
+    private Rectangle rPlayer; // Rechteck für den Spieler
     private int playerMoveInt = 0, obstacleMoveInt = 200;
-    public GameUI(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate) {
-        initFrame(width, height, title, icon, resizable);
-        initMainPanel(width, height);
-        initPlayer(height, playerPosition, playerWidth, playerHeight, playerImage);
-        initGameOver(width, height, gameOverImage);
-        tickrate = new Timer(Tickrate, e -> {
-            if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
-            GameLogic.instance.handleTimerTick(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, dieSound, flapSound, hitSound, pointSound);
-        });
+    public GameUI(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate) { // Konstruktor
+        initFrame(width, height, title, icon, resizable); // Initialisiert das Fenster
+        initMainPanel(width, height); // Initialisiert das Hauptpanel
+        initPlayer(height, playerPosition, playerWidth, playerHeight, playerImage); // Initialisiert den Spieler
+        initGameOver(width, height, gameOverImage); // Initialisiert das Game-Over-Bild
+        tickrate = new Timer(Tickrate, e -> { // Initialisiert den Timer
+            if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync(); // Synchronisiert die Animationen auf Linux
+            GameLogic.instance.handleTimerTick(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, dieSound, flapSound, hitSound, pointSound); // Ruft die Methode handleTimerTick() in der GameLogic-Klasse auf
+        }); // Ende des Timer-Blocks
         addKeyListener(new KeyAdapter() {
             @Override
-            public void keyPressed(KeyEvent e) {
+            public void keyPressed(KeyEvent e) { // Wenn eine Taste gedrückt wird
                 super.keyPressed(e);
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) GameLogic.instance.handleSpaceKeyPress(flapSound);
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) GameLogic.instance.handleSpaceKeyPress(flapSound); // Wenn die Leertaste gedrückt wird, wird die Methode handleSpaceKeyPress() in der GameLogic-Klasse aufgerufen
             }
-        });
-
-        addMouseListener(new MouseListener() {
+        }); // Ende des KeyListener-Blocks
+        addMouseListener(new MouseListener() { // Wenn die Maus gedrückt wird
             @Override
-            public void mouseClicked(MouseEvent e) {
-                GameLogic.instance.handleSpaceKeyPress(flapSound);
-            }
+            public void mouseClicked(MouseEvent e) { GameLogic.instance.handleSpaceKeyPress(flapSound); } // Wenn die Maus gedrückt wird, wird die Methode handleSpaceKeyPress() in der GameLogic-Klasse aufgerufen
             @Override
             public void mousePressed(MouseEvent e) {}
             @Override
@@ -54,18 +51,39 @@ public class GameUI extends JFrame {
             public void mouseEntered(MouseEvent e) {}
             @Override
             public void mouseExited(MouseEvent e) {}
-        });
-    }
-    private void initFrame(int width, int height, String title, String icon, boolean resizable) {
-        setTitle(title);
-        setSize(width, height);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(null);
-        setVisible(true);
-        setResizable(resizable);
-        setIconImage((reader(icon)));
-    }
-    private void initMainPanel(int width, int height) {
+        }); // Ende des MouseListener-Blocks
+    } // Ende des Konstruktors
+    public void audioPlayer(String audioFilePath) { // Methode zum Abspielen von Audiodateien
+        Thread thread = new Thread(() -> { // Erstellt einen neuen Thread
+            try { // Versucht die Audiodatei abzuspielen
+                ClassLoader classLoader = getClass().getClassLoader(); // Erstellt einen neuen ClassLoader
+                InputStream audioFileInputStream = classLoader.getResourceAsStream(audioFilePath); // Erstellt einen neuen InputStream
+                if (audioFileInputStream == null) throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath); // Wenn die Audiodatei nicht gefunden wurde, wird eine Fehlermeldung ausgegeben
+                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(audioFileInputStream);  // Erstellt einen neuen AudioInputStream
+                Clip clip = AudioSystem.getClip(); // Erstellt einen neuen Clip
+                clip.open(audioInputStream); // Öffnet den Clip
+                clip.start(); // Startet den Clip
+                System.out.println("Audio wird abgespielt... " + audioFilePath); // Gibt eine Nachricht in der Konsole aus
+                Thread.sleep(clip.getMicrosecondLength() / 1000); // Wartet bis der Clip zu Ende ist
+                clip.close(); // Schließt den Clip
+                audioInputStream.close(); // Schließt den AudioInputStream
+                audioFileInputStream.close(); // Schließt den InputStream
+            } catch (Exception e) { // Wenn ein Fehler auftritt, wird eine Fehlermeldung ausgegeben
+                e.printStackTrace(); // Gibt den Fehler in der Konsole aus
+            } // Ende des try-catch-Blocks
+        }); // Ende des Thread-Blocks
+        thread.start(); // Startet den Thread
+    } // Ende der Methode audioPlayer()
+    private void initFrame(int width, int height, String title, String icon, boolean resizable) { // Initialisiert das Fenster
+        setTitle(title); // Setzt den Titel des Fensters
+        setSize(width, height); // Setzt die Größe des Fensters
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Setzt die Standardoperation beim Schließen des Fensters
+        setLayout(null); // Setzt das Layout des Fensters
+        setVisible(true); // Setzt die Sichtbarkeit des Fensters
+        setResizable(resizable); // Setzt die Größe des Fensters
+        setIconImage((reader(icon))); // Setzt das Icon des Fensters
+    } // Ende der Methode initFrame()
+    private void initMainPanel(int width, int height) { // Initialisiert das Hauptpanel
         mainPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -75,38 +93,40 @@ public class GameUI extends JFrame {
                 g.drawImage(im, 0, 0, getWidth(), getHeight(), this);
             }
         };
-        mainPanel.setSize(width, height);
-        mainPanel.setLayout(null);
-        mainPanel.setOpaque(false);
-        add(mainPanel);
-    }
-    private void initPlayer(int height, int playerPosition, int playerWidth, int playerHeight, String playerImage) {
-        player = new JLabel();
-        mainPanel.add(player);
-        player.setSize(playerWidth, playerHeight);
-        player.setBounds(playerPosition, player.getY(), playerWidth, playerHeight);
-        rPlayer = new Rectangle(player.getBounds());
-        player.setIcon(new ImageIcon(reader(playerImage)));
-        player.setLocation(playerPosition, height/2);
-    }
-    private void initGameOver(int width, int height, String gameOverImage) {
-        gameOver = new JLabel();
-        mainPanel.add(gameOver);
-        gameOver.setVisible(false);
-        gameOver.setSize(width, height);
-        gameOver.setLocation(0, 0);
-        gameOver.setIcon(new ImageIcon(reader(gameOverImage)));
-    }
-    public void movePlayer() {
+        mainPanel.setSize(width, height); // Setzt die Größe des Hauptpanels
+        mainPanel.setLayout(null); // Setzt das Layout des Hauptpanels
+        mainPanel.setOpaque(false); // Setzt die Deckkraft des Hauptpanels
+        add(mainPanel); // Fügt das Hauptpanel zum Fenster hinzu
+    } // Ende der Methode initMainPanel()
+
+    private void initPlayer(int height, int playerPosition, int playerWidth, int playerHeight, String playerImage) { // Initialisiert den Spieler
+        player = new JLabel(); // Erstellt einen neuen JLabel
+        mainPanel.add(player); // Fügt den JLabel zum Hauptpanel hinzu
+        player.setSize(playerWidth, playerHeight); // Setzt die Größe des JLabels
+        player.setBounds(playerPosition, player.getY(), playerWidth, playerHeight); // Setzt die Position des JLabels
+        rPlayer = new Rectangle(player.getBounds()); // Erstellt ein neues Rechteck
+        player.setIcon(new ImageIcon(reader(playerImage))); // Setzt das Bild des JLabels
+        player.setLocation(playerPosition, height/2); // Setzt die Position des JLabels
+    } // Ende der Methode initPlayer()
+    private void initGameOver(int width, int height, String gameOverImage) { // Initialisiert das GameOver-Label
+        gameOver = new JLabel(); // Erstellt einen neuen JLabel
+        mainPanel.add(gameOver); // Fügt den JLabel zum Hauptpanel hinzu
+        gameOver.setVisible(false); // Setzt die Sichtbarkeit des JLabels
+        gameOver.setSize(width, height); // Setzt die Größe des JLabels
+        gameOver.setLocation(0, 0); // Setzt die Position des JLabels
+        gameOver.setIcon(new ImageIcon(reader(gameOverImage))); // Setzt das Bild des JLabels
+    } // Ende der Methode initGameOver()
+
+    public void movePlayer() { // Bewegt den Spieler
         if (playerMoveInt == 3) {
             xPosition = xPosition + 1;
             int yPosition = (player.getY() - calculateGravity(xPosition));
             player.setLocation(250, yPosition);
-            playerMoveInt = 0;
-        }
-        playerMoveInt = playerMoveInt + 1;
-    }
-    public void generateObstacles(int width, int height, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage) {
+            playerMoveInt = 0; // Setzt den Zähler zurück
+        } // Ende der if-Abfrage
+        playerMoveInt = playerMoveInt + 1; // Zählt den Zähler hoch
+    } // Ende der Methode movePlayer()
+    public void generateObstacles(int width, int height, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage) { // Generiert die Hindernisse
         int minY = ((height * percentage) / 100); // Mindesthöhe des ersten Hindernisses
         int maxY = height - ((height * percentage) / 100); // Maximale Höhe des ersten Hindernisses
         JLabel obstacleTop = new JLabel(), obstacleBottom = new JLabel(); // Erstelle die Hindernisse
@@ -131,78 +151,62 @@ public class GameUI extends JFrame {
         rObstacles.add(rObstacleBottom); // Füge das zweite Rechteck der Liste hinzu
         System.out.println("Obstacles: " + obstacles.size());
         System.out.println("Rectangles: " + rObstacles.size());
-    }
-    public void moveObstacles(int width, int height, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage) {
-        for (JLabel component : obstacles) {
-            if (component != null && component.getIcon() != null) {
-                int x = component.getX();
-                int newX = x - 1;
-                component.setLocation(newX, component.getY());
-            }
-        }
-        for (Rectangle component : rObstacles) {
-            if (component != null) {
-                component.getBounds();
-                int x =  (int) component.getX();
-                int newX = x - 1;
-                component.setLocation(newX, (int) component.getY());
-            }
-        }
-        obstacleMoveInt = obstacleMoveInt + 1;
-        if (obstacleMoveInt >= 200) {
-            generateObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage);
-            obstacleMoveInt = 0;
-        }
-    }
-    public void removeObstacles() {
-        Iterator<JLabel> iterator = obstacles.iterator();
-        while (iterator.hasNext()) {
-            JLabel component = iterator.next();
-            int x = component.getX();
-            if (x < -64) {
-                mainPanel.remove(component);
-                iterator.remove();
-                System.out.println("Obstacle removed at " + x + "x and " + component.getY() + "y");
-            }
-        }
-    }
-    public void checkCollision(int width, String dieSound, String hitSound) {
-        rPlayer.setLocation(player.getX(), player.getY());
-        if (player.getY() > width) GameLogic.instance.handleCollision(dieSound);
-        for (Rectangle component : rObstacles) {
-            if (component != null) if (rPlayer.intersects(component)) {
-                audioPlayer(hitSound);
+    } // Ende der Methode generateObstacles()
+    public void moveObstacles(int width, int height, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage) { // Bewegt die Hindernisse
+        for (JLabel component : obstacles) { // Geht alle Hindernisse durch
+            if (component != null && component.getIcon() != null) { // Wenn das Hindernis nicht null ist
+                int x = component.getX(); // Speichert die X-Position des Hindernisses
+                int newX = x - 1; // Berechnet die neue X-Position des Hindernisses
+                component.setLocation(newX, component.getY()); // Setzt die neue X-Position des Hindernisses
+            } // Ende der if-Abfrage
+        } // Ende der for-Schleife
+        for (Rectangle component : rObstacles) { // Geht alle Rechtecke durch
+            if (component != null) { // Wenn das Rechteck nicht null ist
+                component.getBounds(); // Speichert die Position des Rechtecks
+                int x =  (int) component.getX(); // Speichert die X-Position des Rechtecks
+                int newX = x - 1; // Berechnet die neue X-Position des Rechtecks
+                component.setLocation(newX, (int) component.getY()); // Setzt die neue X-Position des Rechtecks
+            } // Ende der if-Abfrage
+        } // Ende der for-Schleife
+        obstacleMoveInt = obstacleMoveInt + 1; // Zählt den Zähler hoch
+        if (obstacleMoveInt >= 200) { // Wenn der Zähler 200 erreicht hat
+            generateObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage); // Generiere neue Hindernisse
+            obstacleMoveInt = 0; // Setze den Zähler zurück
+        } // Ende der if-Abfrage
+    } // Ende der Methode moveObstacles()
+    public void removeObstacles() { // Entfernt die Hindernisse
+        Iterator<JLabel> iterator = obstacles.iterator(); // Erstellt einen Iterator für die Hindernisse
+        while (iterator.hasNext()) { // Geht alle Hindernisse durch
+            JLabel component = iterator.next(); // Speichert das aktuelle Hindernis
+            int x = component.getX(); // Speichert die X-Position des Hindernisses
+            if (x < -64) { // Wenn das Hindernis außerhalb des Fensters ist
+                mainPanel.remove(component); // Entferne das Hindernis aus dem Fenster
+                iterator.remove(); // Entferne das Hindernis aus der Liste
+                System.out.println("Obstacle removed at " + x + "x and " + component.getY() + "y"); // Gibt die Position des entfernten Hindernisses aus
+            } // Ende der if-Abfrage
+        } // Ende der while-Schleife
+    } // Ende der Methode removeObstacles()
+    public void checkCollision(int width, String dieSound, String hitSound) { // Überprüft, ob der Spieler mit einem Hindernis kollidiert
+        rPlayer.setLocation(player.getX(), player.getY()); // Setzt die Position des Rechtecks auf die Position des Spielers
+        if (player.getY() > width) GameLogic.instance.handleCollision(dieSound); // Wenn der Spieler außerhalb des Fensters ist
+        for (Rectangle component : rObstacles) { // Geht alle Rechtecke durch
+            if (component != null) if (rPlayer.intersects(component)) { // Wenn der Spieler mit einem Rechteck kollidiert
+                audioPlayer(hitSound); // Spiele den Sound ab
                 GameLogic.instance.handleCollision(dieSound);
-            }
-        }
-    }
-    private BufferedImage reader(String resource) {
-        try {
-            return ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    public int calculateGravity(int x) {
-        //return (int) (0.5 * 9.81 * Math.pow(x, 2));
-        return -3*x+4;
-    }
-    public void audioPlayer(String audioFilePath) {
-        Thread thread = new Thread(() -> {
-        try {
-            ClassLoader classLoader = getClass().getClassLoader();
-            URL audioFileUrl = classLoader.getResource(audioFilePath);
-            if (audioFileUrl == null) throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(audioFileUrl);
-            Clip clip = AudioSystem.getClip();
-            clip.open(audioInputStream);
-            clip.start();
-            System.out.println("Audio wird abgespielt... " + audioFilePath);
-            Thread.sleep(clip.getMicrosecondLength() / 1000);
-            clip.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }});
-        thread.start();
-    }
-}
+            } // Ende der if-Abfrage
+        } // Ende der for-Schleife
+    } // Ende der Methode checkCollision()
+
+    private BufferedImage reader(String resource) { // Liest ein Bild aus einer Datei
+        try { // Versuche
+            return ImageIO.read(Objects.requireNonNull(getClass().getResource(resource))); // Gibt das Bild zurück
+        } catch (IOException e) { // Wenn ein Fehler auftritt
+            throw new RuntimeException(e); // Gibt den Fehler zurück
+        } // Ende der try-catch-Abfrage
+    } // Ende der Methode reader()
+
+    public int calculateGravity(int x) { // Berechnet die Schwerkraft
+        //return (int) (0.5 * 9.81 * Math.pow(x, 2)); // Berechnet die Schwerkraft
+        return -3*x+4; // Berechnet die Schwerkraft
+    } // Ende der Methode calculateGravity()
+} // Ende der Klasse GameUI
