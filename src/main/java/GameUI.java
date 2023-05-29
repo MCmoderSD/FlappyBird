@@ -179,28 +179,4 @@ public class GameUI extends JFrame {
         //return (int) (0.5 * 9.81 * Math.pow(x, 2));
         return -3*x+4;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
