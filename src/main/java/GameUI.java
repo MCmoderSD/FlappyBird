@@ -166,7 +166,7 @@ public class GameUI extends JFrame {
             }
         }
     }
-    public void checkCollision(int width, String dieSound, String flapSound, String hitSound, String pointSound) {
+    public void checkCollision(int width, String dieSound, String hitSound) {
         rPlayer.setLocation(player.getX(), player.getY());
         if (player.getY() > width) GameLogic.instance.handleCollision(dieSound);
         for (Rectangle component : rObstacles) {

@@ -30,7 +30,7 @@ public class GameLogic {
         ui.movePlayer();
         ui.moveObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage);
         ui.removeObstacles();
-        ui.checkCollision(width, dieSound, flapSound, hitSound, pointSound);
+        ui.checkCollision(width, dieSound, hitSound);
     }
     // Behandelt die Kollision
     public void handleCollision(String dieSound) {
