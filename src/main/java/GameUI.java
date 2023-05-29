@@ -158,8 +158,19 @@ public class GameUI extends JFrame {
 
     public void checkCollision() {
         rPlayer.setLocation(player.getX(), player.getY());
-        if (player.getY() > Main.WindowsSizeY) GameLogic.instance.handleCollision();
-    }
+        if (player.getY() > Main.WindowsSizeY){
+            tickrate.stop();
+        }
+
+        for (Rectangle component : rObstacles) {
+            if (component != null) {
+                if (rPlayer.intersects(component)) GameLogic.instance.handleCollision();
+                }
+            }
+        }    public Timer tickrate = new Timer(Main.getTPS(), e -> {
+        if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
+        GameLogic.instance.handleTimerTick();
+    });
 
     private BufferedImage reader(String resource) {
         try {
