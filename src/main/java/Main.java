@@ -38,15 +38,20 @@ public class Main {
 
     // Anzahl der Aktualisierungen pro Sekunde (TPS)
     private static final int TPS = 100;
+    private static final boolean sound = true;
 
     // Die main-Methode, die das Spiel startet
     public static void main(String[] args) {
         // Erstellt eine neue Instanz der GameLogic-Klasse, um das Spiel zu starten
-        new GameLogic(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, PlayerPositionX, playerWidth, playerHeight, Background, Player,25, 200, obstacleWidth, obstacleHeight, ObstacleTop, ObstacleBottom, GameOver, dieSound, flapSound, hitSound, pointSound, getTPS());
+        new GameLogic(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, PlayerPositionX, playerWidth, playerHeight, Background, Player,25, 200, obstacleWidth, obstacleHeight, ObstacleTop, ObstacleBottom, GameOver, dieSound, flapSound, hitSound, pointSound, getTPS(), sound);
     }
 
     // Gibt die Anzahl der Aktualisierungen pro Sekunde (TPS) zurück
     public static int getTPS() {
         return 1000 / TPS;
+    }
+
+    public void run(boolean sound) {
+        new GameLogic(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, PlayerPositionX, playerWidth, playerHeight, Background, Player,25, 200, obstacleWidth, obstacleHeight, ObstacleTop, ObstacleBottom, GameOver, dieSound, flapSound, hitSound, pointSound, getTPS(), sound);
     }
 }
