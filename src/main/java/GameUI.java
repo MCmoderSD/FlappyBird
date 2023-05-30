@@ -2,6 +2,7 @@ import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineEvent;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -57,27 +58,32 @@ public class GameUI extends JFrame { // Klasse für die Benutzeroberfläche
     } // Ende des Konstruktors
 
     public void audioPlayer(String audioFilePath) { // Methode zum Abspielen von Audiodateien
-        Thread thread = new Thread(() -> { // Erstellt einen neuen Thread
-            try { // Versuchen Sie, den Code auszuführen
-                ClassLoader classLoader = getClass().getClassLoader(); // Erstellen Sie einen neuen ClassLoader
-                InputStream audioFileInputStream = classLoader.getResourceAsStream(audioFilePath); // Erstellen Sie einen neuen InputStream
-                if (audioFileInputStream == null) throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath); // Wenn die Audiodatei nicht gefunden wurde, wird eine Fehlermeldung ausgegeben
-                BufferedInputStream bufferedInputStream = new BufferedInputStream(audioFileInputStream); // Erstellen Sie einen neuen BufferedInputStream
-                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(bufferedInputStream); // Erstellen Sie einen neuen AudioInputStream
-                Clip clip = AudioSystem.getClip(); // Erstellen Sie einen neuen Clip
-                clip.open(audioInputStream); // Öffnen Sie den Clip
-                clip.start(); // Starten Sie den Clip
-                System.out.println("Audio wird abgespielt... " + audioFilePath); // Gibt eine Nachricht aus
-                Thread.sleep(clip.getMicrosecondLength() / 1000); // Warten Sie, bis der Clip fertig ist
-                clip.close(); // Schließen Sie den Clip
-                audioInputStream.close(); // Schließen Sie den AudioInputStream
-                bufferedInputStream.close(); // Schließen Sie den BufferedInputStream
-            } catch (Exception e) { // Wenn ein Fehler auftritt
-                e.printStackTrace(); // Gibt die Fehlermeldung aus
-            } // Ende des Try-Catch-Blocks
-        }); // Ende des Thread-Blocks
-        thread.start(); // Startet den Thread
+        try { // Versucht, die Audiodatei abzuspielen
+            ClassLoader classLoader = getClass().getClassLoader(); // Erstellt einen neuen ClassLoader
+            InputStream audioFileInputStream = classLoader.getResourceAsStream(audioFilePath); // Erstellt einen neuen InputStream
+            if (audioFileInputStream == null) throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath); // Wenn die Audiodatei nicht gefunden wurde, wird eine Fehlermeldung ausgegeben
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(audioFileInputStream);
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(bufferedInputStream);
+            Clip clip = AudioSystem.getClip(); // Erstellt einen neuen Clip
+            clip.open(audioInputStream); // Öffnet den Clip
+            System.out.println("Audio wird abgespielt... " + audioFilePath); // Gibt eine Meldung aus
+            clip.addLineListener(event -> { // Wenn der Clip abgespielt wird
+                if (event.getType() == LineEvent.Type.STOP) { // Wenn der Clip gestoppt wird
+                    try { // Versucht, den Clip zu schließen
+                        clip.close(); // Schließt den Clip
+                        audioInputStream.close(); // Schließt den AudioInputStream
+                        bufferedInputStream.close(); // Schließt den BufferedInputStream
+                    } catch (IOException e) { // Wenn ein Fehler auftritt
+                        throw new RuntimeException(e); // Gibt eine Fehlermeldung aus
+                    } // Ende des try-catch-Blocks
+                } // Ende des if-Blocks
+            }); // Ende des LineListener-Blocks
+            clip.start(); // Startet den Clip
+        } catch (Exception e) { // Wenn ein Fehler auftritt
+            e.printStackTrace(); // Gibt eine Fehlermeldung aus
+        } // Ende des try-catch-Blocks
     } // Ende der Methode audioPlayer()
+
 
 
     private void initFrame(int width, int height, String title, String icon, boolean resizable) { // Initialisiert das Fenster
