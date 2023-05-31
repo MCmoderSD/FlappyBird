@@ -59,11 +59,13 @@ public class UI extends JFrame {
         return soundCheckBox.isSelected();
     }
 
-    private void initLeaderBoard() {
-        setVisible(true);
-        Timer refreshLeaderBoard = new Timer(1000, e -> {
-
-        });
-        refreshLeaderBoard.start();
-    }
+// --Commented out by Inspection START (31.05.2023 04:08):
+//    private void initLeaderBoard() {
+//        setVisible(true);
+//        Timer refreshLeaderBoard = new Timer(1000, e -> {
+//
+//        });
+//        refreshLeaderBoard.start();
+//    }
+// --Commented out by Inspection STOP (31.05.2023 04:08)
 }

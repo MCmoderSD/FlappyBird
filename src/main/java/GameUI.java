@@ -9,10 +9,11 @@ import java.util.Iterator;
 
 public class GameUI extends JFrame {
     public static GameUI instance;
-    public ArrayList<JLabel> obstacles = new ArrayList<>();
-    public ArrayList<Rectangle> rObstacles = new ArrayList<>(), greenZones = new ArrayList<>();
+    public final ArrayList<JLabel> obstacles = new ArrayList<>();
+    public final ArrayList<Rectangle> rObstacles = new ArrayList<>();
+    public final ArrayList<Rectangle> greenZones = new ArrayList<>();
+    public final Timer tickrate;
     public JLabel player, score, gameOver;
-    public Timer tickrate;
     public int points;
     public Rectangle rPlayer;
     private JPanel mainPanel;
