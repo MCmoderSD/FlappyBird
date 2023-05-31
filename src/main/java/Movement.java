@@ -36,16 +36,18 @@ public class Movement {
         }
     }
 
-    // Hintergrund bewegen
-    public void moveBackground() {
-
-        if (bgShouldMove) {
-            bgX -= 1;
-            bgShouldMove = false;
-        } else {
-            bgShouldMove = true;
-        }
-    }
+// --Commented out by Inspection START (31.05.2023 14:27):
+//    // Hintergrund bewegen
+//    public void moveBackground() {
+//
+//        if (bgShouldMove) {
+//            bgX -= 1;
+//            bgShouldMove = false;
+//        } else {
+//            bgShouldMove = true;
+//        }
+//    }
+// --Commented out by Inspection STOP (31.05.2023 14:27)
 
     // Rechtecke auf dem Bildschirm bewegen
     private void moveRectangles(ArrayList<Rectangle> rectangles) {
