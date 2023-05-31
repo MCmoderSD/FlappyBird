@@ -26,9 +26,9 @@ public class Main {
     private static final int TPS = 100; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde)
 
     public static void main(String[] args) {
-        new UI(); // Erstelle die Benutzeroberfläche
         new Methods(); // Erstelle die Methoden
         new Movement(); // Erstelle die Bewegung
+        new UI(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, Background); // Erstelle die Benutzeroberfläche
     }
 
     public void run(boolean sound) {

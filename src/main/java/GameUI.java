@@ -10,8 +10,7 @@ import java.util.Iterator;
 public class GameUI extends JFrame {
     public static GameUI instance;
     public final ArrayList<JLabel> obstacles = new ArrayList<>();
-    public final ArrayList<Rectangle> rObstacles = new ArrayList<>();
-    public final ArrayList<Rectangle> greenZones = new ArrayList<>();
+    public final ArrayList<Rectangle> rObstacles = new ArrayList<>(), greenZones = new ArrayList<>();
     public final Timer tickrate;
     public JLabel player, score, gameOver;
     public int points;
@@ -27,21 +26,21 @@ public class GameUI extends JFrame {
         instance = this;
         tickrate = new Timer(Tickrate, e -> {
             if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
-            Logic.instance.handleTimerTick(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, dieSound, hitSound, pointSound, sound);
+            Logic.instance.handleTimerTick(width, height, playerHeight, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, dieSound, hitSound, pointSound, Tickrate, sound);
         });
 
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) Logic.instance.handleSpaceKeyPress(flapSound, sound);
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) Logic.instance.handleSpaceKeyPress(width, height, title, icon, resizable, backgroundImage, flapSound, sound);
             }
         });
 
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Logic.instance.handleSpaceKeyPress(flapSound, sound);
+                Logic.instance.handleSpaceKeyPress(width, height, title, icon, resizable, backgroundImage, flapSound, sound);
             }
 
             @Override
@@ -195,14 +194,14 @@ public class GameUI extends JFrame {
     }
 
     // Überprüft Kollisionen mit dem Spieler und anderen Objekten
-    public void checkCollision(int width, String dieSound, String hitSound, String pointSound, boolean sound) {
-        if (player.getY() > width) Logic.instance.handleCollision(dieSound, sound);
+    public void checkCollision(int width, int height, int playerHeight, String dieSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
+        if (player.getY() > width) Logic.instance.handleCollision(height, playerHeight, dieSound, Tickrate, sound);
 
         for (Rectangle component : rObstacles) {
             if (component != null)
                 if (rPlayer.intersects(component)) {
                     Methods.instance.audioPlayer(hitSound, sound);
-                    Logic.instance.handleCollision(dieSound, sound);
+                    Logic.instance.handleCollision(height, playerHeight, dieSound, Tickrate, sound);
                 }
         }
 

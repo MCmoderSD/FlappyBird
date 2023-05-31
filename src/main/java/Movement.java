@@ -34,8 +34,11 @@ public class Movement {
             GameUI.instance.generateObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage);
             obstacleMoveInt = 0;
         }
+    }
 
-        // Hintergrund bewegen
+    // Hintergrund bewegen
+    public void moveBackground() {
+
         if (bgShouldMove) {
             bgX -= 1;
             bgShouldMove = false;
@@ -68,5 +71,4 @@ public class Movement {
         }
         playerMoveInt++; // Zähler erhöhen
     }
-
 }

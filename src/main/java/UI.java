@@ -11,9 +11,9 @@ public class UI extends JFrame {
     private int scoredPoints = -10;
     private boolean newGame = true, isUploaded = true;
 
-    public UI() {
+    public UI(int width, int height, String title, String icon, boolean resizable, String backgroundImage) {
         instance = this;
-        initFrame(scoredPoints);
+        initFrame(width, height, title, icon, resizable, backgroundImage,scoredPoints);
         score.setVisible(false);
         playerName.setVisible(false);
         leaderBoard.setVisible(false);
@@ -32,13 +32,15 @@ public class UI extends JFrame {
         dispose();
     }
 
-    public void initFrame(int points) {
+    public void initFrame(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int points) {
         scoredPoints = points;
         add(UI);
-        setTitle("Flappy Bird");
-        setSize(800, 800);
+        setTitle(title);
+        setSize(width, height);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+        setResizable(resizable);
+        setIconImage((Methods.instance.reader(icon)));
         if (points >= 0) {
             isUploaded = false;
             newGame = false;
