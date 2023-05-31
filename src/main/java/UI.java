@@ -1,6 +1,6 @@
 import javax.swing.*;
 
-public class UI extends JFrame{
+public class UI extends JFrame {
     public static UI instance;
     private JButton bStart;
     private JPanel UI;
@@ -21,14 +21,10 @@ public class UI extends JFrame{
         bStart.addActionListener(e -> {
             if (newGame) {
                 play();
-            } else if (scoredPoints >= 0 && !isUploaded && !newGame) {
+            } else if (scoredPoints >= 0 && !isUploaded) {
                 upload();
-            } else if (scoredPoints >= 0 && isUploaded && newGame) play();
+            }
         });
-    }
-
-    public static void main(String[] args) {
-        new UI();
     }
 
     private void play() {
@@ -63,7 +59,7 @@ public class UI extends JFrame{
         return soundCheckBox.isSelected();
     }
 
-    private void LeaderBoard() {
+    private void initLeaderBoard() {
         setVisible(true);
         Timer refreshLeaderBoard = new Timer(1000, e -> {
 

@@ -1,57 +1,62 @@
 public class Main {
-    // Definiert die Höhe des Sprungs
-    public static final int JumpHeight = 7;
-    // Dateiname des Hintergrundbildes
-    public static final String Background = "Images/Background.png";
-    // Definiert den Titel des Spiels
-    private static final String Title = "Flappy Bird";
-    // Dateiname des Bildes für den Spieler
-    private static final String Player = "BirdPlaceHolder.png";
-    private static final int playerWidth = 32, playerHeight = 32;
-    // Dateiname des Bildes für das Hindernis
-    private static final String ObstacleTop = "ObstaclePlaceHolderGreen.png";
-    private static final String ObstacleBottom = "ObstaclePlaceHolderRed.png";
-    private static final int obstacleWidth = 32, obstacleHeight = 1024;
-    // Dateiname des Icons
-    private static final String Icon = "Images/Icon.png";
+    public static final int JumpHeight = 7; // Die Sprunghöhe des Spielers
 
-    // Dateiname des Game-Over-Bildes
-    private static final String GameOver = "GameOver.png";
+    private static final String Background = "Images/Background.png"; // Dateipfad für den Hintergrund
+    private static final String Title = "Flappy Bird"; // Titel des Spiels
+    private static final String Player = "tests/BirdPlaceHolder.png"; // Dateipfad für das Spielerbild
+    private static final int playerWidth = 32, playerHeight = 32; // Breite und Höhe des Spielers
 
-    // Dateinamen der Soundeffekte
-    private static final String dieSound = "sounds/die.wav";
-    private static final String flapSound = "sounds/flap.wav";
-    private static final String hitSound = "sounds/hit.wav";
-    private static final String pointSound = "sounds/point.wav";
+    private static final String ObstacleTop = "tests/ObstaclePlaceHolderGreen.png"; // Dateipfad für das Hindernis von oben
+    private static final String ObstacleBottom = "tests/ObstaclePlaceHolderRed.png"; // Dateipfad für das Hindernis von unten
+    private static final int obstacleWidth = 32, obstacleHeight = 1024; // Breite und Höhe der Hindernisse
 
-    // Größe des Spielfensters in der horizontalen Richtung
-    private static final int WindowSizeX = 800;
+    private static final String Icon = "Images/Icon.png"; // Dateipfad für das Spielsymbol
+    private static final String GameOver = "tests/GameOver.png"; // Dateipfad für das Game Over-Bild
 
-    // Größe des Spielfensters in der vertikalen Richtung
-    private static final int WindowsSizeY = 800;
+    private static final String dieSound = "sounds/die.wav"; // Dateipfad für den Sterbesound
+    private static final String flapSound = "sounds/flap.wav"; // Dateipfad für den Flügelschlag-Sound
+    private static final String hitSound = "sounds/hit.wav"; // Dateipfad für den Aufprall-Sound
+    private static final String pointSound = "sounds/point.wav"; // Dateipfad für den Punkte-Sound
 
-    // Legt fest, ob das Spielfenster in der Größe verändert werden kann
-    private static final boolean Resizeable = false;
+    private static final int WindowSizeX = 800; // Fensterbreite
+    private static final int WindowsSizeY = 800; // Fensterhöhe
+    private static final boolean Resizeable = false; // Gibt an, ob das Fenster in der Größe verändert werden kann
 
-    // X-Position des Spielers
-    private static final int PlayerPositionX = 250;
+    private static final int PlayerPositionX = 250; // Startposition des Spielers auf der X-Achse
+    private static final int TPS = 100; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde)
 
-    // Anzahl der Aktualisierungen pro Sekunde (TPS)
-    private static final int TPS = 100;
-    private static final boolean sound = true;
-
-    // Die main-Methode, die das Spiel startet
     public static void main(String[] args) {
-        // Erstellt eine neue Instanz der GameLogic-Klasse, um das Spiel zu starten
-        new GameLogic(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, PlayerPositionX, playerWidth, playerHeight, Background, Player,25, 200, obstacleWidth, obstacleHeight, ObstacleTop, ObstacleBottom, GameOver, dieSound, flapSound, hitSound, pointSound, getTPS(), sound);
-    }
-
-    // Gibt die Anzahl der Aktualisierungen pro Sekunde (TPS) zurück
-    public static int getTPS() {
-        return 1000 / TPS;
+        new UI(); // Erstelle die Benutzeroberfläche
+        new Methods(); // Erstelle die Methoden
+        new Movement(); // Erstelle die Bewegung
     }
 
     public void run(boolean sound) {
-        new GameLogic(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, PlayerPositionX, playerWidth, playerHeight, Background, Player,25, 200, obstacleWidth, obstacleHeight, ObstacleTop, ObstacleBottom, GameOver, dieSound, flapSound, hitSound, pointSound, getTPS(), sound);
+        // Starte die Spiellogik mit den angegebenen Parametern
+        new Logic(
+                WindowSizeX,
+                WindowsSizeY,
+                Title,
+                Icon,
+                Resizeable,
+                PlayerPositionX,
+                playerWidth,
+                playerHeight,
+                Background,
+                Player,
+                25,
+                200,
+                obstacleWidth,
+                obstacleHeight,
+                ObstacleTop,
+                ObstacleBottom,
+                GameOver,
+                dieSound,
+                flapSound,
+                hitSound,
+                pointSound,
+                Methods.instance.getTPS(TPS),
+                sound
+        );
     }
 }
