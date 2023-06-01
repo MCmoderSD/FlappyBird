@@ -24,23 +24,23 @@ public class GameUI extends JFrame {
         initScore(width, height);
         initGameOver(width, height, gameOverImage);
         instance = this;
-        tickrate = new Timer(Tickrate, e -> {
+        tickrate = new Timer(Methods.instance.getTPS(Tickrate), e -> {
             if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
-            Logic.instance.handleTimerTick(width, height, playerHeight, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, dieSound, hitSound, pointSound, sound);
+            Logic.instance.handleTimerTick(width, height, playerHeight, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, dieSound, hitSound, pointSound, Tickrate, sound);
         });
 
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) Logic.instance.handleSpaceKeyPress(width, height, title, icon, resizable, backgroundImage, flapSound, sound);
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) Logic.instance.handleSpaceKeyPress(width, height, title, icon, resizable, backgroundImage, flapSound, Tickrate, sound);
             }
         });
 
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Logic.instance.handleSpaceKeyPress(width, height, title, icon, resizable, backgroundImage, flapSound, sound);
+                Logic.instance.handleSpaceKeyPress(width, height, title, icon, resizable, backgroundImage, flapSound, Tickrate, sound);
             }
 
             @Override

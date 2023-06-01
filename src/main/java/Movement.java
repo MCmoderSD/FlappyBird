@@ -15,17 +15,17 @@ public class Movement {
     }
 
     // Hindernisse auf dem Bildschirm bewegen
-    public void moveObstacles(int width, int height, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage) {
+    public void moveObstacles(int width, int height, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, int Tickrate) {
         for (JLabel component : GameUI.instance.obstacles) {
             if (component != null && component.getIcon() != null) {
                 int x = component.getX();
-                int newX = x - 1;
+                int newX = x - 100/Tickrate;
                 component.setLocation(newX, component.getY());
             }
         }
 
-        moveRectangles(GameUI.instance.rObstacles);
-        moveRectangles(GameUI.instance.greenZones);
+        moveRectangles(GameUI.instance.rObstacles, Tickrate);
+        moveRectangles(GameUI.instance.greenZones, Tickrate);
 
         obstacleMoveInt = obstacleMoveInt + 1;
 
@@ -50,24 +50,23 @@ public class Movement {
 // --Commented out by Inspection STOP (31.05.2023 14:27)
 
     // Rechtecke auf dem Bildschirm bewegen
-    private void moveRectangles(ArrayList<Rectangle> rectangles) {
+    private void moveRectangles(ArrayList<Rectangle> rectangles, int Tickrate) {
         for (Rectangle component : rectangles) {
             if (component != null) {
                 component.getBounds();
                 int x = (int) component.getX();
-                int newX = x - 1;
+                int newX = x - 100/Tickrate;
                 component.setLocation(newX, (int) component.getY());
             }
         }
     }
 
     // Spieler bewegen
-    public void movePlayer() {
+    public void movePlayer(int Tickrate) {
         if (playerMoveInt == 3) { // Zähler
-            xPosition = xPosition + 1;
+            xPosition = xPosition + 100/Tickrate;
             int yPosition = (GameUI.instance.player.getY() - Methods.instance.calculateGravity(xPosition));
             GameUI.instance.player.setLocation(250, yPosition);
-
             GameUI.instance.rPlayer.setLocation(GameUI.instance.player.getX(), GameUI.instance.player.getY()); // Rechteck aktualisieren
             playerMoveInt = 0; // Zähler zurücksetzen
         }

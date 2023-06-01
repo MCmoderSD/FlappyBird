@@ -55,7 +55,7 @@ public class Main {
                 flapSound,
                 hitSound,
                 pointSound,
-                Methods.instance.getTPS(TPS),
+                TPS,
                 sound
         );
     }

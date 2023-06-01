@@ -10,7 +10,7 @@ public class Logic {
     }
 
     // Methode zum Verarbeiten der Leertaste-Eingabe
-    public void handleSpaceKeyPress(int width, int height, String title, String icon, boolean resizable, String backgroundImage, String flapSound, boolean sound) {
+    public void handleSpaceKeyPress(int width, int height, String title, String icon, boolean resizable, String backgroundImage, String flapSound, int Tickrate, boolean sound) {
 
         // Wenn das Spiel noch nicht läuft und das Spiel nicht vorbei ist
         if (!ui.tickrate.isRunning() && !gameState && !gameOver) {
@@ -26,15 +26,15 @@ public class Logic {
         }
 
         // Wenn das Spiel nicht vorbei ist, führe den Bounce aus
-        if (!gameOver) handleBounce(flapSound, sound);
+        if (!gameOver) handleBounce(flapSound, Tickrate, sound);
     }
 
     // Methode zum Verarbeiten des Timer-Ticks
-    public void handleTimerTick(int width, int height, int playerHeight, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String dieSound, String hitSound, String pointSound, boolean sound) {
+    public void handleTimerTick(int width, int height, int playerHeight, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String dieSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
         if (ui.player.getY() + 2 * playerHeight >= height && gameOver && !gameState) ui.tickrate.stop(); // Stoppe den Timer
-        Movement.instance.movePlayer(); // Bewege den Spieler
+        Movement.instance.movePlayer(Tickrate); // Bewege den Spieler
         if (gameState && !gameOver) {
-            Movement.instance.moveObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage); // Bewege die Hindernisse
+            Movement.instance.moveObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, Tickrate); // Bewege die Hindernisse
             // Movement.instance.moveBackground(); // Bewege den Hintergrund
             ui.removeObstacles(); // Entferne nicht sichtbare Hindernisse
             ui.checkCollision(width, dieSound, hitSound, pointSound, sound); // Überprüfe auf Kollisionen
@@ -51,7 +51,7 @@ public class Logic {
     }
 
     // Methode zum Verarbeiten des Bounces
-    public void handleBounce(String flapSound, boolean sound) {
+    public void handleBounce(String flapSound, int Tickrate, boolean sound) {
         Methods.instance.audioPlayer(flapSound, sound);
         if (ui.player.getY() > 32) Movement.instance.xPosition = - Main.JumpHeight; // Bewege den Spieler nach oben
     }
