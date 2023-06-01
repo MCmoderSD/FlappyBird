@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 public class Movement {
     public static Movement instance;
-    public int bgX = 0;
+    public final int bgX = 0;
     public int xPosition = - Main.JumpHeight;
     private int obstacleMoveInt = 200, playerMoveInt = 0;
-    private boolean bgShouldMove;
+    // --Commented out by Inspection (01.06.2023 10:52):private boolean bgShouldMove;
 
     // Konstruktor und Instanz
     public Movement() {
