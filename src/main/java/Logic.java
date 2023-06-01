@@ -1,6 +1,3 @@
-import javax.swing.*;
-import java.awt.*;
-
 public class Logic {
     public static Logic instance;
     private static GameUI ui;
@@ -33,30 +30,24 @@ public class Logic {
     }
 
     // Methode zum Verarbeiten des Timer-Ticks
-    public void handleTimerTick(int width, int height, int playerHeight, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String dieSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
+    public void handleTimerTick(int width, int height, int playerHeight, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String dieSound, String hitSound, String pointSound, boolean sound) {
+        if (ui.player.getY() + 2 * playerHeight >= height && gameOver && !gameState) ui.tickrate.stop(); // Stoppe den Timer
         Movement.instance.movePlayer(); // Bewege den Spieler
-        Movement.instance.moveObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage); // Bewege die Hindernisse
-        // Movement.instance.moveBackground(); // Bewege den Hintergrund
-        ui.removeObstacles(); // Entferne nicht sichtbare Hindernisse
-        ui.checkCollision(width, height, playerHeight, dieSound, hitSound, pointSound, Tickrate, sound); // Überprüfe auf Kollisionen
+        if (gameState && !gameOver) {
+            Movement.instance.moveObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage); // Bewege die Hindernisse
+            // Movement.instance.moveBackground(); // Bewege den Hintergrund
+            ui.removeObstacles(); // Entferne nicht sichtbare Hindernisse
+            ui.checkCollision(width, dieSound, hitSound, pointSound, sound); // Überprüfe auf Kollisionen
+        }
     }
 
     // Methode zum Verarbeiten der Kollision
-    public void handleCollision(int height, int playerHeight, String dieSound, int Tickrate, boolean sound) {
+    public void handleCollision(String dieSound, boolean sound) {
         System.out.println("Kollision");
         Methods.instance.audioPlayer(dieSound, sound);
-        ui.tickrate.stop(); // Stoppe den Timer
-        Timer gameOverTimer = new Timer(Tickrate, e -> {
-            if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
-            if (ui.player.getY() <= height + 2 * playerHeight) {
-                Movement.instance.movePlayer();
-            }
-        });
-        gameOverTimer.start();
-        if (ui.player.getY() >= height + 2 * playerHeight) gameOverTimer.stop();
-        ui.gameOver.setVisible(true);
-        gameState = false;
         gameOver = true;
+        gameState = false;
+        ui.gameOver.setVisible(true);
     }
 
     // Methode zum Verarbeiten des Bounces

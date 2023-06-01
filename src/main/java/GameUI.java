@@ -26,7 +26,7 @@ public class GameUI extends JFrame {
         instance = this;
         tickrate = new Timer(Tickrate, e -> {
             if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
-            Logic.instance.handleTimerTick(width, height, playerHeight, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, dieSound, hitSound, pointSound, Tickrate, sound);
+            Logic.instance.handleTimerTick(width, height, playerHeight, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, dieSound, hitSound, pointSound, sound);
         });
 
         addKeyListener(new KeyAdapter() {
@@ -194,14 +194,14 @@ public class GameUI extends JFrame {
     }
 
     // Überprüft Kollisionen mit dem Spieler und anderen Objekten
-    public void checkCollision(int width, int height, int playerHeight, String dieSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
-        if (player.getY() > width) Logic.instance.handleCollision(height, playerHeight, dieSound, Tickrate, sound);
+    public void checkCollision(int width, String dieSound, String hitSound, String pointSound, boolean sound) {
+        if (player.getY() > width) Logic.instance.handleCollision(dieSound, sound);
 
         for (Rectangle component : rObstacles) {
             if (component != null)
                 if (rPlayer.intersects(component)) {
                     Methods.instance.audioPlayer(hitSound, sound);
-                    Logic.instance.handleCollision(height, playerHeight, dieSound, Tickrate, sound);
+                    Logic.instance.handleCollision(dieSound, sound);
                 }
         }
 
