@@ -19,8 +19,18 @@ public class Methods {
 
     // Methode zum Berechnen der Schwerkraft
     public int calculateGravity(int x) {
-        return -3 * x + 4;
+        return -2 * x + 4;
     }
+
+    public boolean containsString(String[] array, String target) {
+        for (String element : array) {
+            if (element.equals(target)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     // Methode zum Berechnen der TPS (Ticks per Second)
     public int getTPS(int TPS) {

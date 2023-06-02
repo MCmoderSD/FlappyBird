@@ -10,7 +10,7 @@ public class Logic {
     }
 
     // Methode zum Verarbeiten der Leertaste-Eingabe
-    public void handleSpaceKeyPress(int width, int height, String title, String icon, boolean resizable, String backgroundImage, String flapSound, int Tickrate, boolean sound) {
+    public void handleSpaceKeyPress(int width, int height, String title, String icon, boolean resizable, String flapSound, int Tickrate, boolean sound) {
 
         // Wenn das Spiel noch nicht läuft und das Spiel nicht vorbei ist
         if (!ui.tickrate.isRunning() && !gameState && !gameOver) {
@@ -21,7 +21,7 @@ public class Logic {
 
         // Wenn das Spiel nicht läuft und das Spiel vorbei ist
         if (!ui.tickrate.isRunning() && !gameState && gameOver) {
-            UI.instance.initFrame(width, height, title, icon, resizable, backgroundImage, ui.points); // Initialisiere das Fenster erneut
+            UI.instance.initFrame(width, height, title, icon, resizable, ui.points); // Initialisiere das Fenster erneut
             ui.dispose(); // Schließe das aktuelle Fenster
         }
 
@@ -30,8 +30,8 @@ public class Logic {
     }
 
     // Methode zum Verarbeiten des Timer-Ticks
-    public void handleTimerTick(int width, int height, int playerHeight, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String dieSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
-        if (ui.player.getY() + 2 * playerHeight >= height && gameOver && !gameState) ui.tickrate.stop(); // Stoppe den Timer
+    public void handleTimerTick(int width, int height, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String dieSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
+        if (ui.player.getY() >= height && gameOver && !gameState) ui.tickrate.stop(); // Stoppe den Timer
         Movement.instance.movePlayer(Tickrate); // Bewege den Spieler
         if (gameState && !gameOver) {
             Movement.instance.moveObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, Tickrate); // Bewege die Hindernisse
