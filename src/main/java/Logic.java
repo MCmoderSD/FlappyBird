@@ -1,12 +1,13 @@
 public class Logic {
     public static Logic instance;
+    public static boolean gamePaused = false;
     private static GameUI ui;
     private boolean gameState = false, gameOver;
 
-    public Logic(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
+    public Logic(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreen, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
         instance = this;
         gameOver = false;
-        ui = new GameUI(width, height, title, icon, resizable, playerPosition, playerWidth, playerHeight, backgroundImage, playerImage, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, gameOverImage, dieSound, flapSound, hitSound, pointSound, Tickrate, sound);
+        ui = new GameUI(width, height, title, icon, resizable, playerPosition, playerWidth, playerHeight, backgroundImage, playerImage, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, gameOverImage, pauseScreen,dieSound, flapSound, hitSound, pointSound, Tickrate, sound);
     }
 
     // Methode zum Verarbeiten der Leertaste-Eingabe
@@ -17,6 +18,7 @@ public class Logic {
             ui.tickrate.start(); // Starte den Timer
             ui.gameOver.setVisible(false);
             gameState = true;
+            gamePaused = false;
         }
 
         // Wenn das Spiel nicht läuft und das Spiel vorbei ist
@@ -31,13 +33,15 @@ public class Logic {
 
     // Methode zum Verarbeiten des Timer-Ticks
     public void handleTimerTick(int width, int height, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String dieSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
-        if (ui.player.getY() >= height && gameOver && !gameState) ui.tickrate.stop(); // Stoppe den Timer
-        Movement.instance.movePlayer(Tickrate); // Bewege den Spieler
-        if (gameState && !gameOver) {
-            Movement.instance.moveObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, Tickrate); // Bewege die Hindernisse
-            // Movement.instance.moveBackground(); // Bewege den Hintergrund
-            ui.removeObstacles(); // Entferne nicht sichtbare Hindernisse
-            ui.checkCollision(width, dieSound, hitSound, pointSound, sound); // Überprüfe auf Kollisionen
+        if (!gamePaused) {
+            if (ui.player.getY() >= height && gameOver && !gameState) ui.tickrate.stop(); // Stoppe den Timer
+            Movement.instance.movePlayer(Tickrate); // Bewege den Spieler
+            if (gameState && !gameOver) {
+                Movement.instance.moveObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, Tickrate); // Bewege die Hindernisse
+                // Movement.instance.moveBackground(); // Bewege den Hintergrund
+                ui.removeObstacles(); // Entferne nicht sichtbare Hindernisse
+                ui.checkCollision(width, dieSound, hitSound, pointSound, sound); // Überprüfe auf Kollisionen
+            }
         }
     }
 
@@ -62,5 +66,16 @@ public class Logic {
         ui.points++;
         ui.score.setText("Score: " + ui.points);
         System.out.println("Punkt! Du hast jetzt " + ui.points);
+    }
+
+    // Methode zum Verarbeiten des Pausierens
+    public void handleGamePause() {
+        if (gamePaused) {
+            ui.pauseScreen.setVisible(false);
+            gamePaused = false;
+        } else {
+            ui.pauseScreen.setVisible(true);
+            gamePaused = true;
+        }
     }
 }

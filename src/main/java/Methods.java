@@ -22,6 +22,7 @@ public class Methods {
         return -2 * x + 4;
     }
 
+    // Methode zum Überprüfen, ob ein String in einem String-Array enthalten ist
     public boolean containsString(String[] array, String target) {
         for (String element : array) {
             if (element.equals(target)) {
@@ -30,7 +31,6 @@ public class Methods {
         }
         return false;
     }
-
 
     // Methode zum Berechnen der TPS (Ticks per Second)
     public int getTPS(int TPS) {
@@ -48,7 +48,7 @@ public class Methods {
 
     // Methode zum Abspielen einer Audiodatei
     public void audioPlayer(String audioFilePath, boolean sound) {
-        if (sound) {
+        if (sound && !Logic.gamePaused) {
             try {
                 ClassLoader classLoader = getClass().getClassLoader();
                 InputStream audioFileInputStream = classLoader.getResourceAsStream(audioFilePath);

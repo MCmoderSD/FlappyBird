@@ -14,6 +14,8 @@ A Flappy Bird Project in Java
 - [x] Game-over
 - [x] Restart
 - [x] Menu
+- [x] Sounds
+- [x] Pause
 - [ ] Highscore
 - [ ] Leaderboard
 - [ ] MySQL Database 

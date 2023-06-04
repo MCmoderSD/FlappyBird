@@ -9,6 +9,7 @@ public class Main {
     private static final int obstacleWidth = 32, obstacleHeight = 1024; // Breite und Höhe der Hindernisse
     private static final String Icon = "Images/Icon.png"; // Dateipfad für das Spielsymbol
     private static final String GameOver = "tests/GameOver.png"; // Dateipfad für das Game Over-Bild
+    private static final String Pause = "tests/Paused.png"; // Dateipfad für das Pause-Bild
     private static final String dieSound = "sounds/die.wav"; // Dateipfad für den Sterbesound
     private static final String flapSound = "sounds/flap.wav"; // Dateipfad für den Flügelschlag-Sound
     private static final String hitSound = "sounds/hit.wav"; // Dateipfad für den Aufprall-Sound
@@ -45,6 +46,7 @@ public class Main {
                 ObstacleTop,
                 ObstacleBottom,
                 GameOver,
+                Pause,
                 dieSound,
                 flapSound,
                 hitSound,

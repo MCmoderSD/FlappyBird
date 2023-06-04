@@ -12,17 +12,18 @@ public class GameUI extends JFrame {
     public final ArrayList<JLabel> obstacles = new ArrayList<>();
     public final ArrayList<Rectangle> rObstacles = new ArrayList<>(), greenZones = new ArrayList<>();
     public final Timer tickrate;
-    public JLabel player, score, gameOver;
+    public JLabel player, score, gameOver, pauseScreen;
     public int points;
     public Rectangle rPlayer;
     private JPanel mainPanel;
 
-    public GameUI(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
+    public GameUI(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreenImage, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
         initFrame(width, height, title, icon, resizable);
         initMainPanel(width, height, backgroundImage);
         initPlayer(height, playerPosition, playerWidth, playerHeight, playerImage);
         initScore(width, height);
         initGameOver(width, height, gameOverImage);
+        initPauseScreen(width, height, pauseScreenImage);
         instance = this;
         tickrate = new Timer(Methods.instance.getTPS(Tickrate), e -> {
             if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
@@ -34,6 +35,14 @@ public class GameUI extends JFrame {
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
                 if (e.getKeyCode() == KeyEvent.VK_SPACE) Logic.instance.handleSpaceKeyPress(width, height, title, icon, resizable, flapSound, Tickrate, sound);
+            }
+        });
+
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                super.keyPressed(e);
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) Logic.instance.handleGamePause();
             }
         });
 
@@ -119,6 +128,15 @@ public class GameUI extends JFrame {
         gameOver.setSize(width, height);
         gameOver.setLocation(0, 0);
         gameOver.setIcon(new ImageIcon(Methods.instance.reader(gameOverImage)));
+    }
+
+    private void initPauseScreen(int width, int height, String pauseImage) {
+        pauseScreen = new JLabel();
+        mainPanel.add(pauseScreen);
+        pauseScreen.setVisible(false);
+        pauseScreen.setSize(width, height);
+        pauseScreen.setLocation(0, 0);
+        pauseScreen.setIcon(new ImageIcon(Methods.instance.reader(pauseImage)));
     }
 
     // Erzeugt Hindernisse basierend auf den übergebenen Parametern
