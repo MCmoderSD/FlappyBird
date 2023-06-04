@@ -18,8 +18,8 @@ public class Methods {
     }
 
     // Methode zum Berechnen der Schwerkraft
-    public int calculateGravity(int x) {
-        return -2 * x + 4;
+    public int calculateGravity(int x, int Tickrate) {
+        return (int) ((-2 * x + 4) / (double) (100/Tickrate));
     }
 
     // Methode zum Überprüfen, ob ein String in einem String-Array enthalten ist
@@ -33,8 +33,8 @@ public class Methods {
     }
 
     // Methode zum Berechnen der TPS (Ticks per Second)
-    public int getTPS(int TPS) {
-        return 1000 / TPS;
+    public int getTPS(int Tickrate) {
+        return 1000 / Tickrate;
     }
 
     // Methode zum Lesen eines Bildes aus einer Ressource

@@ -7,6 +7,7 @@ public class Logic {
     public Logic(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreen, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
         instance = this;
         gameOver = false;
+        if (Tickrate >= 100) Tickrate = 100;
         ui = new GameUI(width, height, title, icon, resizable, playerPosition, playerWidth, playerHeight, backgroundImage, playerImage, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, gameOverImage, pauseScreen,dieSound, flapSound, hitSound, pointSound, Tickrate, sound);
     }
 
@@ -57,7 +58,7 @@ public class Logic {
     // Methode zum Verarbeiten des Bounces
     public void handleBounce(String flapSound, int Tickrate, boolean sound) {
         Methods.instance.audioPlayer(flapSound, sound);
-        if (ui.player.getY() > 32) Movement.instance.xPosition = - Main.JumpHeight; // Bewege den Spieler nach oben
+        if (ui.player.getY() > 32) Movement.instance.xPosition = (int) (- Main.JumpHeight * (double) (100/Tickrate)); // Bewege den Spieler nach oben
     }
 
     // Methode zum Verarbeiten des Punktes

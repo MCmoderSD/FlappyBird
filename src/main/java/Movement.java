@@ -19,7 +19,7 @@ public class Movement {
         for (JLabel component : GameUI.instance.obstacles) {
             if (component != null && component.getIcon() != null) {
                 int x = component.getX();
-                int newX = x - 100/Tickrate;
+                int newX = (int) (x - (double) (100/Tickrate));
                 component.setLocation(newX, component.getY());
             }
         }
@@ -64,8 +64,8 @@ public class Movement {
     // Spieler bewegen
     public void movePlayer(int Tickrate) {
         if (playerMoveInt == 3) { // Zähler
-            xPosition = xPosition + 100/Tickrate;
-            int yPosition = (GameUI.instance.player.getY() - Methods.instance.calculateGravity(xPosition));
+            xPosition = (int) (xPosition + (double) (100/Tickrate));
+            int yPosition = (GameUI.instance.player.getY() - Methods.instance.calculateGravity(xPosition, Tickrate));
             GameUI.instance.player.setLocation(250, yPosition);
             GameUI.instance.rPlayer.setLocation(GameUI.instance.player.getX(), GameUI.instance.player.getY()); // Rechteck aktualisieren
             playerMoveInt = 0; // Zähler zurücksetzen

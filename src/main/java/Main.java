@@ -18,7 +18,7 @@ public class Main {
     private static final int WindowsSizeY = 800; // Fensterhöhe
     private static final boolean Resizeable = false; // Gibt an, ob das Fenster in der Größe verändert werden kann
     private static final int PlayerPositionX = 250; // Startposition des Spielers auf der x-Achse
-    private static final int TPS = 100; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde)
+    private static final int TPS = 100; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde) Maximum: 100
 
     public static void main(String[] args) {
         new Methods(); // Erstelle die Methoden
