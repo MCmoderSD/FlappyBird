@@ -126,7 +126,6 @@ public class GameUI extends JFrame {
         mainPanel.add(gameOver);
         gameOver.setVisible(false);
         gameOver.setSize(width, height);
-        gameOver.setLocation(0, 0);
         gameOver.setIcon(new ImageIcon(Methods.instance.reader(gameOverImage)));
     }
 

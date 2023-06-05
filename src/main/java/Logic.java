@@ -24,7 +24,7 @@ public class Logic {
 
         // Wenn das Spiel nicht läuft und das Spiel vorbei ist
         if (!ui.tickrate.isRunning() && !gameState && gameOver) {
-            UI.instance.initFrame(width, height, title, icon, resizable, ui.points); // Initialisiere das Fenster erneut
+            UI.instance.initFrame(width, height, title, icon, resizable, ui.points, Tickrate); // Initialisiere das Fenster erneut
             ui.dispose(); // Schließe das aktuelle Fenster
         }
 

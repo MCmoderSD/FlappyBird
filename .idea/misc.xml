@@ -4,6 +4,14 @@
     <option name="show" value="ASK" />
     <option name="description" value="" />
   </component>
+  <component name="EntryPointsManager">
+    <pattern value="Methods" method="containsString" />
+    <pattern value="UI" method="createUIComponents" />
+    <pattern value="Main" />
+    <pattern value="Main" method="main" />
+    <pattern value="Methods" />
+    <pattern value="UI" />
+  </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="MavenProjectsManager">
     <option name="originalFiles">

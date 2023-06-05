@@ -23,10 +23,10 @@ public class Main {
     public static void main(String[] args) {
         new Methods(); // Erstelle die Methoden
         new Movement(); // Erstelle die Bewegung
-        new UI(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, Background, args); // Erstelle die Benutzeroberfläche
+        new UI(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, Background, TPS, args); // Erstelle die Benutzeroberfläche
     }
 
-    public void run(boolean sound, String[] args) {
+    public void run(int Tickrate, boolean sound, String[] args) {
         // Starte die Spiellogik mit den angegebenen Parametern
         if (args.length == 0) new Logic(
                 WindowSizeX,
@@ -51,7 +51,7 @@ public class Main {
                 flapSound,
                 hitSound,
                 pointSound,
-                TPS,
+                Tickrate,
                 sound
         );
     }

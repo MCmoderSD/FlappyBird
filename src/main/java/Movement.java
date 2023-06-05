@@ -19,7 +19,7 @@ public class Movement {
         for (JLabel component : GameUI.instance.obstacles) {
             if (component != null && component.getIcon() != null) {
                 int x = component.getX();
-                int newX = (int) (x - (double) (100/Tickrate));
+                int newX = x - (100/Tickrate);
                 component.setLocation(newX, component.getY());
             }
         }
@@ -55,7 +55,7 @@ public class Movement {
             if (component != null) {
                 component.getBounds();
                 int x = (int) component.getX();
-                int newX = x - 100/Tickrate;
+                int newX = x - (100/Tickrate);
                 component.setLocation(newX, (int) component.getY());
             }
         }

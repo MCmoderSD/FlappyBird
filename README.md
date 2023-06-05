@@ -4,6 +4,7 @@ A Flappy Bird Project in Java
 
 ## Features
 
+- [ ] Assets
 - [x] Player movement
 - [x] Pipe movement
 - [x] Pipe generation
@@ -15,6 +16,8 @@ A Flappy Bird Project in Java
 - [x] Restart
 - [x] Menu
 - [x] Sounds
+- [ ] Music
+- [x] Variable Tickrate
 - [x] Pause
 - [ ] Highscore
 - [ ] Leaderboard
