@@ -88,6 +88,9 @@ public class UI extends JFrame {
                 if ((int) spinnerTPS.getValue() <= 1) spinnerTPS.setValue(1);
             }
         });
+
+        // ToDo Restrict input to numbers only
+
     }
 
 // --Commented out by Inspection START (31.05.2023 04:08):
