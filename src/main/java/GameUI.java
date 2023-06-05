@@ -127,6 +127,7 @@ public class GameUI extends JFrame {
         gameOver.setVisible(false);
         gameOver.setSize(width, height);
         gameOver.setIcon(new ImageIcon(Methods.instance.reader(gameOverImage)));
+        gameOver.setLocation(Methods.instance.locatePoint(gameOverImage, width, height));
     }
 
     private void initPauseScreen(int width, int height, String pauseImage) {
@@ -136,6 +137,7 @@ public class GameUI extends JFrame {
         pauseScreen.setSize(width, height);
         pauseScreen.setLocation(0, 0);
         pauseScreen.setIcon(new ImageIcon(Methods.instance.reader(pauseImage)));
+        gameOver.setLocation(Methods.instance.locatePoint(pauseImage, width, height));
     }
 
     // Erzeugt Hindernisse basierend auf den übergebenen Parametern

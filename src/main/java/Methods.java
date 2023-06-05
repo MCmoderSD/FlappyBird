@@ -3,6 +3,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineEvent;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -44,6 +45,17 @@ public class Methods {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Point locatePoint(String image, int width, int height) {
+        BufferedImage img = reader(image);
+        int imageWidth = img.getWidth();
+        int imageHeight = img.getHeight();
+
+        int x = (width - imageWidth) / 2;
+        int y = (height - imageHeight) / 2;
+
+        return new Point(x, y);
     }
 
     // Methode zum Abspielen einer Audiodatei
