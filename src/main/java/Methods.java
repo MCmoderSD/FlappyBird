@@ -18,8 +18,8 @@ public class Methods {
     }
 
     // Methode zum Berechnen der Schwerkraft
-    public int calculateGravity(int x, int Tickrate) {
-        return (int) ((-2 * x + 4) / (double) (100/Tickrate));
+    public int calculateGravity(int x) {
+        return -2 * x + 4;
     }
 
     // Methode zum Überprüfen, ob ein String in einem String-Array enthalten ist

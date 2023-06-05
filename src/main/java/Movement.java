@@ -30,7 +30,7 @@ public class Movement {
         obstacleMoveInt = obstacleMoveInt + 1;
 
         // Periodisch neue Hindernisse generieren
-        if (obstacleMoveInt >= 200) {
+        if (obstacleMoveInt >= (200 / (100/Tickrate))) {
             GameUI.instance.generateObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage);
             obstacleMoveInt = 0;
         }
@@ -63,9 +63,9 @@ public class Movement {
 
     // Spieler bewegen
     public void movePlayer(int Tickrate) {
-        if (playerMoveInt == 3) { // Zähler
-            xPosition = (int) (xPosition + (double) (100/Tickrate));
-            int yPosition = (GameUI.instance.player.getY() - Methods.instance.calculateGravity(xPosition, Tickrate));
+        if (playerMoveInt >= (3 / (100/Tickrate))) { // Zähler
+            xPosition = xPosition + 1;
+            int yPosition = (GameUI.instance.player.getY() - Methods.instance.calculateGravity(xPosition));
             GameUI.instance.player.setLocation(250, yPosition);
             GameUI.instance.rPlayer.setLocation(GameUI.instance.player.getX(), GameUI.instance.player.getY()); // Rechteck aktualisieren
             playerMoveInt = 0; // Zähler zurücksetzen

@@ -29,7 +29,7 @@ public class Logic {
         }
 
         // Wenn das Spiel nicht vorbei ist, führe den Bounce aus
-        if (!gameOver) handleBounce(flapSound, Tickrate, sound);
+        if (!gameOver) handleBounce(flapSound, sound);
     }
 
     // Methode zum Verarbeiten des Timer-Ticks
@@ -56,9 +56,9 @@ public class Logic {
     }
 
     // Methode zum Verarbeiten des Bounces
-    public void handleBounce(String flapSound, int Tickrate, boolean sound) {
+    public void handleBounce(String flapSound, boolean sound) {
         Methods.instance.audioPlayer(flapSound, sound);
-        if (ui.player.getY() > 32) Movement.instance.xPosition = (int) (- Main.JumpHeight * (double) (100/Tickrate)); // Bewege den Spieler nach oben
+        if (ui.player.getY() > 32) Movement.instance.xPosition = - Main.JumpHeight; // Bewege den Spieler nach oben
     }
 
     // Methode zum Verarbeiten des Punktes
