@@ -60,7 +60,7 @@ public class Methods {
 
     // Methode zum Abspielen einer Audiodatei
     public void audioPlayer(String audioFilePath, boolean sound) {
-        if (sound && !Logic.gamePaused) {
+        if (sound && !Logic.instance.gamePaused) {
             try {
                 ClassLoader classLoader = getClass().getClassLoader();
                 InputStream audioFileInputStream = classLoader.getResourceAsStream(audioFilePath);

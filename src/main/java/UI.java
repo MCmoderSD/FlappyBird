@@ -74,7 +74,7 @@ public class UI extends JFrame {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(Methods.instance.reader(Background), Movement.instance.bgX, 0, 1422, getHeight(), this);
+                g.drawImage(Methods.instance.reader(Background), Movement.instance.backgroundResetX, 0, 1422, getHeight(), this);
             }
         };
         bStart = new JButton();

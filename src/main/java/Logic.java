@@ -1,7 +1,7 @@
 public class Logic {
     public static Logic instance;
-    public static boolean gamePaused = false;
     private static GameUI ui;
+    public boolean gamePaused = false;
     private boolean gameState = false, gameOver;
 
     public Logic(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreen, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
@@ -39,7 +39,7 @@ public class Logic {
             Movement.instance.movePlayer(Tickrate); // Bewege den Spieler
             if (gameState && !gameOver) {
                 Movement.instance.moveObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, Tickrate); // Bewege die Hindernisse
-                // Movement.instance.moveBackground(); // Bewege den Hintergrund
+                Movement.instance.moveBackground(width, Tickrate); // Bewege den Hintergrund
                 ui.removeObstacles(); // Entferne nicht sichtbare Hindernisse
                 ui.checkCollision(width, dieSound, hitSound, pointSound, sound); // Überprüfe auf Kollisionen
             }

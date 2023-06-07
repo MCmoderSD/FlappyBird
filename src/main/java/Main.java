@@ -2,7 +2,7 @@ public class Main {
     public static final int JumpHeight = 7; // Die Sprunghöhe des Spielers
     private static final String Background = "Images/Background.png"; // Dateipfad für den Hintergrund
     private static final String Title = "Flappy Bird"; // Titel des Spiels
-    private static final String Player = "tests/BirdPlaceHolder.png"; // Dateipfad für das Spielerbild
+    private static final String Player = "Lena/Bird.png"; // Dateipfad für das Spielerbild
     private static final int playerWidth = 32, playerHeight = 32; // Breite und Höhe des Spielers
     private static final String ObstacleTop = "tests/ObstaclePlaceHolderGreen.png"; // Dateipfad für das Hindernis von oben
     private static final String ObstacleBottom = "tests/ObstaclePlaceHolderRed.png"; // Dateipfad für das Hindernis von unten

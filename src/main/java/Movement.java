@@ -4,14 +4,37 @@ import java.util.ArrayList;
 
 public class Movement {
     public static Movement instance;
-    public final int bgX = 0;
-    public int xPosition = - Main.JumpHeight;
-    private int obstacleMoveInt = 200, playerMoveInt = 0;
-    // --Commented out by Inspection (01.06.2023 10:52):private boolean bgShouldMove;
+    public int backgroundResetX = 0, xPosition = - Main.JumpHeight;
+    private int obstacleMoveInt = 200;
+    private short playerMoveInt = 0, backgroundCount = 0;
 
     // Konstruktor und Instanz
     public Movement() {
         instance = this;
+    }
+
+    public void moveBackground(int width, int Tickrate) {
+        if (backgroundCount >= (2 / (100/Tickrate))) {
+            backgroundResetX--;
+            if (backgroundResetX <= -width) {
+                backgroundResetX = 0;
+            }
+            GameUI.instance.mainPanel.repaint();
+            backgroundCount = 0;
+        }
+        backgroundCount++;
+    }
+
+    // Spieler bewegen
+    public void movePlayer(int Tickrate) {
+        if (playerMoveInt >= (3 / (100/Tickrate))) { // Zähler
+            xPosition = xPosition + 1;
+            int yPosition = (GameUI.instance.player.getY() - Methods.instance.calculateGravity(xPosition));
+            GameUI.instance.player.setLocation(250, yPosition);
+            GameUI.instance.rPlayer.setLocation(GameUI.instance.player.getX(), GameUI.instance.player.getY()); // Rechteck aktualisieren
+            playerMoveInt = 0; // Zähler zurücksetzen
+        }
+        playerMoveInt++; // Zähler erhöhen
     }
 
     // Hindernisse auf dem Bildschirm bewegen
@@ -36,19 +59,6 @@ public class Movement {
         }
     }
 
-// --Commented out by Inspection START (31.05.2023 14:27):
-//    // Hintergrund bewegen
-//    public void moveBackground() {
-//
-//        if (bgShouldMove) {
-//            bgX -= 1;
-//            bgShouldMove = false;
-//        } else {
-//            bgShouldMove = true;
-//        }
-//    }
-// --Commented out by Inspection STOP (31.05.2023 14:27)
-
     // Rechtecke auf dem Bildschirm bewegen
     private void moveRectangles(ArrayList<Rectangle> rectangles, int Tickrate) {
         for (Rectangle component : rectangles) {
@@ -59,17 +69,5 @@ public class Movement {
                 component.setLocation(newX, (int) component.getY());
             }
         }
-    }
-
-    // Spieler bewegen
-    public void movePlayer(int Tickrate) {
-        if (playerMoveInt >= (3 / (100/Tickrate))) { // Zähler
-            xPosition = xPosition + 1;
-            int yPosition = (GameUI.instance.player.getY() - Methods.instance.calculateGravity(xPosition));
-            GameUI.instance.player.setLocation(250, yPosition);
-            GameUI.instance.rPlayer.setLocation(GameUI.instance.player.getX(), GameUI.instance.player.getY()); // Rechteck aktualisieren
-            playerMoveInt = 0; // Zähler zurücksetzen
-        }
-        playerMoveInt++; // Zähler erhöhen
     }
 }

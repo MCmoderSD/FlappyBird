@@ -4,18 +4,20 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 public class GameUI extends JFrame {
     public static GameUI instance;
     public final ArrayList<JLabel> obstacles = new ArrayList<>();
-    public final ArrayList<Rectangle> rObstacles = new ArrayList<>(), greenZones = new ArrayList<>();
+    public final ArrayList<Rectangle> rObstacles = new ArrayList<>();
+    public final ArrayList<Rectangle> greenZones = new ArrayList<>();
     public final Timer tickrate;
     public JLabel player, score, gameOver, pauseScreen;
     public int points;
     public Rectangle rPlayer;
-    private JPanel mainPanel;
+    public JPanel mainPanel;
 
     public GameUI(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreenImage, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
         initFrame(width, height, title, icon, resizable);
@@ -84,13 +86,21 @@ public class GameUI extends JFrame {
     // Initialisiert das Hauptpanel mit Hintergrundbild
     private void initMainPanel(int width, int height, String backgroundImage) {
         mainPanel = new JPanel() {
+            final BufferedImage background = Methods.instance.reader(backgroundImage);
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(Methods.instance.reader(backgroundImage), Movement.instance.bgX, 0, 1422, getHeight(), this);
+
+                // Hintergrund zeichnen
+                for (int x = Movement.instance.backgroundResetX; x < getWidth(); x += background.getWidth()) {
+                    g.drawImage(background, x, 0, null);
+                }
+                // Perfekten Übergang zeichnen
+                for (int x = Movement.instance.backgroundResetX + background.getWidth(); x < getWidth(); x += background.getWidth()) {
+                    g.drawImage(background, x, 0, null);
+                }
             }
         };
-
         mainPanel.setSize(width, height);
         mainPanel.setLayout(null);
         mainPanel.setOpaque(false);

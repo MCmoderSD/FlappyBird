@@ -10,8 +10,8 @@ A Flappy Bird Project in Java
 - [x] Pipe generation
 - [x] Collision
 - [x] Score
-- [x] Background static
-- [ ] Background movement
+- [x] Background movement
+- [ ] Smooth Infinite Background
 - [x] Game-over
 - [x] Restart
 - [x] Menu
@@ -22,3 +22,4 @@ A Flappy Bird Project in Java
 - [ ] Highscore
 - [ ] Leaderboard
 - [ ] MySQL Database 
+- [ ] Game Optimization
