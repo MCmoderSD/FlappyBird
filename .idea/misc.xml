@@ -5,6 +5,9 @@
     <option name="description" value="" />
   </component>
   <component name="EntryPointsManager">
+    <entry_points version="2.0">
+      <entry_point TYPE="field" FQNAME="UI instance" />
+    </entry_points>
     <pattern value="Methods" method="containsString" />
     <pattern value="UI" method="createUIComponents" />
     <pattern value="Main" />

@@ -4,6 +4,7 @@ import java.awt.*;
 public class UI extends JFrame {
     public static UI instance;
     private final String Background;
+    private final int scoredPoints;
     private JButton bStart;
     private JPanel UI;
     private JCheckBox soundCheckBox;
@@ -11,13 +12,16 @@ public class UI extends JFrame {
     private JTextField playerName;
     private JLabel score;
     private JSpinner spinnerTPS;
-    private int scoredPoints = -10, TPS = 100;
+    private int TPS = 100;
     private boolean newGame = true, isUploaded = true;
 
-    public UI(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, String[] args) {
+    public UI(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, String[] args, int points) {
+        scoredPoints = points;
         Background = backgroundImage;
         instance = this;
+
         initFrame(width, height, title, icon, resizable, scoredPoints, Tickrate);
+
         score.setVisible(false);
         playerName.setVisible(false);
         leaderBoard.setVisible(false);
@@ -39,8 +43,8 @@ public class UI extends JFrame {
     }
 
     public void initFrame(int width, int height, String title, String icon, boolean resizable, int points, int Tickrate) {
-        scoredPoints = points;
-        if (Tickrate <= TPS) TPS = Tickrate;
+        if (Tickrate <= TPS)
+            TPS = Tickrate;
 
         add(UI);
         setTitle(title);
@@ -90,8 +94,10 @@ public class UI extends JFrame {
         spinnerTPS.setValue(TPS);
         spinnerTPS.addChangeListener(e -> {
             if (spinnerTPS.getValue() != null) {
-                if ((int) spinnerTPS.getValue() >= 100) spinnerTPS.setValue(100);
-                if ((int) spinnerTPS.getValue() <= 1) spinnerTPS.setValue(1);
+                if ((int) spinnerTPS.getValue() >= 100)
+                    spinnerTPS.setValue(100);
+                if ((int) spinnerTPS.getValue() <= 1)
+                    spinnerTPS.setValue(1);
             }
         });
 

@@ -5,15 +5,16 @@ public class Logic {
     private boolean gameState = false, gameOver;
 
     // Konstruktor und Instanz
-    public Logic(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreen, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
+    public Logic(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreen, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate, boolean sound, String[] args) {
         instance = this;
         gameOver = false;
-        if (Tickrate >= 100) Tickrate = 100;
-        ui = new GameUI(width, height, title, icon, resizable, playerPosition, playerWidth, playerHeight, backgroundImage, playerImage, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, gameOverImage, pauseScreen,dieSound, flapSound, hitSound, pointSound, Tickrate, sound);
+        if (Tickrate >= 100)
+            Tickrate = 100;
+        ui = new GameUI(width, height, title, icon, resizable, playerPosition, playerWidth, playerHeight, backgroundImage, playerImage, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, gameOverImage, pauseScreen,dieSound, flapSound, hitSound, pointSound, Tickrate, sound, args);
     }
 
     // Methode zum Verarbeiten der Leertaste-Eingabe
-    public void handleSpaceKeyPress(int width, int height, String title, String icon, boolean resizable, String flapSound, int Tickrate, boolean sound) {
+    public void handleSpaceKeyPress(int width, int height, String title, String icon, boolean resizable, String backgroundImage, String flapSound, int Tickrate, boolean sound, String[] args) {
 
         // Wenn das Spiel noch nicht läuft und das Spiel nicht vorbei ist
         if (!ui.tickrate.isRunning() && !gameState && !gameOver) {
@@ -25,7 +26,7 @@ public class Logic {
 
         // Wenn das Spiel nicht läuft und das Spiel vorbei ist
         if (!ui.tickrate.isRunning() && !gameState && gameOver) {
-            UI.instance.initFrame(width, height, title, icon, resizable, ui.points, Tickrate); // Initialisiere das Fenster erneut
+            new UI (width, height, title, icon, resizable, backgroundImage, Tickrate, args, ui.points); // Initialisiere das Fenster erneut
             ui.dispose(); // Schließe das aktuelle Fenster
         }
 

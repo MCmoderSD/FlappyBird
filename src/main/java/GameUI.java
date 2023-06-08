@@ -19,7 +19,8 @@ public class GameUI extends JFrame {
     public Rectangle rPlayer;
     public JPanel mainPanel;
 
-    public GameUI(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreenImage, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
+    // Konstruktor
+    public GameUI(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreenImage, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate, boolean sound, String[] args) {
         initFrame(width, height, title, icon, resizable);
         initMainPanel(width, height, backgroundImage);
         initPlayer(height, playerPosition, playerWidth, playerHeight, playerImage);
@@ -36,7 +37,7 @@ public class GameUI extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) Logic.instance.handleSpaceKeyPress(width, height, title, icon, resizable, flapSound, Tickrate, sound);
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) Logic.instance.handleSpaceKeyPress(width, height, title, icon, resizable, backgroundImage, flapSound, Tickrate, sound, args);
             }
         });
 
@@ -51,7 +52,7 @@ public class GameUI extends JFrame {
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Logic.instance.handleSpaceKeyPress(width, height, title, icon, resizable, flapSound, Tickrate, sound);
+                Logic.instance.handleSpaceKeyPress(width, height, title, icon, resizable, backgroundImage, flapSound, Tickrate, sound, args);
             }
 
             @Override
@@ -153,6 +154,7 @@ public class GameUI extends JFrame {
         gameOver.setLocation(Methods.instance.locatePoint(gameOverImage, width, height));
     }
 
+    // Initialisiert das Pause-Bildschirm-Label
     private void initPauseScreen(int width, int height, String pauseImage) {
         pauseScreen = new JLabel();
         mainPanel.add(pauseScreen);
@@ -240,11 +242,12 @@ public class GameUI extends JFrame {
         if (player.getY() > width) Logic.instance.handleCollision(dieSound, sound);
 
         for (Rectangle component : rObstacles) {
-            if (component != null)
+            if (component != null) {
                 if (rPlayer.intersects(component)) {
                     Methods.instance.audioPlayer(hitSound, sound);
                     Logic.instance.handleCollision(dieSound, sound);
                 }
+            }
         }
 
         for (int i = 0; i < greenZones.size(); i++) {

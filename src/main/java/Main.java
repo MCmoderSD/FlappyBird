@@ -29,9 +29,16 @@ public class Main {
         new Movement();
 
         // Erstelle die Benutzeroberfläche
-        new UI(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, Background, TPS, args);
+        new UI(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, Background, TPS, args, -10);
     }
 
+    /**
+     * Startet die Spiellogik mit den angegebenen Parametern.
+     *
+     * @param Tickrate Ticks pro Sekunde
+     * @param sound    gibt an, ob Sound aktiviert ist
+     * @param args     Kommandozeilenargumente
+     */
     public void run(int Tickrate, boolean sound, String[] args) {
         // Starte die Spiellogik mit den angegebenen Parametern
         if (args.length == 0) {
@@ -59,7 +66,8 @@ public class Main {
                     hitSound,
                     pointSound,
                     Tickrate,
-                    sound
+                    sound,
+                    args
             );
         }
     }
