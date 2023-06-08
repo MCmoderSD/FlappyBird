@@ -13,12 +13,12 @@ public class Movement {
         instance = this;
     }
 
-    public void moveBackground(int width, int Tickrate) {
+    public void moveBackground(int Tickrate) {
         if (backgroundCount >= (2 / (100/Tickrate))) {
             backgroundResetX--;
-            if (backgroundResetX <= -width) {
-                backgroundResetX = 0;
-            }
+        if (backgroundResetX <= -Methods.instance.getBackgroundWidth()) {
+            backgroundResetX = 0;
+        }
             GameUI.instance.mainPanel.repaint();
             backgroundCount = 0;
         }

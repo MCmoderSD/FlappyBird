@@ -93,4 +93,8 @@ public class Methods {
             }
         }
     }
+
+    public int getBackgroundWidth() {
+        return reader("Images/Background.png").getWidth();
+    }
 }

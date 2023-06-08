@@ -92,12 +92,16 @@ public class GameUI extends JFrame {
                 super.paintComponent(g);
 
                 // Hintergrund zeichnen
-                for (int x = Movement.instance.backgroundResetX; x < getWidth(); x += background.getWidth()) {
-                    g.drawImage(background, x, 0, null);
+                int imageWidth = background.getWidth();
+
+                int firstX = Movement.instance.backgroundResetX % imageWidth;
+
+                if (firstX > 0) {
+                    g.drawImage(background, firstX - imageWidth, 0, this);
                 }
-                // Perfekten Übergang zeichnen
-                for (int x = Movement.instance.backgroundResetX + background.getWidth(); x < getWidth(); x += background.getWidth()) {
-                    g.drawImage(background, x, 0, null);
+
+                for (int x = firstX; x < width; x += imageWidth) {
+                    g.drawImage(background, x, 0, this);
                 }
             }
         };

@@ -11,7 +11,7 @@ A Flappy Bird Project in Java
 - [x] Collision
 - [x] Score
 - [x] Background movement
-- [ ] Smooth Infinite Background
+- [x] Smooth Infinite Background
 - [x] Game-over
 - [x] Restart
 - [x] Menu

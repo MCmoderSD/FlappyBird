@@ -39,7 +39,7 @@ public class Logic {
             Movement.instance.movePlayer(Tickrate); // Bewege den Spieler
             if (gameState && !gameOver) {
                 Movement.instance.moveObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, Tickrate); // Bewege die Hindernisse
-                Movement.instance.moveBackground(width, Tickrate); // Bewege den Hintergrund
+                Movement.instance.moveBackground(Tickrate); // Bewege den Hintergrund
                 ui.removeObstacles(); // Entferne nicht sichtbare Hindernisse
                 ui.checkCollision(width, dieSound, hitSound, pointSound, sound); // Überprüfe auf Kollisionen
             }
