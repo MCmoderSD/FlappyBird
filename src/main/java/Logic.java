@@ -4,6 +4,7 @@ public class Logic {
     public boolean gamePaused = false;
     private boolean gameState = false, gameOver;
 
+    // Konstruktor und Instanz
     public Logic(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreen, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
         instance = this;
         gameOver = false;
@@ -29,13 +30,17 @@ public class Logic {
         }
 
         // Wenn das Spiel nicht vorbei ist, führe den Bounce aus
-        if (!gameOver) handleBounce(flapSound, sound);
+        if (!gameOver) {
+            handleBounce(flapSound, sound);
+        }
     }
 
     // Methode zum Verarbeiten des Timer-Ticks
     public void handleTimerTick(int width, int height, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String dieSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
         if (!gamePaused) {
-            if (ui.player.getY() >= height && gameOver && !gameState) ui.tickrate.stop(); // Stoppe den Timer
+            if (ui.player.getY() >= height && gameOver && !gameState) {
+                ui.tickrate.stop(); // Stoppe den Timer
+            }
             Movement.instance.movePlayer(Tickrate); // Bewege den Spieler
             if (gameState && !gameOver) {
                 Movement.instance.moveObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, Tickrate); // Bewege die Hindernisse
@@ -58,7 +63,9 @@ public class Logic {
     // Methode zum Verarbeiten des Bounces
     public void handleBounce(String flapSound, boolean sound) {
         Methods.instance.audioPlayer(flapSound, sound);
-        if (ui.player.getY() > 32) Movement.instance.xPosition = - Main.JumpHeight; // Bewege den Spieler nach oben
+        if (ui.player.getY() > 32) {
+            Movement.instance.xPosition = -Main.JumpHeight; // Bewege den Spieler nach oben
+        }
     }
 
     // Methode zum Verarbeiten des Punktes

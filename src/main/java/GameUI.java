@@ -85,24 +85,33 @@ public class GameUI extends JFrame {
 
     // Initialisiert das Hauptpanel mit Hintergrundbild
     private void initMainPanel(int width, int height, String backgroundImage) {
+        final BufferedImage background = Methods.instance.reader(backgroundImage);
+        final BufferedImage buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        int imageWidth = background.getWidth();
         mainPanel = new JPanel() {
-            final BufferedImage background = Methods.instance.reader(backgroundImage);
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
 
-                // Hintergrund zeichnen
-                int imageWidth = background.getWidth();
+                Graphics2D g2d = (Graphics2D) g;
+
+                // Hintergründe zeichnen auf den Buffer
+                Graphics2D bufferGraphics = buffer.createGraphics();
+                bufferGraphics.setBackground(new Color(0, 0, 0, 0)); // Transparenter Hintergrund
+                bufferGraphics.clearRect(0, 0, getWidth(), getHeight());
 
                 int firstX = Movement.instance.backgroundResetX % imageWidth;
 
                 if (firstX > 0) {
-                    g.drawImage(background, firstX - imageWidth, 0, this);
+                    bufferGraphics.drawImage(background, firstX - imageWidth, 0, this);
                 }
 
-                for (int x = firstX; x < width; x += imageWidth) {
-                    g.drawImage(background, x, 0, this);
+                for (int x = firstX; x < getWidth() + imageWidth; x += imageWidth) {
+                    bufferGraphics.drawImage(background, x, 0, this);
                 }
+
+                // Buffer auf das Panel zeichnen
+                g2d.drawImage(buffer, 0, 0, this);
             }
         };
         mainPanel.setSize(width, height);

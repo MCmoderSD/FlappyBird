@@ -1,7 +1,8 @@
 public class Main {
+    // Attribute für die Spielkonfiguration
     public static final int JumpHeight = 7; // Die Sprunghöhe des Spielers
-    private static final String Background = "Images/Background.png"; // Dateipfad für den Hintergrund
     private static final String Title = "Flappy Bird"; // Titel des Spiels
+    private static final String Background = "Images/Background.png"; // Dateipfad für den Hintergrund
     private static final String Player = "Lena/Bird.png"; // Dateipfad für das Spielerbild
     private static final int playerWidth = 32, playerHeight = 32; // Breite und Höhe des Spielers
     private static final String ObstacleTop = "tests/ObstaclePlaceHolderGreen.png"; // Dateipfad für das Hindernis von oben
@@ -21,38 +22,45 @@ public class Main {
     private static final int TPS = 100; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde) Maximum: 100
 
     public static void main(String[] args) {
-        new Methods(); // Erstelle die Methoden
-        new Movement(); // Erstelle die Bewegung
-        new UI(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, Background, TPS, args); // Erstelle die Benutzeroberfläche
+        // Erstelle die Methoden
+        new Methods();
+
+        // Erstelle die Bewegung
+        new Movement();
+
+        // Erstelle die Benutzeroberfläche
+        new UI(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, Background, TPS, args);
     }
 
     public void run(int Tickrate, boolean sound, String[] args) {
         // Starte die Spiellogik mit den angegebenen Parametern
-        if (args.length == 0) new Logic(
-                WindowSizeX,
-                WindowsSizeY,
-                Title,
-                Icon,
-                Resizeable,
-                PlayerPositionX,
-                playerWidth,
-                playerHeight,
-                Background,
-                Player,
-                25,
-                200,
-                obstacleWidth,
-                obstacleHeight,
-                ObstacleTop,
-                ObstacleBottom,
-                GameOver,
-                Pause,
-                dieSound,
-                flapSound,
-                hitSound,
-                pointSound,
-                Tickrate,
-                sound
-        );
+        if (args.length == 0) {
+            new Logic(
+                    WindowSizeX,
+                    WindowsSizeY,
+                    Title,
+                    Icon,
+                    Resizeable,
+                    PlayerPositionX,
+                    playerWidth,
+                    playerHeight,
+                    Background,
+                    Player,
+                    25,
+                    200,
+                    obstacleWidth,
+                    obstacleHeight,
+                    ObstacleTop,
+                    ObstacleBottom,
+                    GameOver,
+                    Pause,
+                    dieSound,
+                    flapSound,
+                    hitSound,
+                    pointSound,
+                    Tickrate,
+                    sound
+            );
+        }
     }
 }

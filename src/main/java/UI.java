@@ -22,6 +22,7 @@ public class UI extends JFrame {
         playerName.setVisible(false);
         leaderBoard.setVisible(false);
         soundCheckBox.setSelected(true);
+
         bStart.addActionListener(e -> {
             if (newGame) {
                 TPS = (int) spinnerTPS.getValue();
@@ -40,6 +41,7 @@ public class UI extends JFrame {
     public void initFrame(int width, int height, String title, String icon, boolean resizable, int points, int Tickrate) {
         scoredPoints = points;
         if (Tickrate <= TPS) TPS = Tickrate;
+
         add(UI);
         setTitle(title);
         setSize(width, height);
@@ -47,6 +49,7 @@ public class UI extends JFrame {
         setVisible(true);
         setResizable(resizable);
         setIconImage((Methods.instance.reader(icon)));
+
         if (points >= 0) {
             isUploaded = false;
             newGame = false;
@@ -78,9 +81,11 @@ public class UI extends JFrame {
                 repaint();
             }
         };
+
         bStart = new JButton();
         bStart.setOpaque(false);
         bStart.setToolTipText("Starte das Spiel");
+
         spinnerTPS = new JSpinner();
         spinnerTPS.setValue(TPS);
         spinnerTPS.addChangeListener(e -> {
@@ -91,7 +96,6 @@ public class UI extends JFrame {
         });
 
         // ToDo Restrict input to numbers only
-
     }
 
 // --Commented out by Inspection START (31.05.2023 04:08):

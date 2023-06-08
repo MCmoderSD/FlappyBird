@@ -14,11 +14,15 @@ public class Movement {
     }
 
     public void moveBackground(int Tickrate) {
-        if (backgroundCount >= (2 / (100/Tickrate))) {
+        // Hintergrund bewegen
+        if (backgroundCount >= (2 / (100 / Tickrate))) {
             backgroundResetX--;
-        if (backgroundResetX <= -Methods.instance.getBackgroundWidth()) {
-            backgroundResetX = 0;
-        }
+
+            // Zurücksetzen der Hintergrundposition
+            if (backgroundResetX <= -Methods.instance.getBackgroundWidth()) {
+                backgroundResetX = 0;
+            }
+
             GameUI.instance.mainPanel.repaint();
             backgroundCount = 0;
         }
@@ -27,7 +31,8 @@ public class Movement {
 
     // Spieler bewegen
     public void movePlayer(int Tickrate) {
-        if (playerMoveInt >= (3 / (100/Tickrate))) { // Zähler
+        // Spielerbewegung
+        if (playerMoveInt >= (3 / (100 / Tickrate))) { // Zähler
             xPosition = xPosition + 1;
             int yPosition = (GameUI.instance.player.getY() - Methods.instance.calculateGravity(xPosition));
             GameUI.instance.player.setLocation(250, yPosition);
@@ -42,7 +47,7 @@ public class Movement {
         for (JLabel component : GameUI.instance.obstacles) {
             if (component != null && component.getIcon() != null) {
                 int x = component.getX();
-                int newX = x - (100/Tickrate);
+                int newX = x - (100 / Tickrate);
                 component.setLocation(newX, component.getY());
             }
         }
@@ -53,7 +58,7 @@ public class Movement {
         obstacleMoveInt = obstacleMoveInt + 1;
 
         // Periodisch neue Hindernisse generieren
-        if (obstacleMoveInt >= (200 / (100/Tickrate))) {
+        if (obstacleMoveInt >= (200 / (100 / Tickrate))) {
             GameUI.instance.generateObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage);
             obstacleMoveInt = 0;
         }
@@ -65,7 +70,7 @@ public class Movement {
             if (component != null) {
                 component.getBounds();
                 int x = (int) component.getX();
-                int newX = x - (100/Tickrate);
+                int newX = x - (100 / Tickrate);
                 component.setLocation(newX, (int) component.getY());
             }
         }

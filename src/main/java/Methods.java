@@ -47,6 +47,7 @@ public class Methods {
         }
     }
 
+    // Methode zum Lokalisieren eines Punktes basierend auf Bildgröße
     public Point locatePoint(String image, int width, int height) {
         BufferedImage img = reader(image);
         int imageWidth = img.getWidth();
@@ -66,7 +67,8 @@ public class Methods {
                 InputStream audioFileInputStream = classLoader.getResourceAsStream(audioFilePath);
 
                 // Überprüfen, ob die Audiodatei gefunden wurde
-                if (audioFileInputStream == null) throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
+                if (audioFileInputStream == null)
+                    throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
 
                 BufferedInputStream bufferedInputStream = new BufferedInputStream(audioFileInputStream);
                 AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(bufferedInputStream);
@@ -94,6 +96,7 @@ public class Methods {
         }
     }
 
+    // Methode zur Rückgabe der Breite des Hintergrunds
     public int getBackgroundWidth() {
         return reader("Images/Background.png").getWidth();
     }
