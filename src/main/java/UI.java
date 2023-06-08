@@ -53,6 +53,8 @@ public class UI extends JFrame {
         setVisible(true);
         setResizable(resizable);
         setIconImage((Methods.instance.reader(icon)));
+        Movement.instance.backgroundResetX = 0;
+        UI.repaint();
 
         if (points >= 0) {
             isUploaded = false;
@@ -79,9 +81,9 @@ public class UI extends JFrame {
     private void createUIComponents() {
         UI = new JPanel() {
             @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(Methods.instance.reader(Background), Movement.instance.backgroundResetX, 0, Methods.instance.getBackgroundWidth(), getHeight(), this);
+            protected void paintComponent(Graphics gUI) {
+                super.paintComponent(gUI);
+                gUI.drawImage(Methods.instance.reader(Background), Movement.instance.backgroundResetX, 0, Methods.instance.getBackgroundWidth(), getHeight(), this);
                 repaint();
             }
         };
