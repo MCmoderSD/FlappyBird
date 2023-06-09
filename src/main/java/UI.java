@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.text.NumberFormatter;
 import java.awt.*;
 
 public class UI extends JFrame {
@@ -102,8 +103,8 @@ public class UI extends JFrame {
                     spinnerTPS.setValue(1);
             }
         });
-
-        // ToDo Restrict input to numbers only
+        JFormattedTextField txt = ((JSpinner.DefaultEditor) spinnerTPS.getEditor()).getTextField();
+        ((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false); // Verhindert ungültige Eingaben
     }
 
 // --Commented out by Inspection START (31.05.2023 04:08):
