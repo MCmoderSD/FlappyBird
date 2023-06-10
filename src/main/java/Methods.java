@@ -3,6 +3,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineEvent;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
@@ -99,5 +100,31 @@ public class Methods {
     // Methode zur Rückgabe der Breite des Hintergrunds
     public int getBackgroundWidth() {
         return reader("Images/Background.png").getWidth();
+    }
+
+    public void setPlaceholder(JTextField textField, String placeholder) {
+        Font originalFont = textField.getFont();
+        Font italicFont = originalFont.deriveFont(Font.ITALIC);
+
+        textField.setForeground(Color.GRAY);
+        textField.setFont(italicFont);
+        textField.setText(placeholder);
+
+        textField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                if (textField.getText().equals(placeholder)) {
+                    textField.setText("");
+                    textField.setForeground(Color.BLACK);
+                    textField.setFont(originalFont);
+                }
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (textField.getText().isEmpty()) {
+                    textField.setForeground(Color.GRAY);
+                    textField.setFont(italicFont);
+                    textField.setText(placeholder);
+                }
+            }
+        });
     }
 }

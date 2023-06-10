@@ -28,7 +28,6 @@ public class UI extends JFrame {
 
         score.setVisible(false);
         playerName.setVisible(true);
-        playerName.setText("Test"); // ToDo Fix Username Length Bug
         leaderBoard.setVisible(false);
         soundCheckBox.setSelected(true);
 
@@ -37,7 +36,7 @@ public class UI extends JFrame {
                 TPS = (int) spinnerTPS.getValue();
                 play(TPS, args);
             } else if (scoredPoints >= 0 && !isUploaded) {
-                upload();
+                upload(width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
             }
         });
     }
@@ -72,22 +71,24 @@ public class UI extends JFrame {
         }
     }
 
-    private void upload() {
+    private void upload(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, String[] args, int points) {
         bStart.setText("Nochmal Spielen");
         bStart.setToolTipText("Nochmal Spielen");
         isUploaded = true;
         newGame = true;
-        if (!(playerName.getText().length() > 0)) {
-            if (playerName.getText().length() >= 32) {
+        if ((playerName.getText().length() == 0)) {
+            if (playerName.getText().length() <= 32) {
                 if (checkUserName(playerName.getText())) {
                     writeLeaderBoard();
                 } else {
                     JOptionPane.showMessageDialog(null, "Der Username ist nicht erlaubt!", "Fehler", JOptionPane.ERROR_MESSAGE);
-                    upload();
+                    new UI(width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
+                    dispose();
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "Der Username ist zu lang!", "Fehler", JOptionPane.ERROR_MESSAGE);
-                upload();
+                new UI(width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
+                dispose();
             }
         }
     }
@@ -110,7 +111,15 @@ public class UI extends JFrame {
         bStart.setOpaque(false);
         bStart.setToolTipText("Starte das Spiel");
 
+        playerName = new JTextField();
+        playerName.setOpaque(false);
+        playerName.setToolTipText(" ");
+        playerName.setHorizontalAlignment(JTextField.CENTER);
+        Methods.instance.setPlaceholder(playerName, "Username");
+
+
         spinnerTPS = new JSpinner();
+        spinnerTPS.setOpaque(false);
         spinnerTPS.setValue(TPS);
         spinnerTPS.addChangeListener(e -> {
             if (spinnerTPS.getValue() != null) {
