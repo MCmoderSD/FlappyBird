@@ -1,16 +1,16 @@
 public class Logic {
     public static Logic instance;
     private static GameUI ui;
-    public boolean gamePaused = false;
+    public boolean gamePaused = false, rainbowMode = false;
     private boolean gameState = false, gameOver;
 
     // Konstruktor und Instanz
-    public Logic(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreen, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate, boolean sound, String[] args) {
+    public Logic(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, String rainbowImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreen, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, int Tickrate, boolean sound, String[] args) {
         instance = this;
         gameOver = false;
         if (Tickrate >= 100)
             Tickrate = 100;
-        ui = new GameUI(width, height, title, icon, resizable, playerPosition, playerWidth, playerHeight, backgroundImage, playerImage, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, gameOverImage, pauseScreen,dieSound, flapSound, hitSound, pointSound, Tickrate, sound, args);
+        ui = new GameUI(width, height, title, icon, resizable, playerPosition, playerWidth, playerHeight, backgroundImage, playerImage, rainbowImage, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, gameOverImage, pauseScreen,dieSound, flapSound, hitSound, pointSound, rainbowSound, Tickrate, sound, args);
     }
 
     // Methode zum Verarbeiten der Leertaste-Eingabe
@@ -37,7 +37,7 @@ public class Logic {
     }
 
     // Methode zum Verarbeiten des Timer-Ticks
-    public void handleTimerTick(int width, int height, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String dieSound, String hitSound, String pointSound, int Tickrate, boolean sound) {
+    public void handleTimerTick(int width, int height, String playerImage, String rainbowImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String dieSound, String hitSound, String pointSound, String rainbowSound, int Tickrate, boolean sound) {
         if (!gamePaused) {
             if (ui.player.getY() >= height && gameOver && !gameState) {
                 ui.tickrate.stop(); // Stoppe den Timer
@@ -47,18 +47,19 @@ public class Logic {
                 Movement.instance.moveObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, Tickrate); // Bewege die Hindernisse
                 Movement.instance.moveBackground(Tickrate); // Bewege den Hintergrund
                 ui.removeObstacles(); // Entferne nicht sichtbare Hindernisse
-                ui.checkCollision(width, dieSound, hitSound, pointSound, sound); // Überprüfe auf Kollisionen
+                ui.checkCollision(width, dieSound, hitSound, pointSound, rainbowSound, sound); // Überprüfe auf Kollisionen
+                ui.checkRainbowMode(playerImage, rainbowImage);
             }
         }
     }
 
     // Methode zum Verarbeiten der Kollision
     public void handleCollision(String dieSound, boolean sound) {
-        System.out.println("Kollision");
-        Methods.instance.audioPlayer(dieSound, sound);
-        gameOver = true;
-        gameState = false;
-        ui.gameOver.setVisible(true);
+            System.out.println("Kollision");
+            Methods.instance.audioPlayer(dieSound, sound);
+            gameOver = true;
+            gameState = false;
+            ui.gameOver.setVisible(true);
     }
 
     // Methode zum Verarbeiten des Bounces
@@ -70,11 +71,17 @@ public class Logic {
     }
 
     // Methode zum Verarbeiten des Punktes
-    public void handlePoint(String pointSound, boolean sound) {
+    public void handlePoint(String pointSound, String rainbowSound, boolean sound) {
         Methods.instance.audioPlayer(pointSound, sound);
         ui.points++;
+        if (ui.points > 0 && ui.points % 5 == 0) {
+            if ((int) (Math.random() * 3 + 1) == 2) {
+                handleRainbowMode(rainbowSound, sound);
+            }
+        }
         ui.score.setText("Score: " + ui.points);
         System.out.println("Punkt! Du hast jetzt " + ui.points);
+
     }
 
     // Methode zum Verarbeiten des Pausierens
@@ -83,8 +90,24 @@ public class Logic {
             ui.pauseScreen.setVisible(false);
             gamePaused = false;
         } else {
-            ui.pauseScreen.setVisible(true);
-            gamePaused = true;
+            if (!rainbowMode) {
+                ui.pauseScreen.setVisible(true);
+                gamePaused = true;
+            }
         }
     }
+
+    private void handleRainbowMode(String rainbowSound, boolean sound) {
+        new Thread(() -> {
+            try {
+                rainbowMode = true;
+                Methods.instance.audioPlayer(rainbowSound, sound);
+                Thread.sleep(7000);
+                rainbowMode = false;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
 }

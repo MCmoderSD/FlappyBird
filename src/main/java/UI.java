@@ -1,7 +1,8 @@
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
-import java.io.File;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class UI extends JFrame {
@@ -176,11 +177,27 @@ public class UI extends JFrame {
         }
     }
 
-    @SuppressWarnings("unused")
     private boolean checkUserName(String userName) {
-        File blockedTerms = new File("src/main/resources/blockedTerms.txt");
-        // ToDo userName in blockedTerms suchen
-        return true;
+        java.util.List<String> blockedTerms = new ArrayList<>();
+        try {
+            InputStream inputStream = FileReader.class.getResourceAsStream("data/blockedTerms.txt");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                blockedTerms.add(line.toLowerCase());
+            }
+
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for (String blockedTerm : blockedTerms) {
+            System.out.println(blockedTerm);
+        }
+
+        return !blockedTerms.contains(userName.toLowerCase());
     }
 
     private boolean checkSQLConnection() {

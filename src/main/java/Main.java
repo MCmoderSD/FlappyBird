@@ -5,6 +5,7 @@ public class Main {
     private static final String Background = "Images/Background.png"; // Dateipfad für den Hintergrund
     private static final String Player = "Lena/Bird.png"; // Dateipfad für das Spielerbild
     private static final int playerWidth = 32, playerHeight = 32; // Breite und Höhe des Spielers
+    private static final String Rainbow = "Lena/rainbowBird.gif"; // Dateipfad für das Regenbogenbild
     private static final String ObstacleTop = "tests/ObstaclePlaceHolderGreen.png"; // Dateipfad für das Hindernis von oben
     private static final String ObstacleBottom = "tests/ObstaclePlaceHolderRed.png"; // Dateipfad für das Hindernis von unten
     private static final int obstacleWidth = 32, obstacleHeight = 1024; // Breite und Höhe der Hindernisse
@@ -15,6 +16,7 @@ public class Main {
     private static final String flapSound = "sounds/flap.wav"; // Dateipfad für den Flügelschlag-Sound
     private static final String hitSound = "sounds/hit.wav"; // Dateipfad für den Aufprall-Sound
     private static final String pointSound = "sounds/point.wav"; // Dateipfad für den Punkte-Sound
+    private static final String RainbowSound = "sounds/rainbow.wav"; // Dateipfad für den Regenbogen-Sound
     private static final int WindowSizeX = 800; // Fensterbreite
     private static final int WindowsSizeY = 800; // Fensterhöhe
     private static final boolean Resizeable = false; // Gibt an, ob das Fenster in der Größe verändert werden kann
@@ -53,6 +55,7 @@ public class Main {
                     playerHeight,
                     Background,
                     Player,
+                    Rainbow,
                     25,
                     200,
                     obstacleWidth,
@@ -65,6 +68,7 @@ public class Main {
                     flapSound,
                     hitSound,
                     pointSound,
+                    RainbowSound,
                     Tickrate,
                     sound,
                     args

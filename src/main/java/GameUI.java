@@ -20,7 +20,7 @@ public class GameUI extends JFrame {
     public JPanel mainPanel;
 
     // Konstruktor
-    public GameUI(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreenImage, String dieSound, String flapSound, String hitSound, String pointSound, int Tickrate, boolean sound, String[] args) {
+    public GameUI(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, String rainbowImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreenImage, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, int Tickrate, boolean sound, String[] args) {
         initFrame(width, height, title, icon, resizable);
         initMainPanel(width, height, backgroundImage);
         initPlayer(height, playerPosition, playerWidth, playerHeight, playerImage);
@@ -30,7 +30,7 @@ public class GameUI extends JFrame {
         instance = this;
         tickrate = new Timer(Methods.instance.getTPS(Tickrate), e -> {
             if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
-            Logic.instance.handleTimerTick(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, dieSound, hitSound, pointSound, Tickrate, sound);
+            Logic.instance.handleTimerTick(width, height, playerImage, rainbowImage, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, dieSound, hitSound, pointSound, rainbowSound,Tickrate, sound);
         });
 
         addKeyListener(new KeyAdapter() {
@@ -238,12 +238,12 @@ public class GameUI extends JFrame {
     }
 
     // Überprüft Kollisionen mit dem Spieler und anderen Objekten
-    public void checkCollision(int width, String dieSound, String hitSound, String pointSound, boolean sound) {
+    public void checkCollision(int width, String dieSound, String hitSound, String pointSound, String rainbowSound, boolean sound) {
         if (player.getY() > width) Logic.instance.handleCollision(dieSound, sound);
 
         for (Rectangle component : rObstacles) {
             if (component != null) {
-                if (rPlayer.intersects(component)) {
+                if (rPlayer.intersects(component) && !Logic.instance.rainbowMode) {
                     Methods.instance.audioPlayer(hitSound, sound);
                     Logic.instance.handleCollision(dieSound, sound);
                 }
@@ -253,11 +253,19 @@ public class GameUI extends JFrame {
         for (int i = 0; i < greenZones.size(); i++) {
             Rectangle component = greenZones.get(i);
             if (component != null && rPlayer.intersects(component)) {
-                Logic.instance.handlePoint(pointSound, sound);
+                Logic.instance.handlePoint(pointSound, rainbowSound, sound);
                 greenZones.remove(i);
                 System.out.println("Green zone removed at " + (int) component.getX() + "x and " + (int) component.getY() + "y");
                 i--;
             }
+        }
+    }
+
+    public void checkRainbowMode(String playerImage, String rainbowImage) {
+        if (Logic.instance.rainbowMode) {
+                player.setIcon(new ImageIcon(Methods.instance.reader(rainbowImage)));
+            } else {
+                player.setIcon(new ImageIcon(Methods.instance.reader(playerImage)));
         }
     }
 }
