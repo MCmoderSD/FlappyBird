@@ -65,6 +65,7 @@ public class UI extends JFrame {
             newGame = false;
             score.setVisible(true);
             playerName.setVisible(true);
+            playerName.setEnabled(true);
             score.setText("Dein Score: " + points);
             bStart.setText("Score Bestätigen");
             bStart.setToolTipText("Lade deinen Score hoch");
@@ -111,16 +112,25 @@ public class UI extends JFrame {
         bStart.setOpaque(false);
         bStart.setToolTipText("Starte das Spiel");
 
+        soundCheckBox = new JCheckBox();
+        soundCheckBox.setOpaque(false);
+        soundCheckBox.setToolTipText("Aktiviere oder deaktiviere den Sound");
+        soundCheckBox.setBorder(BorderFactory.createEmptyBorder());
+
         playerName = new JTextField();
         playerName.setOpaque(false);
-        playerName.setToolTipText(" ");
+        playerName.setEnabled(false);
+        playerName.setFont(new Font("Roboto", Font.PLAIN, 22));
+        playerName.setToolTipText("Gib deinen Username ein");
         playerName.setHorizontalAlignment(JTextField.CENTER);
+        playerName.setBorder(BorderFactory.createEmptyBorder());
         Methods.instance.setPlaceholder(playerName, "Username");
 
 
         spinnerTPS = new JSpinner();
         spinnerTPS.setOpaque(false);
         spinnerTPS.setValue(TPS);
+        spinnerTPS.setToolTipText("Ticks pro Sekunde");
         spinnerTPS.addChangeListener(e -> {
             if (spinnerTPS.getValue() != null) {
                 if ((int) spinnerTPS.getValue() >= 100)

@@ -104,10 +104,9 @@ public class Methods {
 
     public void setPlaceholder(JTextField textField, String placeholder) {
         Font originalFont = textField.getFont();
-        Font italicFont = originalFont.deriveFont(Font.ITALIC);
 
         textField.setForeground(Color.GRAY);
-        textField.setFont(italicFont);
+        textField.setFont(originalFont);
         textField.setText(placeholder);
 
         textField.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -121,7 +120,7 @@ public class Methods {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 if (textField.getText().isEmpty()) {
                     textField.setForeground(Color.GRAY);
-                    textField.setFont(italicFont);
+                    textField.setFont(originalFont);
                     textField.setText(placeholder);
                 }
             }
