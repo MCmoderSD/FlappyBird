@@ -27,6 +27,8 @@ public class UI extends JFrame {
         Background = backgroundImage;
         instance = this;
 
+        database = new Database("mcmodersd.live", "3306", "FlappyBirdLeaderboard", "test", "test");
+
         initFrame(width, height, title, icon, resizable, backgroundImage, args, scoredPoints, Tickrate);
         spinnerTPS.setValue(TPS);
         score.setVisible(false);
