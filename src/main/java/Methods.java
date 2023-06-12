@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Objects;
 
 public class Methods {
@@ -42,10 +43,21 @@ public class Methods {
     // Methode zum Lesen eines Bildes aus einer Ressource
     public BufferedImage reader(String resource) {
         try {
-            return ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)));
+            if (resource.endsWith(".png")) {
+                return ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)));
+            }
+            return ImageIO.read(Objects.requireNonNull(getClass().getResource("error/error.png")));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    // Methode zum Erstellen eines ImageIcon aus einer Ressource
+    public ImageIcon createImageIcon(String resource) {
+        URL imageUrl = getClass().getClassLoader().getResource(resource);
+        if (resource.endsWith(".png")) return new ImageIcon(reader(resource));
+        if (resource.endsWith(".gif")) return new ImageIcon(Objects.requireNonNull(imageUrl));
+        else return new ImageIcon(reader("error/error.png"));
     }
 
     // Methode zum Lokalisieren eines Punktes basierend auf Bildgröße
@@ -102,6 +114,7 @@ public class Methods {
         return reader("Images/Background.png").getWidth();
     }
 
+    // Methode zum Setzen eines Platzhalters für ein JTextField
     public void setPlaceholder(JTextField textField, String placeholder) {
         Font originalFont = textField.getFont();
 
@@ -117,6 +130,7 @@ public class Methods {
                     textField.setFont(originalFont);
                 }
             }
+
             public void focusLost(java.awt.event.FocusEvent evt) {
                 if (textField.getText().isEmpty()) {
                     textField.setForeground(Color.GRAY);

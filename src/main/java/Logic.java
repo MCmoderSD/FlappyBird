@@ -1,7 +1,9 @@
+import java.nio.file.Path;
+
 public class Logic {
     public static Logic instance;
     private static GameUI ui;
-    public boolean gamePaused = false, rainbowMode = false;
+    public boolean gamePaused = false, rainbowMode = false, rainbowModeActive = false, developerMode = false;
     private boolean gameState = false, gameOver;
 
     // Konstruktor und Instanz
@@ -15,7 +17,6 @@ public class Logic {
 
     // Methode zum Verarbeiten der Leertaste-Eingabe
     public void handleSpaceKeyPress(int width, int height, String title, String icon, boolean resizable, String backgroundImage, String flapSound, int Tickrate, boolean sound, String[] args) {
-
         // Wenn das Spiel noch nicht läuft und das Spiel nicht vorbei ist
         if (!ui.tickrate.isRunning() && !gameState && !gameOver) {
             ui.tickrate.start(); // Starte den Timer
@@ -55,11 +56,11 @@ public class Logic {
 
     // Methode zum Verarbeiten der Kollision
     public void handleCollision(String dieSound, boolean sound) {
-            System.out.println("Kollision");
-            Methods.instance.audioPlayer(dieSound, sound);
-            gameOver = true;
-            gameState = false;
-            ui.gameOver.setVisible(true);
+        System.out.println("Kollision");
+        Methods.instance.audioPlayer(dieSound, sound);
+        gameOver = true;
+        gameState = false;
+        ui.gameOver.setVisible(true);
     }
 
     // Methode zum Verarbeiten des Bounces
@@ -97,6 +98,7 @@ public class Logic {
         }
     }
 
+    // Methode zum Verarbeiten des Regenbogen-Modus
     private void handleRainbowMode(String rainbowSound, boolean sound) {
         new Thread(() -> {
             try {
@@ -109,5 +111,4 @@ public class Logic {
             }
         }).start();
     }
-
 }

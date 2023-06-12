@@ -65,11 +65,11 @@ public class UI extends JFrame {
             isUploaded = false;
             newGame = false;
             score.setVisible(true);
-            playerName.setVisible(true);
-            playerName.setEnabled(true);
-            score.setText("Dein Score: " + points);
-            bStart.setText("Score Bestätigen");
-            bStart.setToolTipText("Lade deinen Score hoch");
+                playerName.setVisible(true);
+                playerName.setEnabled(true);
+                score.setText("Dein Score: " + points);
+                bStart.setText("Score Bestätigen");
+                bStart.setToolTipText("Lade deinen Score hoch");
         }
     }
 
@@ -78,19 +78,21 @@ public class UI extends JFrame {
         bStart.setToolTipText("Nochmal Spielen");
         isUploaded = true;
         newGame = true;
-        if ((playerName.getText().length() == 0)) {
-            if (playerName.getText().length() <= 32) {
-                if (checkUserName(playerName.getText())) {
-                    writeLeaderBoard();
+        if (!Logic.instance.developerMode) {
+            if ((playerName.getText().length() == 0)) {
+                if (playerName.getText().length() <= 32) {
+                    if (checkUserName(playerName.getText())) {
+                        writeLeaderBoard();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Der Username ist nicht erlaubt!", "Fehler", JOptionPane.ERROR_MESSAGE);
+                        new UI(width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
+                        dispose();
+                    }
                 } else {
-                    JOptionPane.showMessageDialog(null, "Der Username ist nicht erlaubt!", "Fehler", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Der Username ist zu lang!", "Fehler", JOptionPane.ERROR_MESSAGE);
                     new UI(width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
                     dispose();
                 }
-            } else {
-                JOptionPane.showMessageDialog(null, "Der Username ist zu lang!", "Fehler", JOptionPane.ERROR_MESSAGE);
-                new UI(width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
-                dispose();
             }
         }
     }

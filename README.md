@@ -17,6 +17,7 @@ A Flappy Bird Project in Java
 - [x] Menu
 - [x] Sounds
 - [x] Rainbow Mode (PowerUp)
+- [x] Developer Mode
 - [ ] Music
 - [x] Variable Tickrate
 - [x] Pause
