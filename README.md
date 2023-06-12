@@ -21,6 +21,7 @@ A Flappy Bird Project in Java
 - [ ] Music
 - [x] Variable Tickrate
 - [x] Pause
+- [x] Username Checker
 - [ ] Highscore
 - [ ] Leaderboard
 - [ ] MySQL Database 

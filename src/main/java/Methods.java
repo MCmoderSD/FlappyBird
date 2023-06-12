@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.util.Objects;
 
@@ -139,5 +141,19 @@ public class Methods {
                 }
             }
         });
+    }
+
+    // Methode zum Überprüfen, ob eine Verbindung zu einem Server hergestellt werden kann
+    public boolean checkSQLConnection(String ip, int port) {
+        try (Socket socket = new Socket()) {
+            // Verbindungsversuch zum Server
+            socket.connect(new InetSocketAddress(ip, port), 1000); // Timeout von 1 Sekunde
+
+            // Wenn die Verbindung erfolgreich war
+            return true;
+        } catch (IOException e) {
+            // Bei einem Fehler während der Verbindung
+            return false;
+        }
     }
 }
