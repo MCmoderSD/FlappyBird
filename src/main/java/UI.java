@@ -83,6 +83,8 @@ public class UI extends JFrame {
         setIconImage((Methods.instance.reader(icon)));
         Movement.instance.backgroundResetX = 0;
         UI.repaint();
+        Dimension frameDimension = Toolkit.getDefaultToolkit().getScreenSize();
+        setLocation((frameDimension.width - width) / 2, (frameDimension.height - height) / 2);
 
         if (points >= 0) {
             isUploaded = false;
