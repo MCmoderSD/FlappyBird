@@ -49,6 +49,7 @@
         </constraints>
         <properties>
           <autoCreateRowSorter value="false"/>
+          <autoResizeMode value="4"/>
         </properties>
       </component>
       <component id="9d99e" class="javax.swing.JSpinner" binding="spinnerTPS" custom-create="true">

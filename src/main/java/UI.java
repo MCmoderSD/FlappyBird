@@ -1,9 +1,13 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Objects;
 
 public class UI extends JFrame {
@@ -83,8 +87,6 @@ public class UI extends JFrame {
         setIconImage((Methods.instance.reader(icon)));
         Movement.instance.backgroundResetX = 0;
         UI.repaint();
-        Dimension frameDimension = Toolkit.getDefaultToolkit().getScreenSize();
-        setLocation((frameDimension.width - width) / 2, (frameDimension.height - height) / 2);
 
         if (points >= 0) {
             isUploaded = false;
@@ -152,10 +154,8 @@ public class UI extends JFrame {
 
         leaderBoard = new JTable();
         leaderBoard.setOpaque(false);
+        leaderBoard.setFont(new Font("Roboto", Font.PLAIN, 22));
         add(leaderBoard);
-        JScrollPane scrollPane = new JScrollPane(leaderBoard);
-        scrollPane.setOpaque(false);
-        add(scrollPane);
 
         spinnerTPS = new JSpinner();
         spinnerTPS.setOpaque(false);
@@ -179,28 +179,87 @@ public class UI extends JFrame {
     private void initLeaderBoard(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, String[] args, int points) {
         leaderBoard.setVisible(true);
 
-
         Database.Table table = new Database.Table("leaderboard", database);
         Database.Table.Column users = new Database.Table.Column("users", table);
         Database.Table.Column highscores = new Database.Table.Column("scores", table);
 
+        // Daten vom SQL Server holen und in die Tabelle einfügen
+        String[] userValues = users.getValues();
+        String[] scoreValues = highscores.getValues();
 
-        // ToDo Daten vom SQL Server holen und in die Tabelle einfügen
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Die Zellen sind nicht editierbar
+            }
+        };
+        model.addColumn("User");
+        model.addColumn("Score");
+
+        if (userValues != null && scoreValues != null && userValues.length == scoreValues.length) {
+            for (int i = 0; i < userValues.length; i++) {
+                model.addRow(new Object[]{userValues[i], scoreValues[i]});
+            }
+        }
+
+        // Tabelle nach der Punktzahl sortieren
+        sortTableByScore(model);
+
+        leaderBoard.setModel(model);
+        adjustRowHeight(leaderBoard);
 
         refreshLeaderBoard = new Timer(10000, e -> {
             if (Methods.instance.checkSQLConnection("MCmoderSD.live", 3306)) {
+                String[] updatedUserValues = users.getValues();
+                String[] updatedScoreValues = highscores.getValues();
 
+                if (updatedUserValues != null && updatedScoreValues != null && updatedUserValues.length == updatedScoreValues.length) {
+                    model.setRowCount(0);
+                    for (int i = 0; i < updatedUserValues.length; i++) {
+                        model.addRow(new Object[]{updatedUserValues[i], updatedScoreValues[i]});
+                    }
+                }
 
-
-                users.getValues();
-                highscores.getValues();
-
+                // Tabelle nach der Punktzahl sortieren
+                sortTableByScore(model);
+                adjustRowHeight(leaderBoard);
             } else {
                 JOptionPane.showMessageDialog(null, "Es konnte keine Verbindung zum SQL Server hergestellt werden!", "Fehler", JOptionPane.ERROR_MESSAGE);
                 handleNoSQLConnection(width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
             }
         });
         refreshLeaderBoard.start();
+    }
+
+    private void sortTableByScore(DefaultTableModel model) {
+        ArrayList<RowData> rowDataList = new ArrayList<>();
+
+        // Daten aus der Tabelle in die ArrayList kopieren
+        for (int i = 0; i < model.getRowCount(); i++) {
+            String user = model.getValueAt(i, 0).toString();
+            int score = Integer.parseInt(model.getValueAt(i, 1).toString());
+            RowData rowData = new RowData(i, user, score);
+            rowDataList.add(rowData);
+        }
+
+        // ArrayList nach der Punktzahl sortieren
+        rowDataList.sort(Comparator.comparingInt(RowData::getScore).reversed());
+
+        // Aktualisierte Daten in die Tabelle einfügen
+        model.setRowCount(0);
+        for (RowData rowData : rowDataList) {
+            model.addRow(new Object[]{rowData.getUser(), rowData.getScore()});
+        }
+    }
+
+    private void adjustRowHeight(JTable table) {
+        int rowHeight = table.getRowHeight();
+        FontMetrics fontMetrics = table.getFontMetrics(table.getFont());
+
+        for (int row = 0; row < table.getRowCount(); row++) {
+            int fontHeight = fontMetrics.getHeight() + 10;
+            table.setRowHeight(row, Math.max(rowHeight, fontHeight));
+        }
     }
 
     private void handleNoSQLConnection(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, String[] args, int points) {
@@ -219,6 +278,30 @@ public class UI extends JFrame {
 
         if (Objects.equals(playerName.getText(), userSQL) && scoredPoints > scoreSQL) {
             // ToDo Score vom SQL Server aktualisieren
+        }
+    }
+
+    class RowData {
+        private final int index;
+        private final String user;
+        private final int score;
+
+        public RowData(int index, String user, int score) {
+            this.index = index;
+            this.user = user;
+            this.score = score;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public String getUser() {
+            return user;
+        }
+
+        public int getScore() {
+            return score;
         }
     }
 }
