@@ -6,9 +6,7 @@ import javax.sound.sampled.LineEvent;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
@@ -155,5 +153,23 @@ public class Methods {
             // Bei einem Fehler während der Verbindung
             return false;
         }
+    }
+
+    public boolean checkUserName(String userName) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(UI.class.getResourceAsStream("data/blockedTerms.txt"))))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                // Konvertiere sowohl den Nutzernamen als auch die Wörter in Kleinbuchstaben
+                String lowercaseUsername = userName.toLowerCase();
+                String lowercaseWord = line.toLowerCase();
+
+                if (lowercaseUsername.contains(lowercaseWord)) {
+                    return true; // Wort gefunden
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false; // Wort nicht gefunden
     }
 }

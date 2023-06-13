@@ -2,26 +2,24 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 public class UI extends JFrame {
     public static UI instance;
     private final String Background;
     private final int scoredPoints;
     private final Database database;
     private JButton bStart;
-    private JPanel UI;
+    private JPanel UI, tablePanel;
     private JCheckBox soundCheckBox;
     private JTable leaderBoard;
     private JTextField playerName;
     private JLabel score;
     private JSpinner spinnerTPS;
+    private JScrollPane scrollPane;
     private Timer refreshLeaderBoard;
     private int TPS = 100;
     private boolean newGame = true, isUploaded = true;
@@ -35,7 +33,9 @@ public class UI extends JFrame {
 
         initFrame(width, height, title, icon, resizable, backgroundImage, args, scoredPoints, Tickrate);
         spinnerTPS.setValue(TPS);
-        score.setVisible(false);
+        score.setVisible(true);
+        playerName.setVisible(true);
+        score.setText("Global Leaderboard");
         initLeaderBoard(width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
 
 
@@ -50,24 +50,6 @@ public class UI extends JFrame {
         });
 
 
-    }
-
-    public static boolean checkUserName(String userName) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(UI.class.getResourceAsStream("data/blockedTerms.txt"))))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                // Konvertiere sowohl den Nutzernamen als auch die Wörter in Kleinbuchstaben
-                String lowercaseUsername = userName.toLowerCase();
-                String lowercaseWord = line.toLowerCase();
-
-                if (lowercaseUsername.contains(lowercaseWord)) {
-                    return true; // Wort gefunden
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false; // Wort nicht gefunden
     }
 
     private void play(int Tickrate, String[] args) {
@@ -86,13 +68,10 @@ public class UI extends JFrame {
         setResizable(resizable);
         setIconImage((Methods.instance.reader(icon)));
         Movement.instance.backgroundResetX = 0;
-        UI.repaint();
 
         if (points >= 0) {
             isUploaded = false;
             newGame = false;
-            score.setVisible(true);
-            playerName.setVisible(true);
             playerName.setEnabled(true);
             score.setText("Dein Score: " + points);
             bStart.setText("Score Bestätigen");
@@ -108,7 +87,7 @@ public class UI extends JFrame {
         if (!Logic.instance.developerMode) {
             if (playerName.getText().length() != 0) {
                 if (playerName.getText().length() <= 32) {
-                    if (!checkUserName(playerName.getText())) {
+                    if (!Methods.instance.checkUserName(playerName.getText())) {
                         writeLeaderBoard();
                     } else {
                         JOptionPane.showMessageDialog(null, "Der Username ist nicht erlaubt!", "Fehler", JOptionPane.ERROR_MESSAGE);
@@ -142,6 +121,7 @@ public class UI extends JFrame {
         soundCheckBox.setOpaque(false);
         soundCheckBox.setToolTipText("Aktiviere oder deaktiviere den Sound");
         soundCheckBox.setBorder(BorderFactory.createEmptyBorder());
+        soundCheckBox.setSelected(true);
 
         playerName = new JTextField();
         playerName.setOpaque(false);
@@ -152,10 +132,21 @@ public class UI extends JFrame {
         playerName.setBorder(BorderFactory.createEmptyBorder());
         Methods.instance.setPlaceholder(playerName, "Username");
 
+        scrollPane = new JScrollPane();
+        scrollPane.setOpaque(false);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
         leaderBoard = new JTable();
-        leaderBoard.setOpaque(false);
         leaderBoard.setFont(new Font("Roboto", Font.PLAIN, 22));
-        add(leaderBoard);
+        leaderBoard.setOpaque(false);
+
+        scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+        scrollPane.setAlignmentY(Component.CENTER_ALIGNMENT);
+        scrollPane.add(leaderBoard);
+        scrollPane.setOpaque(false);
 
         spinnerTPS = new JSpinner();
         spinnerTPS.setOpaque(false);
@@ -170,13 +161,10 @@ public class UI extends JFrame {
         });
         JFormattedTextField txt = ((JSpinner.DefaultEditor) spinnerTPS.getEditor()).getTextField();
         ((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false); // Verhindert ungültige Eingaben
-
-        playerName.setVisible(false);
-        leaderBoard.setVisible(true);
-        soundCheckBox.setSelected(true);
     }
 
     private void initLeaderBoard(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, String[] args, int points) {
+
         leaderBoard.setVisible(true);
 
         Database.Table table = new Database.Table("leaderboard", database);
@@ -281,7 +269,7 @@ public class UI extends JFrame {
         }
     }
 
-    class RowData {
+    static class RowData {
         private final int index;
         private final String user;
         private final int score;
