@@ -82,6 +82,8 @@ public class GameUI extends JFrame {
         setVisible(true);
         setResizable(resizable);
         setIconImage((Methods.instance.reader(icon)));
+        Dimension frameDimension = Toolkit.getDefaultToolkit().getScreenSize();
+        setLocation((frameDimension.width - width) / 2, (frameDimension.height - height) / 2);
     }
 
     // Initialisiert das Hauptpanel mit Hintergrundbild
