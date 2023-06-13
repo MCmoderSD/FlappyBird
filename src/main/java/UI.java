@@ -1,10 +1,11 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class UI extends JFrame {
@@ -68,6 +69,8 @@ public class UI extends JFrame {
         setResizable(resizable);
         setIconImage((Methods.instance.reader(icon)));
         Movement.instance.backgroundResetX = 0;
+        Dimension frameDimension = Toolkit.getDefaultToolkit().getScreenSize();
+        setLocation((frameDimension.width - width) / 2, (frameDimension.height - height) / 2);
 
         if (points >= 0) {
             isUploaded = false;
@@ -88,7 +91,7 @@ public class UI extends JFrame {
             if (playerName.getText().length() != 0) {
                 if (playerName.getText().length() <= 32) {
                     if (!Methods.instance.checkUserName(playerName.getText())) {
-                        writeLeaderBoard();
+                        writeLeaderBoard(playerName.getText(), points);
                     } else {
                         JOptionPane.showMessageDialog(null, "Der Username ist nicht erlaubt!", "Fehler", JOptionPane.ERROR_MESSAGE);
                         new UI(width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
@@ -164,12 +167,12 @@ public class UI extends JFrame {
     }
 
     private void initLeaderBoard(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, String[] args, int points) {
-
         leaderBoard.setVisible(true);
 
         Database.Table table = new Database.Table("leaderboard", database);
         Database.Table.Column users = new Database.Table.Column("users", table);
         Database.Table.Column highscores = new Database.Table.Column("scores", table);
+        leaderBoard.getTableHeader().setReorderingAllowed(false); // Spaltenverschiebung deaktivieren
 
         // Daten vom SQL Server holen und in die Tabelle einfügen
         String[] userValues = users.getValues();
@@ -181,8 +184,8 @@ public class UI extends JFrame {
                 return false; // Die Zellen sind nicht editierbar
             }
         };
-        model.addColumn("User");
-        model.addColumn("Score");
+        model.addColumn("Username");
+        model.addColumn("Highscore");
 
         if (userValues != null && scoreValues != null && userValues.length == scoreValues.length) {
             for (int i = 0; i < userValues.length; i++) {
@@ -243,12 +246,20 @@ public class UI extends JFrame {
     private void adjustRowHeight(JTable table) {
         int rowHeight = table.getRowHeight();
         FontMetrics fontMetrics = table.getFontMetrics(table.getFont());
+        Font boldFont = new Font("Roboto", Font.BOLD, 24);
+
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer); // Spalte "User" zentriert ausrichten
 
         for (int row = 0; row < table.getRowCount(); row++) {
             int fontHeight = fontMetrics.getHeight() + 10;
             table.setRowHeight(row, Math.max(rowHeight, fontHeight));
         }
+
+        table.getTableHeader().setFont(boldFont);
     }
+
 
     private void handleNoSQLConnection(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, String[] args, int points) {
         JOptionPane.showMessageDialog(null, "Es konnte keine Verbindung zum SQL Server hergestellt werden! \nVersuche es nochmal order gib kein Username ein", "Fehler", JOptionPane.ERROR_MESSAGE);
@@ -257,17 +268,34 @@ public class UI extends JFrame {
         dispose();
     }
 
-    private void writeLeaderBoard() {
-        String userSQL = ""; // ToDo Usernamen vom SQL Server holen
+    private void writeLeaderBoard(String username, int score) {
+        Database.Table table = new Database.Table("leaderboard", database);
+        Database.Table.Column users = new Database.Table.Column("users", table);
+        Database.Table.Column highscores = new Database.Table.Column("scores", table);
 
-        int scoreSQL = 0; // ToDo Score vom SQL Server holen
+        ArrayList<String> usernames = new ArrayList<>(Arrays.asList(users.getValues()));
+        ArrayList<String> scores = new ArrayList<>(Arrays.asList(highscores.getValues()));
 
-        // ToDo Daten in die Tabelle einfügen
+        if (usernames.contains(username)) {
+            int index = usernames.indexOf(username);
+            int oldScore = Integer.parseInt(scores.get(index));
+            if (score > oldScore) {
+                scores.set(index, String.valueOf(score));
+                // ToDo: Score Updaten
+            }
+        } else {
+            System.out.println("Username ist nicht im System");
 
-        if (Objects.equals(playerName.getText(), userSQL) && scoredPoints > scoreSQL) {
-            // ToDo Score vom SQL Server aktualisieren
+            // ToDo: Username und Score in die Datenbank einfügen mit Score
+
         }
+
+
+        String userSQL = ""; // ToDo: Usernamen vom SQL Server holen
+        int scoreSQL = 0; // ToDo: Score vom SQL Server holen
+
     }
+
 
     static class RowData {
         private final int index;
