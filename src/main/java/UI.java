@@ -26,12 +26,16 @@ public class UI extends JFrame {
     private final Timer updateDatabase;
     private final String host = "MCmoderSD.live", port = "3306";
     private int TPS = 100;
+    private final int frameWidth;
+    private final int frameHeight;
     private boolean newGame = true, isUploaded = true;
 
 
     // Konstruktor und Instanz
-    public UI(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, String[] args, int points) {
+    public UI(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, boolean sound , String[] args, int points) {
         scoredPoints = points;
+        frameWidth = width;
+        frameHeight= height;
         Background = backgroundImage;
         instance = this;
 
@@ -40,6 +44,7 @@ public class UI extends JFrame {
         spinnerTPS.setValue(TPS);
         score.setVisible(true);
         playerName.setVisible(true);
+        soundCheckBox.setSelected(sound);
 
         // Timer für die Aktualisierung der Bestenliste
         updateDatabase = new Timer(5000, e -> initLeaderBoard(width, height, title, icon, resizable, backgroundImage, Tickrate, args, points));
@@ -88,9 +93,6 @@ public class UI extends JFrame {
 
         Movement.instance.backgroundResetX = 0;
 
-        Dimension frameDimension = Toolkit.getDefaultToolkit().getScreenSize();
-        setLocation((frameDimension.width - width) / 2, (frameDimension.height - height) / 2);
-
         score.setText("Global Leaderboard");
 
         if (points >= 0) {
@@ -117,13 +119,13 @@ public class UI extends JFrame {
                         writeLeaderBoard(playerName.getText(), points);
                     } else {
                         JOptionPane.showMessageDialog(null, "Der Username ist nicht erlaubt!", "Fehler", JOptionPane.ERROR_MESSAGE);
-                        new UI(width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
+                        new UI(width, height, title, icon, resizable, backgroundImage, Tickrate, soundCheckBox.isSelected(), args, points);
                         updateDatabase.stop();
                         dispose();
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "Der Username ist zu lang!", "Fehler", JOptionPane.ERROR_MESSAGE);
-                    new UI(width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
+                    new UI(width, height, title, icon, resizable, backgroundImage, Tickrate, soundCheckBox.isSelected(), args, points);
                     updateDatabase.stop();
                     dispose();
                 }
@@ -133,6 +135,7 @@ public class UI extends JFrame {
 
     // Methode zum Initialisieren der Fensterelemente
     private void createUIComponents() {
+
         UI = new JPanel() {
             @Override
             protected void paintComponent(Graphics gUI) {
@@ -142,6 +145,9 @@ public class UI extends JFrame {
             }
         };
 
+        Dimension frameDimension = Toolkit.getDefaultToolkit().getScreenSize();
+        setLocation((frameDimension.width - frameWidth) / 2, (frameDimension.height - frameHeight) / 2);
+
         bStart = new JButton();
         bStart.setOpaque(false);
         bStart.setToolTipText("Starte das Spiel");
@@ -150,7 +156,6 @@ public class UI extends JFrame {
         soundCheckBox.setOpaque(false);
         soundCheckBox.setToolTipText("Aktiviere oder deaktiviere den Sound");
         soundCheckBox.setBorder(BorderFactory.createEmptyBorder());
-        soundCheckBox.setSelected(true);
 
         playerName = new JTextField();
         playerName.setOpaque(false);
@@ -296,7 +301,7 @@ public class UI extends JFrame {
         if (!updateDatabase.isRunning()) JOptionPane.showMessageDialog(null, "Es konnte keine Verbindung zum SQL Server hergestellt werden!", "Fehler", JOptionPane.ERROR_MESSAGE);
         if (updateDatabase.isRunning()) JOptionPane.showMessageDialog(null, "Verbindung zum SQL Server verloren, überprüfe deine Internetverbindung!", "Fehler", JOptionPane.ERROR_MESSAGE);
         updateDatabase.stop();
-        new UI(width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
+        new UI(width, height, title, icon, resizable, backgroundImage, Tickrate, soundCheckBox.isSelected(),args, points);
         dispose();
     }
 

@@ -290,6 +290,7 @@ public class GameUI extends JFrame {
             System.out.println("Rainbow Mode Active");
             } else if (!Logic.instance.rainbowMode && Logic.instance.rainbowModeActive){
                 player.setIcon(Methods.instance.createImageIcon((playerImage)));
+                Logic.instance.rainbowModeActive = false;
         }
     }
 }

@@ -2,12 +2,12 @@ public class Main {
     // Attribute für die Spielkonfiguration
     public static final int JumpHeight = 7; // Die Sprunghöhe des Spielers
     private static final String Title = "Flappy Bird"; // Titel des Spiels
-    private static final String Background = "Images/Background.png"; // Dateipfad für den Hintergrund
-    private static final String Player = "Lena/Bird.png"; // Dateipfad für das Spielerbild
+    private static final String Background = "911/Skyline.png"; // Dateipfad für den Hintergrund
+    private static final String Player = "911/Plane.png"; // Dateipfad für das Spielerbild
     private static final int playerWidth = 32, playerHeight = 32; // Breite und Höhe des Spielers
     private static final String Rainbow = "Lena/rainbowBird.gif"; // Dateipfad für das Regenbogenbild
-    private static final String ObstacleTop = "tests/ObstaclePlaceHolderGreen.png"; // Dateipfad für das Hindernis von oben
-    private static final String ObstacleBottom = "tests/ObstaclePlaceHolderRed.png"; // Dateipfad für das Hindernis von unten
+    private static final String ObstacleTop = "911/TowerTop.png"; // Dateipfad für das Hindernis von oben
+    private static final String ObstacleBottom = "911/TowerBottom.png"; // Dateipfad für das Hindernis von unten
     private static final int obstacleWidth = 32, obstacleHeight = 1024; // Breite und Höhe der Hindernisse
     private static final String Icon = "Images/Icon.png"; // Dateipfad für das Spielsymbol
     private static final String GameOver = "tests/GameOver.png"; // Dateipfad für das Game Over-Bild
@@ -31,7 +31,7 @@ public class Main {
         new Movement();
 
         // Erstelle die Benutzeroberfläche
-        new UI(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, Background, TPS, args, -10);
+        new UI(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, Background, TPS, true, args, -10);
     }
 
     /**
