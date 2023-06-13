@@ -28,9 +28,7 @@ public class Methods {
     // Methode zum Überprüfen, ob ein String in einem String-Array enthalten ist
     public boolean containsString(String[] array, String target) {
         for (String element : array) {
-            if (element.equals(target)) {
-                return true;
-            }
+            return element.equals(target);
         }
         return false;
     }
@@ -55,9 +53,14 @@ public class Methods {
     // Methode zum Erstellen eines ImageIcon aus einer Ressource
     public ImageIcon createImageIcon(String resource) {
         URL imageUrl = getClass().getClassLoader().getResource(resource);
-        if (resource.endsWith(".png")) return new ImageIcon(reader(resource));
-        if (resource.endsWith(".gif")) return new ImageIcon(Objects.requireNonNull(imageUrl));
-        else return new ImageIcon(reader("error/error.png"));
+        if (resource.endsWith(".png")) {
+            return new ImageIcon(reader(resource));
+        }
+        if (resource.endsWith(".gif")) {
+            return new ImageIcon(Objects.requireNonNull(imageUrl));
+        } else {
+            return new ImageIcon(reader("error/error.png"));
+        }
     }
 
     // Methode zum Lokalisieren eines Punktes basierend auf Bildgröße
@@ -80,8 +83,9 @@ public class Methods {
                 InputStream audioFileInputStream = classLoader.getResourceAsStream(audioFilePath);
 
                 // Überprüfen, ob die Audiodatei gefunden wurde
-                if (audioFileInputStream == null)
+                if (audioFileInputStream == null) {
                     throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
+                }
 
                 BufferedInputStream bufferedInputStream = new BufferedInputStream(audioFileInputStream);
                 AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(bufferedInputStream);
@@ -142,10 +146,10 @@ public class Methods {
     }
 
     // Methode zum Überprüfen, ob eine Verbindung zu einem Server hergestellt werden kann
-    public boolean checkSQLConnection(String ip, int port) {
+    public boolean checkSQLConnection(String ip, String port) {
         try (Socket socket = new Socket()) {
             // Verbindungsversuch zum Server
-            socket.connect(new InetSocketAddress(ip, port), 1000); // Timeout von 1 Sekunde
+            socket.connect(new InetSocketAddress(ip, Integer.parseInt(port)), 1000); // Timeout von 1 Sekunde
 
             // Wenn die Verbindung erfolgreich war
             return true;
@@ -155,14 +159,13 @@ public class Methods {
         }
     }
 
+    // Methode zum Überprüfen, ob ein Nutzername blockiert ist
     public boolean checkUserName(String userName) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(UI.class.getResourceAsStream("data/blockedTerms.txt"))))) {
             String line;
             while ((line = br.readLine()) != null) {
                 // Konvertiere sowohl den Nutzernamen als auch die Wörter in Kleinbuchstaben
-                String lowercaseUsername = userName.toLowerCase();
-                String lowercaseWord = line.toLowerCase();
-
+                String lowercaseUsername = userName.toLowerCase(), lowercaseWord = line.toLowerCase();
                 if (lowercaseUsername.contains(lowercaseWord)) {
                     return true; // Wort gefunden
                 }

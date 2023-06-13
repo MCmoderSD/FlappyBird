@@ -185,6 +185,7 @@ public class GameUI extends JFrame {
 
             if (konamiCodeEntered) {
                 Logic.instance.developerMode = !Logic.instance.developerMode;
+                Logic.instance.cheatsEnabled = true;
                 System.out.println("Developer-Modus umgeschaltet: " + Logic.instance.developerMode);
                 userInput.clear();
             }

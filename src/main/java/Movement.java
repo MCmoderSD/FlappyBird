@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Movement {
     public static Movement instance;
-    public int backgroundResetX = 0, xPosition = - Main.JumpHeight;
+    public int backgroundResetX = 0, xPosition = -Main.JumpHeight;
     private int obstacleMoveInt = 200;
     private short playerMoveInt = 0, backgroundCount = 0;
 
@@ -13,6 +13,7 @@ public class Movement {
         instance = this;
     }
 
+    // Hintergrund auf dem Bildschirm bewegen
     public void moveBackground(int Tickrate) {
         // Hintergrund bewegen
         if (backgroundCount >= (2 / (100 / Tickrate))) {

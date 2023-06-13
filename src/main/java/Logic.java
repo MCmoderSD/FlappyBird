@@ -1,22 +1,29 @@
-import java.nio.file.Path;
-
 public class Logic {
     public static Logic instance;
     private static GameUI ui;
-    public boolean gamePaused = false, rainbowMode = false, rainbowModeActive = false, developerMode = false;
+    public boolean gamePaused = false, rainbowMode = false, rainbowModeActive = false, developerMode = false, cheatsEnabled = false;
     private boolean gameState = false, gameOver;
 
     // Konstruktor und Instanz
-    public Logic(int width, int height, String title, String icon, boolean resizable, int playerPosition, int playerWidth, int playerHeight, String backgroundImage, String playerImage, String rainbowImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreen, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, int Tickrate, boolean sound, String[] args) {
+    public Logic(int width, int height, String title, String icon, boolean resizable,
+                 int playerPosition, int playerWidth, int playerHeight, String backgroundImage,
+                 String playerImage, String rainbowImage, int percentage, int verticalGap,
+                 int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage,
+                 String gameOverImage, String pauseScreen, String dieSound, String flapSound,
+                 String hitSound, String pointSound, String rainbowSound, int Tickrate, boolean sound, String[] args) {
         instance = this;
         gameOver = false;
         if (Tickrate >= 100)
             Tickrate = 100;
-        ui = new GameUI(width, height, title, icon, resizable, playerPosition, playerWidth, playerHeight, backgroundImage, playerImage, rainbowImage, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, gameOverImage, pauseScreen,dieSound, flapSound, hitSound, pointSound, rainbowSound, Tickrate, sound, args);
+        ui = new GameUI(width, height, title, icon, resizable, playerPosition, playerWidth, playerHeight,
+                backgroundImage, playerImage, rainbowImage, percentage, verticalGap, obstacleWidth,
+                obstacleHeight, obstacleTopImage, obstacleBottomImage, gameOverImage, pauseScreen,
+                dieSound, flapSound, hitSound, pointSound, rainbowSound, Tickrate, sound, args);
     }
 
     // Methode zum Verarbeiten der Leertaste-Eingabe
-    public void handleSpaceKeyPress(int width, int height, String title, String icon, boolean resizable, String backgroundImage, String flapSound, int Tickrate, boolean sound, String[] args) {
+    public void handleSpaceKeyPress(int width, int height, String title, String icon, boolean resizable,
+                                    String backgroundImage, String flapSound, int Tickrate, boolean sound, String[] args) {
         // Wenn das Spiel noch nicht läuft und das Spiel nicht vorbei ist
         if (!ui.tickrate.isRunning() && !gameState && !gameOver) {
             ui.tickrate.start(); // Starte den Timer
@@ -27,7 +34,7 @@ public class Logic {
 
         // Wenn das Spiel nicht läuft und das Spiel vorbei ist
         if (!ui.tickrate.isRunning() && !gameState && gameOver) {
-            new UI (width, height, title, icon, resizable, backgroundImage, Tickrate, args, ui.points); // Initialisiere das Fenster erneut
+            new UI(width, height, title, icon, resizable, backgroundImage, Tickrate, args, ui.points); // Initialisiere das Fenster erneut
             ui.dispose(); // Schließe das aktuelle Fenster
         }
 
@@ -38,14 +45,18 @@ public class Logic {
     }
 
     // Methode zum Verarbeiten des Timer-Ticks
-    public void handleTimerTick(int width, int height, String playerImage, String rainbowImage, int percentage, int verticalGap, int obstacleWidth, int obstacleHeight, String obstacleTopImage, String obstacleBottomImage, String dieSound, String hitSound, String pointSound, String rainbowSound, int Tickrate, boolean sound) {
+    public void handleTimerTick(int width, int height, String playerImage, String rainbowImage,
+                                int percentage, int verticalGap, int obstacleWidth, int obstacleHeight,
+                                String obstacleTopImage, String obstacleBottomImage, String dieSound,
+                                String hitSound, String pointSound, String rainbowSound, int Tickrate, boolean sound) {
         if (!gamePaused) {
             if (ui.player.getY() >= height && gameOver && !gameState) {
                 ui.tickrate.stop(); // Stoppe den Timer
             }
             Movement.instance.movePlayer(Tickrate); // Bewege den Spieler
             if (gameState && !gameOver) {
-                Movement.instance.moveObstacles(width, height, percentage, verticalGap, obstacleWidth, obstacleHeight, obstacleTopImage, obstacleBottomImage, Tickrate); // Bewege die Hindernisse
+                Movement.instance.moveObstacles(width, height, percentage, verticalGap, obstacleWidth,
+                        obstacleHeight, obstacleTopImage, obstacleBottomImage, Tickrate); // Bewege die Hindernisse
                 Movement.instance.moveBackground(Tickrate); // Bewege den Hintergrund
                 ui.removeObstacles(); // Entferne nicht sichtbare Hindernisse
                 ui.checkCollision(width, dieSound, hitSound, pointSound, rainbowSound, sound); // Überprüfe auf Kollisionen
@@ -82,7 +93,6 @@ public class Logic {
         }
         ui.score.setText("Score: " + ui.points);
         System.out.println("Punkt! Du hast jetzt " + ui.points);
-
     }
 
     // Methode zum Verarbeiten des Pausierens

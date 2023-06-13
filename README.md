@@ -22,7 +22,9 @@ A Flappy Bird Project in Java
 - [x] Variable Tickrate
 - [x] Pause
 - [x] Username Checker
-- [ ] Highscore
-- [ ] Leaderboard
-- [ ] MySQL Database 
-- [ ] Game Optimization
+- [x] Highscore
+- [x] Leaderboard
+- [x] MySQL Database 
+- [x] Offline Mode
+- [x] Game Optimization
+- [ ] Further Optimization
