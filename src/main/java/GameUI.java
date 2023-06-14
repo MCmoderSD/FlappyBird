@@ -9,21 +9,23 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class GameUI extends JFrame {
+
+    //TODO: change comments to java docs
     public static GameUI instance;
     public final ArrayList<JLabel> obstacles = new ArrayList<>();
     public final ArrayList<Rectangle> rObstacles = new ArrayList<>();
     public final ArrayList<Rectangle> greenZones = new ArrayList<>();
     public final Timer tickrate;
-    private final ArrayList<Integer> userInput = new ArrayList<>();
-    private final int[] KONAMI_CODE = { KeyEvent.VK_UP, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_DOWN,
-            KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_B, KeyEvent.VK_A };
     public final JLabel player, score, gameOver, pauseScreen;
-    public int points;
     public final Rectangle rPlayer;
     public final JPanel mainPanel;
+    private final ArrayList<Integer> userInput = new ArrayList<>();
+    private final int[] KONAMI_CODE = {KeyEvent.VK_UP, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_DOWN,
+            KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_B, KeyEvent.VK_A};
+    public int points;
 
     // Konstruktor
-    public GameUI(Methods methods, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, String playerImage, String rainbowImage, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreenImage, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, int Tickrate, boolean sound, String[] args) {
+    public GameUI(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, String playerImage, String rainbowImage, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreenImage, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, int Tickrate, boolean sound, String[] args) {
         instance = this;
 
         // Initialisiere das Fenster
@@ -31,20 +33,19 @@ public class GameUI extends JFrame {
         setSize(width, height);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
-        setLocation(methods.centerFrame(this));
+        setLocation(utils.centerFrame(this));
         setVisible(true);
         setResizable(resizable);
-        setIconImage((methods.reader(icon)));
+        setIconImage((utils.reader(icon)));
 
         // Initialisiere das Main-Panel mit Hintergrund
-        final BufferedImage background = methods.reader(backgroundImage);
+        final BufferedImage background = utils.reader(backgroundImage);
         final BufferedImage buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
         int imageWidth = background.getWidth();
         mainPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-
                 Graphics2D g2d = (Graphics2D) g;
 
                 // Hintergründe zeichnen auf den Buffer
@@ -53,11 +54,9 @@ public class GameUI extends JFrame {
                 bufferGraphics.clearRect(0, 0, getWidth(), getHeight());
 
                 int firstX = movement.backgroundResetX % imageWidth;
-
                 if (firstX > 0) {
                     bufferGraphics.drawImage(background, firstX - imageWidth, 0, this);
                 }
-
                 for (int x = firstX; x < getWidth() + imageWidth; x += imageWidth) {
                     bufferGraphics.drawImage(background, x, 0, this);
                 }
@@ -74,9 +73,9 @@ public class GameUI extends JFrame {
 
         // Initialisiere den Spieler
         player = new JLabel();
-        final ImageIcon playerIcon = methods.createImageIcon(playerImage);
+        final ImageIcon playerIcon = utils.createImageIcon(playerImage);
         player.setSize(playerIcon.getIconWidth(), playerIcon.getIconHeight());
-        player.setLocation(methods.xPlayerPosition(mainPanel), getHeight() / 2);
+        player.setLocation(utils.xPlayerPosition(mainPanel), getHeight() / 2);
         player.setIcon(playerIcon);
         player.setBounds(player.getX(), player.getY(), playerIcon.getIconWidth(), playerIcon.getIconHeight());
         rPlayer = new Rectangle(player.getBounds());
@@ -95,24 +94,24 @@ public class GameUI extends JFrame {
         // Initialisiere das Game Over Bild
         gameOver = new JLabel();
         gameOver.setSize(getWidth(), getHeight());
-        gameOver.setLocation(methods.locatePoint(gameOverImage, getWidth(), getHeight()));
-        gameOver.setIcon(methods.createImageIcon((gameOverImage)));
+        gameOver.setLocation(utils.locatePoint(gameOverImage, getWidth(), getHeight()));
+        gameOver.setIcon(utils.createImageIcon((gameOverImage)));
         gameOver.setVisible(false);
         mainPanel.add(gameOver);
 
         // Initialisiere das Pause-Bild
         pauseScreen = new JLabel();
         pauseScreen.setVisible(false);
-        ImageIcon pauseScreenIcon = methods.createImageIcon(pauseScreenImage);
+        ImageIcon pauseScreenIcon = utils.createImageIcon(pauseScreenImage);
         pauseScreen.setSize(pauseScreenIcon.getIconWidth(), pauseScreenIcon.getIconHeight());
-        pauseScreen.setLocation(methods.locatePoint(pauseScreenImage, getWidth(), getHeight()));
+        pauseScreen.setLocation(utils.locatePoint(pauseScreenImage, getWidth(), getHeight()));
         pauseScreen.setIcon(pauseScreenIcon);
         mainPanel.add(pauseScreen);
 
         // Initialisiere den Timer
-        tickrate = new Timer(methods.getTPS(Tickrate), e -> {
+        tickrate = new Timer(utils.getTPS(Tickrate), e -> {
             if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
-            Logic.instance.handleTimerTick(methods, movement, height, playerImage, rainbowImage, percentage, verticalGap, obstacleTopImage, obstacleBottomImage, dieSound, hitSound, pointSound, rainbowSound,Tickrate, sound);
+            Logic.instance.handleTimerTick(utils, movement, height, playerImage, rainbowImage, percentage, verticalGap, obstacleTopImage, obstacleBottomImage, dieSound, hitSound, pointSound, rainbowSound, Tickrate, sound);
         });
 
         // Initialisiere die Steuerung
@@ -122,9 +121,9 @@ public class GameUI extends JFrame {
                 super.keyPressed(e);
 
                 // Steuerung
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) Logic.instance.handleSpaceKeyPress(methods, movement, width, height, title, icon, resizable, backgroundImage, flapSound, Tickrate, sound, args);
+                if (e.getKeyCode() == KeyEvent.VK_SPACE)
+                    Logic.instance.handleSpaceKeyPress(utils, movement, width, height, title, icon, resizable, backgroundImage, flapSound, Tickrate, sound, args);
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) Logic.instance.handleGamePause();
-
 
                 // Konami-Code
                 userInput.add(e.getKeyCode());
@@ -158,26 +157,30 @@ public class GameUI extends JFrame {
         // Initialisiere die Maussteuerung
         addMouseListener(new MouseListener() {
             @Override
-            public void mouseClicked(MouseEvent e) {}
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                Logic.instance.handleSpaceKeyPress(methods, movement, width, height, title, icon, resizable, backgroundImage, flapSound, Tickrate, sound, args);
+            public void mouseClicked(MouseEvent e) {
             }
 
             @Override
-            public void mouseReleased(MouseEvent e) {}
+            public void mousePressed(MouseEvent e) {
+                Logic.instance.handleSpaceKeyPress(utils, movement, width, height, title, icon, resizable, backgroundImage, flapSound, Tickrate, sound, args);
+            }
 
             @Override
-            public void mouseEntered(MouseEvent e) {}
+            public void mouseReleased(MouseEvent e) {
+            }
 
             @Override
-            public void mouseExited(MouseEvent e) {}
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
         });
     }
 
     // Erzeugt Hindernisse basierend auf den übergebenen Parametern
-    public void generateObstacles(Methods methods, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage) {
+    public void generateObstacles(Utils utils, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage) {
 
         int minY = ((getHeight() * percentage) / 100);
         int maxY = getHeight() - ((getHeight() * percentage) / 100);
@@ -186,8 +189,8 @@ public class GameUI extends JFrame {
         mainPanel.add(obstacleTop);
         mainPanel.add(obstacleBottom);
 
-        ImageIcon obstacleTopIcon = methods.createImageIcon((obstacleTopImage));
-        ImageIcon obstacleBottomIcon = methods.createImageIcon((obstacleBottomImage));
+        ImageIcon obstacleTopIcon = utils.createImageIcon((obstacleTopImage));
+        ImageIcon obstacleBottomIcon = utils.createImageIcon((obstacleBottomImage));
 
         obstacleTop.setIcon(obstacleTopIcon);
         obstacleBottom.setIcon(obstacleBottomIcon);
@@ -249,38 +252,40 @@ public class GameUI extends JFrame {
     }
 
     // Überprüft Kollisionen mit dem Spieler und anderen Objekten
-    public void checkCollision(Methods methods, String dieSound, String hitSound, String pointSound, String rainbowSound, boolean sound) {
+    public void checkCollision(Utils utils, String dieSound, String hitSound, String pointSound, String rainbowSound, boolean sound) {
         if (!Logic.instance.developerMode) {
-            if (player.getY() > getWidth()) Logic.instance.handleCollision(methods, dieSound, sound);
+            if (player.getY() > getWidth()) Logic.instance.handleCollision(utils, dieSound, sound);
 
             for (Rectangle component : rObstacles) {
                 if (component != null) {
                     if (rPlayer.intersects(component) && !Logic.instance.rainbowMode) {
-                        methods.audioPlayer(hitSound, sound);
-                        Logic.instance.handleCollision(methods, dieSound, sound);
+                        utils.audioPlayer(hitSound, sound);
+                        Logic.instance.handleCollision(utils, dieSound, sound);
                     }
                 }
             }
         }
 
         for (int i = 0; i < greenZones.size(); i++) {
+
             Rectangle component = greenZones.get(i);
             if (component != null && rPlayer.intersects(component)) {
-                Logic.instance.handlePoint( methods, pointSound, rainbowSound, sound);
+                Logic.instance.handlePoint(utils, pointSound, rainbowSound, sound);
                 greenZones.remove(i);
                 i--;
             }
         }
     }
 
-    public void checkRainbowMode(Methods methods, String playerImage, String rainbowImage) {
+    public void checkRainbowMode(Utils utils, String playerImage, String rainbowImage) {
         if (Logic.instance.rainbowMode && !Logic.instance.rainbowModeActive) {
-            player.setIcon(methods.createImageIcon((rainbowImage)));
+            player.setIcon(utils.createImageIcon((rainbowImage)));
             Logic.instance.rainbowModeActive = true;
+
             System.out.println("Rainbow Mode Active");
-            } else if (!Logic.instance.rainbowMode && Logic.instance.rainbowModeActive){
-                player.setIcon(methods.createImageIcon((playerImage)));
-                Logic.instance.rainbowModeActive = false;
+        } else if (!Logic.instance.rainbowMode && Logic.instance.rainbowModeActive) {
+            player.setIcon(utils.createImageIcon((playerImage)));
+            Logic.instance.rainbowModeActive = false;
         }
     }
 }

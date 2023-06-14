@@ -1,11 +1,13 @@
 public class Logic {
+    //TODO: change comments to java docs
+
     public static Logic instance;
     private final GameUI ui;
     public boolean gamePaused = false, rainbowMode = false, rainbowModeActive = false, developerMode = false, cheatsEnabled = false;
     private boolean gameState = false, gameOver = false;
 
     // Konstruktor und Instanz
-    public Logic(Methods methods, Movement  movement, int width, int height, String title, String icon, boolean resizable,
+    public Logic(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable,
                  String backgroundImage, String playerImage, String rainbowImage,
                  int percentage, int verticalGap,
                  String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreen,
@@ -16,7 +18,7 @@ public class Logic {
         instance = this;
 
         if (Tickrate >= 100) Tickrate = 100;
-        ui = new GameUI(methods, movement, width, height, title, icon, resizable,
+        ui = new GameUI(utils, movement, width, height, title, icon, resizable,
                 backgroundImage, playerImage, rainbowImage,
                 percentage, verticalGap,
                 obstacleTopImage, obstacleBottomImage, gameOverImage, pauseScreen,
@@ -25,7 +27,7 @@ public class Logic {
     }
 
     // Methode zum Verarbeiten der Leertaste-Eingabe
-    public void handleSpaceKeyPress(Methods methods, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, String flapSound, int Tickrate, boolean sound, String[] args) {
+    public void handleSpaceKeyPress(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, String flapSound, int Tickrate, boolean sound, String[] args) {
 
         // Wenn das Spiel noch nicht läuft und das Spiel nicht vorbei ist
         if (!ui.tickrate.isRunning() && !gameState && !gameOver) {
@@ -37,42 +39,42 @@ public class Logic {
 
         // Wenn das Spiel nicht läuft und das Spiel vorbei ist
         if (!ui.tickrate.isRunning() && !gameState && gameOver) {
-            new UI(methods, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, sound, args, ui.points); // Initialisiere das Fenster erneut
+            new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, sound, args, ui.points); // Initialisiere das Fenster erneut
             ui.dispose(); // Schließe das aktuelle Fenster
         }
 
         // Wenn das Spiel nicht vorbei ist, führe den Bounce aus
         if (!gameOver) {
-            handleBounce(methods, movement, flapSound, sound);
+            handleBounce(utils, movement, flapSound, sound);
         }
     }
 
     // Methode zum Verarbeiten des Timer-Ticks
-    public void handleTimerTick(Methods methods, Movement movement, int height, String playerImage, String rainbowImage,
+    public void handleTimerTick(Utils utils, Movement movement, int height, String playerImage, String rainbowImage,
                                 int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, String dieSound,
                                 String hitSound, String pointSound, String rainbowSound, int Tickrate, boolean sound) {
 
         if (!gamePaused) {
 
             if (ui.player.getY() >= height && gameOver && !gameState) ui.tickrate.stop(); // Stoppe den Timer
-            movement.movePlayer(methods, Tickrate); // Bewege den Spieler
+            movement.movePlayer(utils, Tickrate); // Bewege den Spieler
 
 
             if (gameState && !gameOver) {
-                movement.moveObstacles(methods, percentage, verticalGap, obstacleTopImage, obstacleBottomImage, Tickrate); // Bewege die Hindernisse
-                movement.moveBackground(methods, Tickrate); // Bewege den Hintergrund
+                movement.moveObstacles(utils, percentage, verticalGap, obstacleTopImage, obstacleBottomImage, Tickrate); // Bewege die Hindernisse
+                movement.moveBackground(utils, Tickrate); // Bewege den Hintergrund
 
                 ui.removeObstacles(); // Entferne nicht sichtbare Hindernisse
-                ui.checkCollision(methods, dieSound, hitSound, pointSound, rainbowSound, sound); // Überprüfe auf Kollisionen
-                ui.checkRainbowMode(methods, playerImage, rainbowImage);
+                ui.checkCollision(utils, dieSound, hitSound, pointSound, rainbowSound, sound); // Überprüfe auf Kollisionen
+                ui.checkRainbowMode(utils, playerImage, rainbowImage);
             }
         }
     }
 
     // Methode zum Verarbeiten der Kollision
-    public void handleCollision(Methods methods, String dieSound, boolean sound) {
+    public void handleCollision(Utils utils, String dieSound, boolean sound) {
         System.out.println("Kollision");
-        methods.audioPlayer(dieSound, sound);
+        utils.audioPlayer(dieSound, sound);
 
         gameOver = true;
         gameState = false;
@@ -81,16 +83,17 @@ public class Logic {
     }
 
     // Methode zum Verarbeiten des Bounces
-    public void handleBounce(Methods methods, Movement movement, String flapSound, boolean sound) {
-        methods.audioPlayer(flapSound, sound);
+    public void handleBounce(Utils utils, Movement movement, String flapSound, boolean sound) {
+        utils.audioPlayer(flapSound, sound);
         if (ui.player.getY() > 32) movement.xPosition = -Main.JumpHeight; // Bewege den Spieler nach oben
     }
 
     // Methode zum Verarbeiten des Punktes
-    public void handlePoint(Methods methods, String pointSound, String rainbowSound, boolean sound) {
-        methods.audioPlayer(pointSound, sound);
+    public void handlePoint(Utils utils, String pointSound, String rainbowSound, boolean sound) {
+        utils.audioPlayer(pointSound, sound);
         ui.points++;
-        if (ui.points > 0 && ui.points % 5 == 0 && (int) (Math.random() * 3 + 1) == 2) handleRainbowMode(methods, rainbowSound, sound);
+        if (ui.points > 0 && ui.points % 5 == 0 && (int) (Math.random() * 3 + 1) == 2)
+            handleRainbowMode(utils, rainbowSound, sound);
         ui.score.setText("Score: " + ui.points);
     }
 
@@ -108,11 +111,11 @@ public class Logic {
     }
 
     // Methode zum Verarbeiten des Regenbogen-Modus
-    private void handleRainbowMode(Methods methods, String rainbowSound, boolean sound) {
+    private void handleRainbowMode(Utils utils, String rainbowSound, boolean sound) {
         new Thread(() -> {
             try {
                 rainbowMode = true;
-                methods.audioPlayer(rainbowSound, sound);
+                utils.audioPlayer(rainbowSound, sound);
                 Thread.sleep(7000);
                 rainbowMode = false;
             } catch (InterruptedException e) {
