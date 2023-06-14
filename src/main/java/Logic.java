@@ -9,7 +9,6 @@ public class Logic {
     private boolean gameState = false, gameOver = false;
 
     /**
-
      Konstruiert ein Logic-Objekt.
 
      @param utils das Utils-Objekt
@@ -79,7 +78,6 @@ public class Logic {
     }
 
     /**
-
      Behandelt das Ereignis des Drückens der Leertaste.
 
      @param utils das Utils-Objekt
@@ -129,7 +127,6 @@ public class Logic {
     }
 
     /**
-
      Behandelt das Ereignis des Timer-Ticks.
 
      @param utils das Utils-Objekt
@@ -184,7 +181,6 @@ public class Logic {
     }
 
     /**
-
     Behandelt das Kollisionsereignis.
 
     @param utils das Utils-Objekt
@@ -204,7 +200,6 @@ public class Logic {
     }
 
     /**
-
      Behandelt das Ereignis des Sprungs.
      @param utils das Utils-Objekt
      @param movement das Movement-Objekt
@@ -215,8 +210,8 @@ public class Logic {
         utils.audioPlayer(flapSound, sound);
         if (ui.player.getY() > 32) movement.xPosition = -Main.JumpHeight; // Spieler nach oben bewegen
     }
-    /**
 
+    /**
      Behandelt das Ereignis der Punktevergabe.
      @param utils das Utils-Objekt
      @param pointSound der Pfad zum Punkte-Soundeffekt
@@ -229,8 +224,8 @@ public class Logic {
         if (ui.points > 0 && ui.points % 5 == 0 && (int) (Math.random() * 3 + 1) == 2) handleRainbowMode(utils, rainbowSound, sound);
         ui.score.setText("Score: " + ui.points);
     }
-    /**
 
+    /**
      Behandelt das Spiel-Pause-Ereignis.
      */
     public void handleGamePause() {
@@ -244,8 +239,8 @@ public class Logic {
             }
         }
     }
-    /**
 
+    /**
      Behandelt das Regenbogenmodus-Ereignis.
      @param utils das Utils-Objekt
      @param rainbowSound der Pfad zum Regenbogen-Soundeffekt
