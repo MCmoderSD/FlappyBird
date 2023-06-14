@@ -13,13 +13,6 @@ import java.net.URL;
 import java.util.Objects;
 
 public class Methods {
-    public static Methods instance;
-
-    // Konstruktor und Instanz
-    public Methods() {
-        instance = this;
-    }
-
     // Methode zum Berechnen der Schwerkraft
     public int calculateGravity(int x) {
         return -2 * x + 4;
@@ -174,5 +167,20 @@ public class Methods {
             e.printStackTrace();
         }
         return false; // Wort nicht gefunden
+    }
+
+    // Methode zum Zentrieren eines JFrames
+    public Point centerFrame(JFrame frame) {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (screenSize.width - frame.getWidth()) / 2;
+        int y = (screenSize.height - frame.getHeight()) / 2;
+
+        return new Point(x, y);
+    }
+
+    // Berechnet die Position des Spielers auf der X-Achse
+    public int xPlayerPosition(JPanel frame) {
+        int x = frame.getWidth()/4;
+        return Math.min(x, 200);
     }
 }

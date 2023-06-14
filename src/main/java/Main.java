@@ -4,11 +4,9 @@ public class Main {
     private static final String Title = "Flappy Bird"; // Titel des Spiels
     private static final String Background = "911/Skyline.png"; // Dateipfad für den Hintergrund
     private static final String Player = "911/Plane.png"; // Dateipfad für das Spielerbild
-    private static final int playerWidth = 32, playerHeight = 32; // Breite und Höhe des Spielers
     private static final String Rainbow = "Lena/rainbowBird.gif"; // Dateipfad für das Regenbogenbild
     private static final String ObstacleTop = "911/TowerTop.png"; // Dateipfad für das Hindernis von oben
     private static final String ObstacleBottom = "911/TowerBottom.png"; // Dateipfad für das Hindernis von unten
-    private static final int obstacleWidth = 32, obstacleHeight = 1024; // Breite und Höhe der Hindernisse
     private static final String Icon = "Images/Icon.png"; // Dateipfad für das Spielsymbol
     private static final String GameOver = "tests/GameOver.png"; // Dateipfad für das Game Over-Bild
     private static final String Pause = "tests/Paused.png"; // Dateipfad für das Pause-Bild
@@ -20,46 +18,37 @@ public class Main {
     private static final int WindowSizeX = 800; // Fensterbreite
     private static final int WindowsSizeY = 800; // Fensterhöhe
     private static final boolean Resizeable = false; // Gibt an, ob das Fenster in der Größe verändert werden kann
-    private static final int PlayerPositionX = 250; // Startposition des Spielers auf der x-Achse
     private static final int TPS = 100; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde) Maximum: 100
 
     public static void main(String[] args) {
         // Erstelle die Methoden
-        new Methods();
+        Methods methods = new Methods();
 
         // Erstelle die Bewegung
-        new Movement();
+        Movement movement = new Movement();
 
         // Erstelle die Benutzeroberfläche
-        new UI(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, Background, TPS, true, args, -10);
+        new UI(methods, movement, WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, Background, TPS, true, args, -10);
     }
 
-    /**
-     * Startet die Spiellogik mit den angegebenen Parametern.
-     *
-     * @param Tickrate Ticks pro Sekunde
-     * @param sound    gibt an, ob Sound aktiviert ist
-     * @param args     Kommandozeilenargumente
-     */
-    public void run(int Tickrate, boolean sound, String[] args) {
+    // Methode zum Starten des Spiels
+    public void run(Methods methods, Movement movement, int Tickrate, boolean sound, String[] args) {
+
         // Starte die Spiellogik mit den angegebenen Parametern
         if (args.length == 0) {
             new Logic(
+                    methods,
+                    movement,
                     WindowSizeX,
                     WindowsSizeY,
                     Title,
                     Icon,
                     Resizeable,
-                    PlayerPositionX,
-                    playerWidth,
-                    playerHeight,
                     Background,
                     Player,
                     Rainbow,
                     25,
                     200,
-                    obstacleWidth,
-                    obstacleHeight,
                     ObstacleTop,
                     ObstacleBottom,
                     GameOver,

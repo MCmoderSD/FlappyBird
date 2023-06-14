@@ -11,7 +11,6 @@ import java.util.Comparator;
 
 @SuppressWarnings("unused")
 public class UI extends JFrame {
-    public static UI instance;
     private final String Background;
     private final int scoredPoints;
     private Database database;
@@ -26,34 +25,31 @@ public class UI extends JFrame {
     private final Timer updateDatabase;
     private final String host = "MCmoderSD.live", port = "3306";
     private int TPS = 100;
-    private final int frameWidth;
-    private final int frameHeight;
+    private final int frameWidth, frameHeight;
     private boolean newGame = true, isUploaded = true;
 
 
     // Konstruktor und Instanz
-    public UI(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, boolean sound , String[] args, int points) {
+    public UI(Methods methods, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, boolean sound , String[] args, int points) {
         scoredPoints = points;
         frameWidth = width;
         frameHeight= height;
         Background = backgroundImage;
-        instance = this;
 
         // Initialisierung des Fensters
-        initFrame(width, height, title, icon, resizable, backgroundImage, args, scoredPoints, Tickrate);
+        initFrame(methods, movement, width, height, title, icon, resizable, backgroundImage, args, scoredPoints, Tickrate);
         spinnerTPS.setValue(TPS);
         score.setVisible(true);
         playerName.setVisible(true);
         soundCheckBox.setSelected(sound);
 
         // Timer für die Aktualisierung der Bestenliste
-        updateDatabase = new Timer(5000, e -> initLeaderBoard(width, height, title, icon, resizable, backgroundImage, Tickrate, args, points));
+        updateDatabase = new Timer(5000, e -> initLeaderBoard(methods, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, args, points));
 
         // Initialisierung der Datenbankverbindung und der Bestenliste
-
-        if (Methods.instance.checkSQLConnection(host, port)) {
+        if (methods.checkSQLConnection(host, port)) {
             database = new Database(host, port, "FlappyBirdLeaderboard", "flappy", "2013");
-            initLeaderBoard(width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
+            initLeaderBoard(methods, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
             updateDatabase.start();
         }
 
@@ -62,24 +58,22 @@ public class UI extends JFrame {
             if (newGame) {
                 int spinnerValue = (int) spinnerTPS.getValue();
                 if (spinnerValue <= 100 && spinnerValue > 0) TPS = spinnerValue;
-                play(TPS, args);
+                play(methods, movement, TPS, args);
             } else if (scoredPoints >= 0 && !isUploaded) {
-                upload(width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
+                upload(methods, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
             }
         });
-
-
     }
 
     // Methode zum Starten des Spiels
-    private void play(int Tickrate, String[] args) {
-        new Main().run(Tickrate, soundCheckBox.isSelected(), args);
+    private void play(Methods methods, Movement movement, int Tickrate, String[] args) {
+        new Main().run(methods, movement, Tickrate, soundCheckBox.isSelected(), args);
         updateDatabase.stop();
         dispose();
     }
 
     // Methode zum Initialisieren des Fensters
-    public void initFrame(int width, int height, String title, String icon, boolean resizable, String backgroundImage, String[] args, int points, int Tickrate) {
+    public void initFrame(Methods methods, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, String[] args, int points, int Tickrate) {
         if (Tickrate <= TPS)
             TPS = Tickrate;
 
@@ -89,9 +83,9 @@ public class UI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         setResizable(resizable);
-        setIconImage((Methods.instance.reader(icon)));
+        setIconImage(methods.reader(icon));
 
-        Movement.instance.backgroundResetX = 0;
+        movement.backgroundResetX = 0;
 
         score.setText("Global Leaderboard");
 
@@ -106,26 +100,27 @@ public class UI extends JFrame {
     }
 
     // Methode zum Hochladen des Scores
-    private void upload(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, String[] args, int points) {
+    private void upload(Methods methods, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, String[] args, int points) {
         bStart.setText("Nochmal Spielen");
         bStart.setToolTipText("Nochmal Spielen");
         isUploaded = true;
         newGame = true;
 
+        // Überprüfung der Eingabe
         if (!Logic.instance.developerMode && !Logic.instance.cheatsEnabled) {
             if (playerName.getText().length() != 0 && !playerName.getText().contains("Username")) {
                 if (playerName.getText().length() <= 32) {
-                    if (!Methods.instance.checkUserName(playerName.getText()) && !playerName.getText().contains(" ")) {
-                        writeLeaderBoard(playerName.getText(), points);
-                    } else {
+                    if (!methods.checkUserName(playerName.getText()) && !playerName.getText().contains(" ")) {
+                        writeLeaderBoard(playerName.getText(), points); // Hochladen des Scores
+                    } else { // Fehlermeldung bei unerlaubtem Username
                         JOptionPane.showMessageDialog(null, "Der Username ist nicht erlaubt!", "Fehler", JOptionPane.ERROR_MESSAGE);
-                        new UI(width, height, title, icon, resizable, backgroundImage, Tickrate, soundCheckBox.isSelected(), args, points);
+                        new UI(methods, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, soundCheckBox.isSelected(), args, points);
                         updateDatabase.stop();
                         dispose();
                     }
-                } else {
+                } else { // Fehlermeldung bei zu langem Username
                     JOptionPane.showMessageDialog(null, "Der Username ist zu lang!", "Fehler", JOptionPane.ERROR_MESSAGE);
-                    new UI(width, height, title, icon, resizable, backgroundImage, Tickrate, soundCheckBox.isSelected(), args, points);
+                    new UI(methods, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, soundCheckBox.isSelected(), args, points);
                     updateDatabase.stop();
                     dispose();
                 }
@@ -136,27 +131,35 @@ public class UI extends JFrame {
     // Methode zum Initialisieren der Fensterelemente
     private void createUIComponents() {
 
+        Methods methods = new Methods();
+        Movement movement = new Movement();
+
+        // Initialisierung JPanels mit Hintergrundbild
         UI = new JPanel() {
             @Override
             protected void paintComponent(Graphics gUI) {
                 super.paintComponent(gUI);
-                gUI.drawImage(Methods.instance.reader(Background), Movement.instance.backgroundResetX, 0, Methods.instance.getBackgroundWidth(), getHeight(), this);
+                gUI.drawImage(methods.reader(Background), movement.backgroundResetX, 0, methods.getBackgroundWidth(), getHeight(), this);
                 repaint();
             }
         };
 
+        // Initialisierung der Fensterposition
         Dimension frameDimension = Toolkit.getDefaultToolkit().getScreenSize();
         setLocation((frameDimension.width - frameWidth) / 2, (frameDimension.height - frameHeight) / 2);
 
+        // Initialisierung des Start-Buttons
         bStart = new JButton();
         bStart.setOpaque(false);
         bStart.setToolTipText("Starte das Spiel");
 
+        // Initialisierung des Sound-Checkbox
         soundCheckBox = new JCheckBox();
         soundCheckBox.setOpaque(false);
         soundCheckBox.setToolTipText("Aktiviere oder deaktiviere den Sound");
         soundCheckBox.setBorder(BorderFactory.createEmptyBorder());
 
+        // Initialisierung des Username-Textfeldes
         playerName = new JTextField();
         playerName.setOpaque(false);
         playerName.setEnabled(false);
@@ -164,8 +167,9 @@ public class UI extends JFrame {
         playerName.setToolTipText("Gib deinen Username ein");
         playerName.setHorizontalAlignment(JTextField.CENTER);
         playerName.setBorder(BorderFactory.createEmptyBorder());
-        Methods.instance.setPlaceholder(playerName, "Username");
+        methods.setPlaceholder(playerName, "Username");
 
+        // Initialisierung der ScrollPane für die Tabelle
         scrollPane = new JScrollPane();
         scrollPane.setOpaque(false);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -173,18 +177,26 @@ public class UI extends JFrame {
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
+        // Initialisierung der Tabelle
         leaderBoard = new JTable();
         leaderBoard.setFont(new Font("Roboto", Font.PLAIN, 22));
         leaderBoard.setOpaque(false);
 
+        // Hinzufügen der Tabelle zur ScrollPane
         scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
         scrollPane.setAlignmentY(Component.CENTER_ALIGNMENT);
         scrollPane.add(leaderBoard);
         scrollPane.setOpaque(false);
 
+        // Initialisierung des TPS-Spinners
         spinnerTPS = new JSpinner();
         spinnerTPS.setOpaque(false);
         spinnerTPS.setToolTipText("Ticks pro Sekunde");
+
+        // Verhindert ungültige Eingaben im TPS-Spinner
+        JFormattedTextField txt = ((JSpinner.DefaultEditor) spinnerTPS.getEditor()).getTextField();
+        ((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
+
         spinnerTPS.addChangeListener(e -> {
             if (spinnerTPS.getValue() != null) {
                 if ((int) spinnerTPS.getValue() >= 100)
@@ -193,15 +205,14 @@ public class UI extends JFrame {
                     spinnerTPS.setValue(1);
             }
         });
-        JFormattedTextField txt = ((JSpinner.DefaultEditor) spinnerTPS.getEditor()).getTextField();
-        ((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false); // Verhindert ungültige Eingaben
     }
 
     // Methode zum Aktualisieren des Leaderboards
-    private void initLeaderBoard(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, String[] args, int points) {
-        if (Methods.instance.checkSQLConnection(host, port)) {
+    private void initLeaderBoard(Methods methods, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, String[] args, int points) {
+        if (methods.checkSQLConnection(host, port)) {
             leaderBoard.setVisible(true);
 
+            // Initialisierung der Datenbank
             Database.Table table = database.getTable("leaderboard");
             Database.Table.Column users = table.getColumn("users");
             Database.Table.Column highscores = table.getColumn("scores");
@@ -211,16 +222,20 @@ public class UI extends JFrame {
             String[] userValues = users.getValues();
             String[] scoreValues = highscores.getValues();
 
+            // Tabelle erstellen
             DefaultTableModel model = new DefaultTableModel() {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false; // Die Zellen sind nicht editierbar
                 }
             };
+
+            // Spalten hinzufügen
             model.addColumn("Rank");
             model.addColumn("Username");
             model.addColumn("Highscore");
 
+            // Daten in die Tabelle einfügen
             if (userValues != null && scoreValues != null && userValues.length == scoreValues.length) {
                 for (int i = 0; i < userValues.length; i++) {
                     model.addRow(new Object[]{(i + 1) + ".", userValues[i], scoreValues[i]});
@@ -230,11 +245,12 @@ public class UI extends JFrame {
             // Tabelle nach der Punktzahl sortieren
             sortTableByScore(model);
 
+            // Tabelle configuieren
             leaderBoard.setModel(model);
             adjustRowHeight(leaderBoard);
             adjustColumnWidths(leaderBoard);
-        } else {
-            handleNoSQLConnection(width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
+        } else { // Wenn keine Verbindung zur Datenbank besteht
+            handleNoSQLConnection(methods, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
         }
     }
 
@@ -267,20 +283,25 @@ public class UI extends JFrame {
         FontMetrics fontMetrics = table.getFontMetrics(table.getFont());
         Font boldFont = new Font("Roboto", Font.BOLD, 24);
 
+        // Spalten zentriert ausrichten
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer); // Spalte "User" zentriert ausrichten
 
+        // Zeilenhöhe anpassen
         for (int row = 0; row < table.getRowCount(); row++) {
             int fontHeight = fontMetrics.getHeight() + 10;
             table.setRowHeight(row, Math.max(rowHeight, fontHeight));
         }
 
+        // Schriftart der Spaltenüberschriften Fett setzen
         table.getTableHeader().setFont(boldFont);
     }
 
     // Methode zum Anpassen der Spaltenbreiten
     private void adjustColumnWidths(JTable table) {
+
+        // Breite der Rang-Zeile anpassen
         TableColumnModel columnModel = table.getColumnModel();
         TableColumn rankColumn = columnModel.getColumn(0);
         rankColumn.setMaxWidth(800); // Maximale Breite der Rang-Zeile auf 50 setzen
@@ -297,24 +318,30 @@ public class UI extends JFrame {
     }
 
     // Methode zum Anzeigen einer Fehlermeldung, wenn keine Verbindung zum SQL Server hergestellt werden konnte
-    private void handleNoSQLConnection(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, String[] args, int points) {
+    private void handleNoSQLConnection(Methods methods, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, String[] args, int points) {
         if (!updateDatabase.isRunning()) JOptionPane.showMessageDialog(null, "Es konnte keine Verbindung zum SQL Server hergestellt werden!", "Fehler", JOptionPane.ERROR_MESSAGE);
         if (updateDatabase.isRunning()) JOptionPane.showMessageDialog(null, "Verbindung zum SQL Server verloren, überprüfe deine Internetverbindung!", "Fehler", JOptionPane.ERROR_MESSAGE);
         updateDatabase.stop();
-        new UI(width, height, title, icon, resizable, backgroundImage, Tickrate, soundCheckBox.isSelected(),args, points);
+        new UI(methods, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, soundCheckBox.isSelected(),args, points);
         dispose();
     }
 
     // Methode zum Schreiben der Daten in die Tabelle
     private void writeLeaderBoard(String username, int score) {
+
+        // Daten aus der Tabelle auslesen
         Database.Table table = database.getTable("leaderboard");
         Database.Table.Column users = table.getColumn("users");
         Database.Table.Column highscores = table.getColumn("scores");
 
+        // Daten in ArrayLists speichern
         ArrayList<String> usernames = new ArrayList<>(Arrays.asList(users.getValues()));
         ArrayList<String> scores = new ArrayList<>(Arrays.asList(highscores.getValues()));
+
+        // Wenn der Benutzername noch nicht in der Tabelle vorhanden ist, wird er hinzugefügt
         if (!users.contains(username)) users.addLine(username);
 
+        // Wenn der Benutzername bereits in der Tabelle vorhanden ist, wird die Punktzahl aktualisiert
         if (usernames.contains(username)) {
             int index = usernames.indexOf(username);
             int oldScore = Integer.parseInt(scores.get(index));
@@ -326,23 +353,19 @@ public class UI extends JFrame {
             }
         }
 
+        // Daten in die Tabelle schreiben
         highscores.set(users, username, String.valueOf(score));
     }
 
     // Innere Klasse für die Daten der Tabelle
     static class RowData {
-        private final int index;
         private final String user;
         private final int score;
 
         // Konstruktor
         public RowData(int index, String user, int score) {
-            this.index = index;
             this.user = user;
             this.score = score;
-        }
-        public int getIndex() {
-            return index;
         }
         public String getUser() {
             return user;
