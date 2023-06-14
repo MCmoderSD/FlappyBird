@@ -12,7 +12,9 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.Objects;
 
-public class Methods {
+public class Utils {
+    //TODO: make static, add Javadocs
+
     // Methode zum Berechnen der Schwerkraft
     public int calculateGravity(int x) {
         return -2 * x + 4;
@@ -143,44 +145,44 @@ public class Methods {
         try (Socket socket = new Socket()) {
             // Verbindungsversuch zum Server
             socket.connect(new InetSocketAddress(ip, Integer.parseInt(port)), 1000); // Timeout von 1 Sekunde
-
-            // Wenn die Verbindung erfolgreich war
             return true;
         } catch (IOException e) {
-            // Bei einem Fehler während der Verbindung
             return false;
         }
     }
 
-    // Methode zum Überprüfen, ob ein Nutzername blockiert ist
+    /**
+     * Methode zum Überprüfen, ob ein Nutzername blockiert ist
+     */
     public boolean checkUserName(String userName) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(UI.class.getResourceAsStream("data/blockedTerms.txt"))))) {
             String line;
             while ((line = br.readLine()) != null) {
                 // Konvertiere sowohl den Nutzernamen als auch die Wörter in Kleinbuchstaben
-                String lowercaseUsername = userName.toLowerCase(), lowercaseWord = line.toLowerCase();
-                if (lowercaseUsername.contains(lowercaseWord)) {
-                    return true; // Wort gefunden
-                }
+                String lowercaseUsername = userName.toLowerCase();
+                String lowercaseWord = line.toLowerCase();
+
+                return lowercaseUsername.contains(lowercaseWord);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return false; // Wort nicht gefunden
+        return false;
     }
 
-    // Methode zum Zentrieren eines JFrames
+    /**
+     * Methode zum Zentrieren eines JFrames
+     */
     public Point centerFrame(JFrame frame) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screenSize.width - frame.getWidth()) / 2;
-        int y = (screenSize.height - frame.getHeight()) / 2;
-
-        return new Point(x, y);
+        return new Point(((screenSize.width - frame.getWidth()) / 2), ((screenSize.height - frame.getHeight()) / 2));
     }
 
-    // Berechnet die Position des Spielers auf der X-Achse
+    /**
+     * Berechnet die Position des Spielers auf der X-Achse
+     */
     public int xPlayerPosition(JPanel frame) {
-        int x = frame.getWidth()/4;
+        int x = frame.getWidth() / 4;
         return Math.min(x, 200);
     }
 }
