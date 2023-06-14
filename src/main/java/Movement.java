@@ -2,17 +2,30 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ Diese Klasse enthält Methoden, um die Objekte des Spiels zu bewegen.
+ */
 public class Movement {
-    //TODO: change comments to java docs
-
+    /**
+     * Zurücksetzen der X-Position des Hintergrunds auf 0.
+     /
+     public int backgroundResetX = 0;
+     /*
+     * Aktuelle X-Position des Spielers.
+     */
     public int backgroundResetX = 0, xPosition = -Main.JumpHeight;
     private int obstacleMoveInt = 200;
     private short playerMoveInt = 0, backgroundCount = 0;
 
-    // Hintergrund auf dem Bildschirm bewegen
-    public void moveBackground(Utils utils, int Tickrate) {
+    /**
+     * Bewegt den Hintergrund auf dem Bildschirm.
+     *
+     * @param utils     Das Hilfsobjekt für die Spiellogik.
+     * @param tickRate  Die Taktgeschwindigkeit des Spiels.
+     */
+    public void moveBackground(Utils utils, int tickRate) {
         // Hintergrund bewegen
-        if (backgroundCount >= (2 / (100 / Tickrate))) {
+        if (backgroundCount >= (2 / (100 / tickRate))) {
             backgroundResetX--;
 
             // Zurücksetzen der Hintergrundposition
@@ -25,10 +38,15 @@ public class Movement {
         backgroundCount++;
     }
 
-    // Spieler bewegen
-    public void movePlayer(Utils utils, int Tickrate) {
+    /**
+     * Bewegt den Spieler.
+     *
+     * @param utils     Das Hilfsobjekt für die Spiellogik.
+     * @param tickRate  Die Taktgeschwindigkeit des Spiels.
+     */
+    public void movePlayer(Utils utils, int tickRate) {
         // Spielerbewegung
-        if (playerMoveInt >= (3 / (100 / Tickrate))) { // Zähler
+        if (playerMoveInt >= (3 / (100 / tickRate))) { // Zähler
             xPosition = xPosition + 1;
             int yPosition = (GameUI.instance.player.getY() - utils.calculateGravity(xPosition));
             GameUI.instance.player.setLocation(utils.xPlayerPosition(GameUI.instance.mainPanel), yPosition);
@@ -38,35 +56,49 @@ public class Movement {
         playerMoveInt++; // Zähler erhöhen
     }
 
-    // Hindernisse auf dem Bildschirm bewegen
-    public void moveObstacles(Utils utils, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, int Tickrate) {
+    /**
+     * Bewegt die Hindernisse auf dem Bildschirm.
+     *
+     * @param utils             Das Hilfsobjekt für die Spiellogik.
+     * @param percentage        Die Prozentsatzchance für das Auftreten von Hindernissen.
+     * @param verticalGap       Der vertikale Abstand zwischen den Hindernissen.
+     * @param obstacleTopImage  Der Dateiname des Bildes für das obere Hindernis.
+     * @param obstacleBottomImage  Der Dateiname des Bildes für das untere Hindernis.
+     * @param tickRate          Die Taktgeschwindigkeit des Spiels.
+     */
+    public void moveObstacles(Utils utils, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, int tickRate) {
         for (JLabel component : GameUI.instance.obstacles) {
             if (component != null && component.getIcon() != null) {
                 int x = component.getX();
-                int newX = x - (100 / Tickrate);
+                int newX = x - (100 / tickRate);
                 component.setLocation(newX, component.getY());
             }
         }
 
-        moveRectangles(Tickrate, GameUI.instance.rObstacles, GameUI.instance.greenZones);
+        moveRectangles(tickRate, GameUI.instance.rObstacles, GameUI.instance.greenZones);
         obstacleMoveInt = obstacleMoveInt + 1;
 
         // Periodisch neue Hindernisse generieren
-        if (obstacleMoveInt >= (200 / (100 / Tickrate))) {
+        if (obstacleMoveInt >= (200 / (100 / tickRate))) {
             GameUI.instance.generateObstacles(utils, percentage, verticalGap, obstacleTopImage, obstacleBottomImage);
             obstacleMoveInt = 0;
         }
     }
 
-    // Rechtecke auf dem Bildschirm bewegen
+    /**
+     * Bewegt die Rechtecke auf dem Bildschirm.
+     *
+     * @param tickRate         Die Taktgeschwindigkeit des Spiels.
+     * @param rectangleList    Eine Liste von Rechteck-Arrays.
+     */
     @SafeVarargs
-    private final void moveRectangles(int Tickrate, ArrayList<Rectangle>... rectangleList) {
+    private final void moveRectangles(int tickRate, ArrayList<Rectangle>... rectangleList) {
         for (ArrayList<Rectangle> rectangles : rectangleList) {
             for (Rectangle component : rectangles) {
                 if (component != null) {
                     component.getBounds();
                     int x = (int) component.getX();
-                    int newX = x - (100 / Tickrate);
+                    int newX = x - (100 / tickRate);
                     component.setLocation(newX, (int) component.getY());
                 }
             }
