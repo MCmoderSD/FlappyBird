@@ -1,3 +1,7 @@
+/**
+ * Diese Klasse ist die Hauptklasse des Spiels. Sie enthält die Main-Methode, die das Spiel startet.
+ * Außerdem enthält sie die Attribute für die Spielkonfiguration.
+ */
 public class Main {
     // Attribute für die Spielkonfiguration
     public static final int JumpHeight = 7; // Die Sprunghöhe des Spielers
@@ -20,24 +24,37 @@ public class Main {
     private static final boolean Resizeable = false; // Gibt an, ob das Fenster in der Größe verändert werden kann
     private static final int TPS = 100; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde) Maximum: 100
 
+    /**
+
+     Die main-Methode zum Starten des Spiels.
+
+     @param args Die Befehlszeilenargumente.
+     */
     public static void main(String[] args) {
         // Erstelle die Methoden
-        Methods methods = new Methods();
+        Utils utils = new Utils();
 
         // Erstelle die Bewegung
         Movement movement = new Movement();
 
         // Erstelle die Benutzeroberfläche
-        new UI(methods, movement, WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, Background, TPS, true, args, -10);
+        new UI(utils, movement, WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, Background, TPS, true, args, -10);
     }
 
-    // Methode zum Starten des Spiels
-    public void run(Methods methods, Movement movement, int Tickrate, boolean sound, String[] args) {
+    /**
+     Methode zum Starten des Spiels.
+     @param utils Das Utils-Objekt.
+     @param movement Das Movement-Objekt.
+     @param Tickrate Die Tickrate des Spiels.
+     @param sound Gibt an, ob Sound aktiviert ist.
+     @param args Die Befehlszeilenargumente.
+     */
+    public void run(Utils utils, Movement movement, int Tickrate, boolean sound, String[] args) {
 
         // Starte die Spiellogik mit den angegebenen Parametern
         if (args.length == 0) {
             new Logic(
-                    methods,
+                    utils,
                     movement,
                     WindowSizeX,
                     WindowsSizeY,
