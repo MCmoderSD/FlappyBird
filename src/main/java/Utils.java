@@ -12,28 +12,15 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.Objects;
 
-/**
- * Diese Klasse enthält alle Methoden für verschiedene Berechnungen.
- */
 public class Utils {
-    /**
-     * Methode zum Berechnen der Schwerkraft.
-     *
-     * @param x Der Eingabewert.
-     * @return Die berechnete Schwerkraft.
-     */
+    //TODO: make static, add Javadocs
+
+    // Methode zum Berechnen der Schwerkraft
     public int calculateGravity(int x) {
         return -2 * x + 4;
     }
 
-    /**
-     * Methode zum Überprüfen, ob ein String in einem String-Array enthalten ist.
-     *
-     * @param array  Das String-Array.
-     * @param target Der zu überprüfende String.
-     * @return {@code true}, wenn der String enthalten ist, andernfalls {@code false}.
-     */
-    @SuppressWarnings("unused")
+    // Methode zum Überprüfen, ob ein String in einem String-Array enthalten ist
     public boolean containsString(String[] array, String target) {
         for (String element : array) {
             return element.equals(target);
@@ -41,22 +28,12 @@ public class Utils {
         return false;
     }
 
-    /**
-     * Methode zum Berechnen der TPS (Ticks per Second).
-     *
-     * @param tickrate Die Tickrate.
-     * @return Die berechneten TPS.
-     */
-    public int getTPS(int tickrate) {
-        return 1000 / tickrate;
+    // Methode zum Berechnen der TPS (Ticks per Second)
+    public int getTPS(int Tickrate) {
+        return 1000 / Tickrate;
     }
 
-    /**
-     * Methode zum Lesen eines Bildes aus einer Ressource.
-     *
-     * @param resource Der Pfad zur Ressource.
-     * @return Das gelesene Bild.
-     */
+    // Methode zum Lesen eines Bildes aus einer Ressource
     public BufferedImage reader(String resource) {
         try {
             if (resource.endsWith(".png")) {
@@ -68,12 +45,7 @@ public class Utils {
         }
     }
 
-    /**
-     * Methode zum Erstellen eines ImageIcon aus einer Ressource.
-     *
-     * @param resource Der Pfad zur Ressource.
-     * @return Das erstellte ImageIcon.
-     */
+    // Methode zum Erstellen eines ImageIcon aus einer Ressource
     public ImageIcon createImageIcon(String resource) {
         URL imageUrl = getClass().getClassLoader().getResource(resource);
         if (resource.endsWith(".png")) {
@@ -86,14 +58,7 @@ public class Utils {
         }
     }
 
-    /**
-     * Methode zum Lokalisieren eines Punktes basierend auf Bildgröße.
-     *
-     * @param image  Der Pfad zur Bild-Ressource.
-     * @param width  Die Breite.
-     * @param height Die Höhe.
-     * @return Der lokalisierte Punkt.
-     */
+    // Methode zum Lokalisieren eines Punktes basierend auf Bildgröße
     public Point locatePoint(String image, int width, int height) {
         BufferedImage img = reader(image);
         int imageWidth = img.getWidth();
@@ -105,12 +70,7 @@ public class Utils {
         return new Point(x, y);
     }
 
-    /**
-     * Methode zum Abspielen einer Audiodatei.
-     *
-     * @param audioFilePath Der Pfad zur Audiodatei.
-     * @param sound         Ein Flag, ob der Sound aktiviert ist.
-     */
+    // Methode zum Abspielen einer Audiodatei
     public void audioPlayer(String audioFilePath, boolean sound) {
         if (sound && !Logic.instance.gamePaused) {
             try {
@@ -148,21 +108,12 @@ public class Utils {
         }
     }
 
-    /**
-     * Methode zur Rückgabe der Breite des Hintergrunds.
-     *
-     * @return Die Breite des Hintergrunds.
-     */
+    // Methode zur Rückgabe der Breite des Hintergrunds
     public int getBackgroundWidth() {
         return reader("Images/Background.png").getWidth();
     }
 
-    /**
-     * Methode zum Setzen eines Platzhalters für ein JTextField.
-     *
-     * @param textField  Das JTextField.
-     * @param placeholder Der Platzhalter-Text.
-     */
+    // Methode zum Setzen eines Platzhalters für ein JTextField
     public void setPlaceholder(JTextField textField, String placeholder) {
         Font originalFont = textField.getFont();
 
@@ -189,64 +140,46 @@ public class Utils {
         });
     }
 
-    /**
-     * Methode zum Überprüfen, ob eine Verbindung zu einem Server hergestellt werden kann.
-     *
-     * @param ip   Die IP-Adresse des Servers.
-     * @param port Der Port des Servers.
-     * @return {@code true}, wenn eine Verbindung hergestellt werden konnte, andernfalls {@code false}.
-     */
+    // Methode zum Überprüfen, ob eine Verbindung zu einem Server hergestellt werden kann
     public boolean checkSQLConnection(String ip, String port) {
         try (Socket socket = new Socket()) {
             // Verbindungsversuch zum Server
             socket.connect(new InetSocketAddress(ip, Integer.parseInt(port)), 1000); // Timeout von 1 Sekunde
-
-            // Wenn die Verbindung erfolgreich war
             return true;
         } catch (IOException e) {
-            // Bei einem Fehler während der Verbindung
             return false;
         }
     }
 
     /**
-     * Methode zum Überprüfen, ob ein Nutzername blockiert ist.
-     *
-     * @param userName Der zu überprüfende Nutzername.
-     * @return {@code true}, wenn der Nutzername blockiert ist, andernfalls {@code false}.
+     * Methode zum Überprüfen, ob ein Nutzername blockiert ist
      */
     public boolean checkUserName(String userName) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(UI.class.getResourceAsStream("data/blockedTerms.txt"))))) {
             String line;
             while ((line = br.readLine()) != null) {
                 // Konvertiere sowohl den Nutzernamen als auch die Wörter in Kleinbuchstaben
-                String lowercaseUsername = userName.toLowerCase(), lowercaseWord = line.toLowerCase();
-                if (lowercaseUsername.contains(lowercaseWord)) {
-                    return true; // Wort gefunden
-                }
+                String lowercaseUsername = userName.toLowerCase();
+                String lowercaseWord = line.toLowerCase();
+
+                return lowercaseUsername.contains(lowercaseWord);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return false; // Wort nicht gefunden
+        return false;
     }
 
     /**
-     * Methode zum Zentrieren eines JFrames.
-     *
-     * @param frame Das JFrame.
-     * @return Der Punkt, an dem das JFrame zentriert werden soll.
+     * Methode zum Zentrieren eines JFrames
      */
     public Point centerFrame(JFrame frame) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        return new Point((screenSize.height - frame.getHeight()) / 2, (screenSize.width - frame.getWidth()) / 2);
+        return new Point(((screenSize.width - frame.getWidth()) / 2), ((screenSize.height - frame.getHeight()) / 2));
     }
 
     /**
-     * Berechnet die Position des Spielers auf der X-Achse.
-     *
-     * @param frame Das JPanel.
-     * @return Die berechnete Position des Spielers auf der X-Achse.
+     * Berechnet die Position des Spielers auf der X-Achse
      */
     public int xPlayerPosition(JPanel frame) {
         int x = frame.getWidth() / 4;
