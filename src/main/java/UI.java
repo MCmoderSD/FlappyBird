@@ -16,6 +16,9 @@ import java.util.Comparator;
 public class UI extends JFrame {
     private final String Background;
     private final int scoredPoints;
+    private final Timer updateDatabase;
+    private final String host = "MCmoderSD.live", port = "3306";
+    private final int frameWidth, frameHeight;
     private Database database;
     private JButton bStart;
     private JPanel UI, tablePanel;
@@ -25,10 +28,7 @@ public class UI extends JFrame {
     private JLabel score;
     private JSpinner spinnerTPS;
     private JScrollPane scrollPane;
-    private final Timer updateDatabase;
-    private final String host = "MCmoderSD.live", port = "3306";
     private int TPS = 100;
-    private final int frameWidth, frameHeight;
     private boolean newGame = true, isUploaded = true;
 
     /**
@@ -228,6 +228,8 @@ public class UI extends JFrame {
     private void initLeaderBoard(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, String[] args, int points) {
         if (utils.checkSQLConnection(host, port)) {
             leaderBoard.setVisible(true);
+            scrollPane.setVisible(true);
+            tablePanel.setVisible(true);
 
             // Initialisierung der Datenbank
             Database.Table table = database.getTable("leaderboard");
