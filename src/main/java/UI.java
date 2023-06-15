@@ -20,6 +20,8 @@ public class UI extends JFrame {
     private final String host = "MCmoderSD.live", port = "3306";
     private final int frameWidth, frameHeight;
     private Database database;
+    private final Utils utils;
+    private final Movement movement;
     private JButton bStart;
     private JPanel UI, tablePanel;
     private JCheckBox soundCheckBox;
@@ -52,6 +54,8 @@ public class UI extends JFrame {
         frameWidth = width;
         frameHeight= height;
         Background = backgroundImage;
+        this.utils = utils;
+        this.movement = movement;
 
         // Initialisierung des Fensters
         initFrame(utils, movement, width, height, title, icon, resizable, backgroundImage, args, scoredPoints, Tickrate);
@@ -75,7 +79,7 @@ public class UI extends JFrame {
             if (newGame) {
                 int spinnerValue = (int) spinnerTPS.getValue();
                 if (spinnerValue <= 100 && spinnerValue > 0) TPS = spinnerValue;
-                play(utils, movement, TPS, args);
+                play(TPS, args);
             } else if (scoredPoints >= 0 && !isUploaded) {
                 upload(utils, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
             }
@@ -83,8 +87,8 @@ public class UI extends JFrame {
     }
 
     // Methode zum Starten des Spiels
-    private void play(Utils utils, Movement movement, int Tickrate, String[] args) {
-        new Main().run(utils, movement, Tickrate, soundCheckBox.isSelected(), args);
+    private void play(int Tickrate, String[] args) {
+        new Main().run(this, utils, movement, Tickrate, soundCheckBox.isSelected(), args);
         updateDatabase.stop();
         dispose();
     }
@@ -148,8 +152,8 @@ public class UI extends JFrame {
     // Methode zum Initialisieren der Fensterelemente
     private void createUIComponents() {
 
-        Utils utils = new Utils();
-        Movement movement = new Movement();
+
+
 
         // Initialisierung JPanels mit Hintergrundbild
         UI = new JPanel() {

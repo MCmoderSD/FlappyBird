@@ -10,6 +10,7 @@ import java.util.Iterator;
 
 public class GameUI extends JFrame {
     public static GameUI instance;
+    private final Logic logic;
     public final ArrayList<JLabel> obstacles = new ArrayList<>();
     public final ArrayList<Rectangle> rObstacles = new ArrayList<>();
     public final ArrayList<Rectangle> greenZones = new ArrayList<>();
@@ -23,8 +24,9 @@ public class GameUI extends JFrame {
     public final JPanel mainPanel;
 
     // Konstruktor
-    public GameUI(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, String playerImage, String rainbowImage, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreenImage, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, int Tickrate, boolean sound, String[] args) {
+    public GameUI(UI ui, Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, String playerImage, String rainbowImage, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreenImage, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, int Tickrate, boolean sound, String[] args) {
         instance = this;
+        logic = new Logic(this, ui, utils, movement);
 
         // Initialisiere das Fenster
         setTitle(title);
@@ -112,7 +114,8 @@ public class GameUI extends JFrame {
         // Initialisiere den Timer
         tickrate = new Timer(utils.getTPS(Tickrate), e -> {
             if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
-            Logic.instance.handleTimerTick(utils, movement, height, playerImage, rainbowImage, percentage, verticalGap, obstacleTopImage, obstacleBottomImage, dieSound, hitSound, pointSound, rainbowSound,Tickrate, sound);
+            logic.handleTimerTick(utils, movement, height, playerImage, rainbowImage, percentage, verticalGap, obstacleTopImage, obstacleBottomImage, dieSound, hitSound, pointSound, rainbowSound,Tickrate, sound);
+            System.out.println(utils.calculateSystemLatency());
         });
 
         // Initialisiere die Steuerung
@@ -122,8 +125,8 @@ public class GameUI extends JFrame {
                 super.keyPressed(e);
 
                 // Steuerung
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) Logic.instance.handleSpaceKeyPress(utils, movement, width, height, title, icon, resizable, backgroundImage, flapSound, Tickrate, sound, args);
-                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) Logic.instance.handleGamePause();
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) logic.handleSpaceKeyPress(utils, movement, width, height, title, icon, resizable, backgroundImage, flapSound, Tickrate, sound, args);
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) logic.handleGamePause();
 
 
                 // Konami-Code
@@ -146,9 +149,9 @@ public class GameUI extends JFrame {
 
                     // Wenn der Konami-Code eingegeben wurde, den Entwickler-Modus umschalten
                     if (konamiCodeEntered) {
-                        Logic.instance.developerMode = !Logic.instance.developerMode;
-                        Logic.instance.cheatsEnabled = true;
-                        System.out.println("Developer-Modus umgeschaltet: " + Logic.instance.developerMode);
+                        logic.developerMode = !logic.developerMode;
+                        logic.cheatsEnabled = true;
+                        System.out.println("Developer-Modus umgeschaltet: " + logic.developerMode);
                         userInput.clear();
                     }
                 }
@@ -162,7 +165,7 @@ public class GameUI extends JFrame {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                Logic.instance.handleSpaceKeyPress(utils, movement, width, height, title, icon, resizable, backgroundImage, flapSound, Tickrate, sound, args);
+                logic.handleSpaceKeyPress(utils, movement, width, height, title, icon, resizable, backgroundImage, flapSound, Tickrate, sound, args);
             }
 
             @Override
@@ -250,14 +253,14 @@ public class GameUI extends JFrame {
 
     // Überprüft Kollisionen mit dem Spieler und anderen Objekten
     public void checkCollision(Utils utils, String dieSound, String hitSound, String pointSound, String rainbowSound, boolean sound) {
-        if (!Logic.instance.developerMode) {
-            if (player.getY() > getWidth()) Logic.instance.handleCollision(utils, dieSound, sound);
+        if (!logic.developerMode) {
+            if (player.getY() > getWidth()) logic.handleCollision(utils, dieSound, sound);
 
             for (Rectangle component : rObstacles) {
                 if (component != null) {
-                    if (rPlayer.intersects(component) && !Logic.instance.rainbowMode) {
+                    if (rPlayer.intersects(component) && !logic.rainbowMode) {
                         utils.audioPlayer(hitSound, sound);
-                        Logic.instance.handleCollision(utils, dieSound, sound);
+                        logic.handleCollision(utils, dieSound, sound);
                     }
                 }
             }
@@ -266,7 +269,7 @@ public class GameUI extends JFrame {
         for (int i = 0; i < greenZones.size(); i++) {
             Rectangle component = greenZones.get(i);
             if (component != null && rPlayer.intersects(component)) {
-                Logic.instance.handlePoint(utils, pointSound, rainbowSound, sound);
+                logic.handlePoint(utils, pointSound, rainbowSound, sound);
                 greenZones.remove(i);
                 i--;
             }
@@ -274,13 +277,13 @@ public class GameUI extends JFrame {
     }
 
     public void checkRainbowMode(Utils utils, String playerImage, String rainbowImage) {
-        if (Logic.instance.rainbowMode && !Logic.instance.rainbowModeActive) {
+        if (logic.rainbowMode && !logic.rainbowModeActive) {
             player.setIcon(utils.createImageIcon((rainbowImage)));
-            Logic.instance.rainbowModeActive = true;
+            logic.rainbowModeActive = true;
             System.out.println("Rainbow Mode Active");
-            } else if (!Logic.instance.rainbowMode && Logic.instance.rainbowModeActive){
+            } else if (!logic.rainbowMode && logic.rainbowModeActive){
                 player.setIcon(utils.createImageIcon((playerImage)));
-                Logic.instance.rainbowModeActive = false;
+                logic.rainbowModeActive = false;
         }
     }
 }

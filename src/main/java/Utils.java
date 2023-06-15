@@ -16,6 +16,11 @@ import java.util.Objects;
  * Diese Klasse enthält Methoden, die zum Berechnen von Werten oder zum Lesen von Dateien benötigt werden.
  */
 public class Utils {
+    private final Movement movement;
+    public Utils(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, boolean sound , String[] args, int points) {
+        movement = new Movement(this, width, height, title, icon, resizable, backgroundImage, Tickrate, sound, args, points);
+    }
+    private long startTime = System.currentTimeMillis();
     /**
      * Methode zum Berechnen der Schwerkraft.
      *
@@ -242,5 +247,12 @@ public class Utils {
     public int xPlayerPosition(JPanel frame) {
         int x = frame.getWidth() / 4;
         return Math.min(x, 200);
+    }
+
+    public long calculateSystemLatency() {
+        long currentTime = System.currentTimeMillis();
+        long latency = currentTime - startTime;
+        startTime = currentTime;
+        return latency;
     }
 }

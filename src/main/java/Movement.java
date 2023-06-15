@@ -16,6 +16,10 @@ public class Movement {
     public int backgroundResetX = 0, xPosition = -Main.JumpHeight;
     private int obstacleMoveInt = 200;
     private short playerMoveInt = 0, backgroundCount = 0;
+    private final UI ui;
+    public Movement(Utils utils, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, boolean sound , String[] args, int points) {
+         ui = new UI(utils, this, width, height, title, icon, resizable, backgroundImage, Tickrate, sound, args, points);
+    }
 
     /**
      * Bewegt den Hintergrund auf dem Bildschirm.
