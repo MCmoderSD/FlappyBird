@@ -144,19 +144,24 @@ public class Utils {
     }
 
     public boolean checkUserName(String userName) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(UI.class.getResourceAsStream("data/blockedTerms.txt"))))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                // Konvertiere sowohl den Nutzernamen als auch die Wörter in Kleinbuchstaben
-                String lowercaseUsername = userName.toLowerCase(), lowercaseWord = line.toLowerCase();
-                if (lowercaseUsername.contains(lowercaseWord)) {
-                    return true; // Wort gefunden
+        try (InputStream inputStream = getClass().getResourceAsStream("data/blockedTerms.txt")) {
+            assert inputStream != null;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                String line;
+                int lineNumber = 1;
+                while ((line = reader.readLine()) != null) {
+                    if (userName.contains(line)) {
+                        System.out.println("Match found in line: " + lineNumber);
+                        return true;
+                    }
+                    lineNumber++;
                 }
+                System.out.println("No match found.");
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return false; // Wort nicht gefunden
+        return false;
     }
 
     public Point centerFrame(JFrame frame) {

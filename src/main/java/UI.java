@@ -343,7 +343,7 @@ public class UI extends JFrame {
         ArrayList<String> scores = new ArrayList<>(Arrays.asList(highscores.getValues()));
 
         // Wenn der Benutzername noch nicht in der Tabelle vorhanden ist, wird er hinzugefügt
-        if (!users.contains(username)) users.addLine(username);
+        if (!users.containsLC(username)) users.addLine(username);
 
         // Wenn der Benutzername bereits in der Tabelle vorhanden ist, wird die Punktzahl aktualisiert
         if (usernames.contains(username)) {

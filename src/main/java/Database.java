@@ -175,6 +175,15 @@ public class Database {
                 return false;
             }
 
+            public boolean containsLC(String name) {
+                for (String value : getValues()) {
+                    if (value.equalsIgnoreCase(name)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
             /**
              Retrieves the value of a specific row and column.
              @param column the Column object representing the column
