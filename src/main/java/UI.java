@@ -33,22 +33,6 @@ public class UI extends JFrame {
     private double TPS = 100;
     private boolean newGame = true, isUploaded = true;
 
-    /**
-     * Creates a new UI instance for the Flappy Bird game.
-     *
-     * @param utils           utility class instance
-     * @param movement        movement class instance
-     * @param width           the width of the frame
-     * @param height          the height of the frame
-     * @param title           the title of the frame
-     * @param icon            the icon of the frame
-     * @param resizable       whether the frame is resizable
-     * @param backgroundImage the background image path
-     * @param Tickrate        the tick rate of the game
-     * @param sound           whether the sound is enabled
-     * @param args            additional arguments
-     * @param points          the scored points in the game
-     */
     public UI(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, double Tickrate, boolean sound , String[] args, int points) {
         scoredPoints = points;
         frameWidth = width;
@@ -69,7 +53,7 @@ public class UI extends JFrame {
 
         // Initialisierung der Datenbankverbindung und der Bestenliste
         if (utils.checkSQLConnection(host, port)) {
-            database = new Database(host, port, "FlappyBirdLeaderboard", "flappy", "2013");
+            database = new Database(host, port, "FlappyBirdLeaderboard", "flappy", "c93fee41f754fc69715285fb605c474bdd4b7c0f43e62fb6e8c4daeaea6fa3747333b6348e730bc6ed1e8ec993130407bf958b758642cd09074c6c0e4561be1f");
             initLeaderBoard(utils, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
             updateDatabase.start();
         }
