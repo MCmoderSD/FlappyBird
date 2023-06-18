@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="FlappyBirdLeaderboard@MCmoderSD.live" uuid="fed1385a-78ac-4eb7-afd0-33bc4e5d54b1">
+    <data-source source="LOCAL" name="FlappyBirdLeaderboard@MCmoderSD.de" uuid="fed1385a-78ac-4eb7-afd0-33bc4e5d54b1">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://MCmoderSD.live:3306/FlappyBirdLeaderboard</jdbc-url>
+      <jdbc-url>jdbc:mysql://MCmoderSD.de:3306/FlappyBirdLeaderboard</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

@@ -11,105 +11,57 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.util.Objects;
-
-/**
- * Diese Klasse enthält Methoden, die zum Berechnen von Werten oder zum Lesen von Dateien benötigt werden.
- */
 public class Utils {
-    private final Movement movement;
-    public Utils(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, boolean sound , String[] args, int points) {
-        movement = new Movement(this, width, height, title, icon, resizable, backgroundImage, Tickrate, sound, args, points);
-    }
+    private int getWidthSave;
+    private String getWidthPath, readerPath, createImageIconPath;
+    private BufferedImage readerSave;
+    private ImageIcon createImageIconSave;
     private long startTime = System.currentTimeMillis();
-    /**
-     * Methode zum Berechnen der Schwerkraft.
-     *
-     * @param x der Eingabewert für die Berechnung der Schwerkraft
-     * @return den berechneten Schwerkraftwert
-     */
+    private final double osMultiplier;
+
+    public Utils(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, boolean sound , String[] args, int points, double osMultiplier) {
+        this.osMultiplier = osMultiplier;
+        new Movement(this, width, height, title, icon, resizable, backgroundImage, Tickrate, sound, args, points);
+    }
+
     public int calculateGravity(int x) {
         return -2 * x + 4;
     }
 
-    /**
-     * Methode zum Überprüfen, ob ein String in einem String-Array enthalten ist.
-     *
-     * @param array  das String-Array, in dem gesucht wird
-     * @param target der zu suchende String
-     * @return true, wenn der String im Array enthalten ist, sonst false
-     */
-    @SuppressWarnings("unused")
-    public boolean containsString(String[] array, String target) {
-        for (String element : array) {
-            return element.equals(target);
-        }
-        return false;
-    }
-
-    /**
-     * Methode zum Berechnen der TPS (Ticks per Second).
-     *
-     * @param tickrate die Tickrate, um die TPS zu berechnen
-     * @return den berechneten TPS-Wert
-     */
-    public int getTPS(int tickrate) {
-        return 1000 / tickrate;
-    }
-
-    /**
-     * Methode zum Lesen eines Bildes aus einer Ressource.
-     *
-     * @param resource der Pfad zur Bildressource
-     * @return das gelesene BufferedImage
-     */
     public BufferedImage reader(String resource) {
-        try {
-            if (resource.endsWith(".png")) {
-                return ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)));
+        if (!Objects.equals(readerPath, resource)) {
+            try {
+                if (resource.endsWith(".png")) {
+                    readerPath = resource;
+                    readerSave = ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)));
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            return ImageIO.read(Objects.requireNonNull(getClass().getResource("error/error.png")));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
+        return readerSave;
     }
 
-    /**
-     * Methode zum Erstellen eines ImageIcon aus einer Ressource.
-     *
-     * @param resource der Pfad zur Bildressource
-     * @return das erstellte ImageIcon
-     */
     public ImageIcon createImageIcon(String resource) {
-        URL imageUrl = getClass().getClassLoader().getResource(resource);
-        if (resource.endsWith(".png")) {
-            return new ImageIcon(reader(resource));
+        if (!Objects.equals(createImageIconPath, resource)) {
+            if (resource.endsWith(".png")) {
+                createImageIconPath = resource;
+                createImageIconSave = new ImageIcon(reader(resource));
+            }
+            if (resource.endsWith(".gif")) {
+                URL imageUrl = getClass().getClassLoader().getResource(resource);
+                createImageIconPath = resource;
+                createImageIconSave = new ImageIcon(Objects.requireNonNull(imageUrl));
+            }
         }
-        if (resource.endsWith(".gif")) {
-            return new ImageIcon(Objects.requireNonNull(imageUrl));
-        } else {
-            return new ImageIcon(reader("error/error.png"));
-        }
+        return createImageIconSave;
     }
 
-    /**
-     * Methode zum Lokalisieren eines Punktes basierend auf Bildgröße.
-     *
-     * @param image  der Pfad zur Bildressource
-     * @param width  die Breite des Rahmens
-     * @param height die Höhe des Rahmens
-     * @return der lokalisierte Punkt als Point-Objekt
-     */
     public Point locatePoint(String image, int width, int height) {
         BufferedImage img = reader(image);
         return new Point((width -  img.getWidth()) / 2, (height - img.getHeight()) / 2);
     }
 
-    /**
-     * Methode zum Abspielen einer Audiodatei.
-     *
-     * @param audioFilePath der Pfad zur Audiodatei
-     * @param sound         true, um den Ton abzuspielen, false, um den Ton stummzuschalten
-     */
     public void audioPlayer(String audioFilePath, boolean sound) {
         if (sound && !Logic.instance.gamePaused) {
             try {
@@ -147,21 +99,14 @@ public class Utils {
         }
     }
 
-    /**
-     * Methode zur Rückgabe der Breite des Hintergrunds.
-     *
-     * @return die Breite des Hintergrunds
-     */
-    public int getBackgroundWidth() {
-        return reader("Images/Background.png").getWidth();
+    public int getBackgroundWidth(String path) {
+        if (!Objects.equals(path, getWidthPath)) {
+            getWidthPath = path;
+            getWidthSave = reader(path).getWidth();
+        }
+        return getWidthSave;
     }
 
-    /**
-     * Methode zum Setzen eines Platzhalters für ein JTextField.
-     *
-     * @param textField   das JTextField, für das der Platzhalter gesetzt wird
-     * @param placeholder der Platzhalter-Text
-     */
     public void setPlaceholder(JTextField textField, String placeholder) {
         Font originalFont = textField.getFont();
 
@@ -188,13 +133,6 @@ public class Utils {
         });
     }
 
-    /**
-     * Methode zum Überprüfen, ob eine Verbindung zu einem Server hergestellt werden kann.
-     *
-     * @param ip   die IP-Adresse des Servers
-     * @param port der Port des Servers
-     * @return true, wenn eine Verbindung hergestellt werden kann, sonst false
-     */
     public boolean checkSQLConnection(String ip, String port) {
         try (Socket socket = new Socket()) {
             // Verbindungsversuch zum Server
@@ -205,12 +143,6 @@ public class Utils {
         }
     }
 
-    /**
-     * Methode zum Überprüfen, ob ein Nutzername blockiert ist.
-     *
-     * @param userName der zu überprüfende Nutzername
-     * @return true, wenn der Nutzername blockiert ist, sonst false
-     */
     public boolean checkUserName(String userName) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(UI.class.getResourceAsStream("data/blockedTerms.txt"))))) {
             String line;
@@ -227,26 +159,21 @@ public class Utils {
         return false; // Wort nicht gefunden
     }
 
-    /**
-     * Methode zum Zentrieren eines JFrames.
-     *
-     * @param frame das JFrame, das zentriert werden soll
-     * @return die zentrierte Position als Point-Objekt
-     */
     public Point centerFrame(JFrame frame) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         return new Point(((screenSize.width - frame.getWidth()) / 2), ((screenSize.height - frame.getHeight()) / 2));
     }
 
-    /**
-     * Berechnet die Position des Spielers auf der X-Achse.
-     *
-     * @param frame das JPanel, das den Spieler enthält
-     * @return die X-Position des Spielers
-     */
     public int xPlayerPosition(JPanel frame) {
         int x = frame.getWidth() / 4;
         return Math.min(x, 200);
+    }
+
+    public double calculateOSspecifcTickrate(double Tickrate) {
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("windows")) return Tickrate;
+        if (os.contains("linux")) return (Tickrate * osMultiplier); // Windows Lag Compensation
+        return Tickrate;
     }
 
     public long calculateSystemLatency() {

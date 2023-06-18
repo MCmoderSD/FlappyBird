@@ -2,38 +2,24 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-/**
- Diese Klasse enthält Methoden, um die Objekte des Spiels zu bewegen.
- */
 public class Movement {
-    /**
-     * Zurücksetzen der X-Position des Hintergrunds auf 0.
-     /
-     public int backgroundResetX = 0;
-     /*
-     * Aktuelle X-Position des Spielers.
-     */
     public int backgroundResetX = 0, xPosition = -Main.JumpHeight;
     private int obstacleMoveInt = 200;
     private short playerMoveInt = 0, backgroundCount = 0;
-    private final UI ui;
+    private final String backgroundImage;
+
     public Movement(Utils utils, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, boolean sound , String[] args, int points) {
-         ui = new UI(utils, this, width, height, title, icon, resizable, backgroundImage, Tickrate, sound, args, points);
+        this.backgroundImage = backgroundImage;
+        new UI(utils, this, width, height, title, icon, resizable, backgroundImage, Tickrate, sound, args, points);
     }
 
-    /**
-     * Bewegt den Hintergrund auf dem Bildschirm.
-     *
-     * @param utils     Das Hilfsobjekt für die Spiellogik.
-     * @param tickRate  Die Taktgeschwindigkeit des Spiels.
-     */
-    public void moveBackground(Utils utils, int tickRate) {
+    public void moveBackground(Utils utils, double Tickrate) {
         // Hintergrund bewegen
-        if (backgroundCount >= (2 / (100 / tickRate))) {
+        if (backgroundCount >= (2 / (100 / Tickrate))) {
             backgroundResetX--;
 
             // Zurücksetzen der Hintergrundposition
-            if (backgroundResetX <= -utils.getBackgroundWidth()) {
+            if (backgroundResetX <= -utils.getBackgroundWidth(backgroundImage)) {
                 backgroundResetX = 0;
             }
             GameUI.instance.mainPanel.repaint();
@@ -42,15 +28,9 @@ public class Movement {
         backgroundCount++;
     }
 
-    /**
-     * Bewegt den Spieler.
-     *
-     * @param utils     Das Hilfsobjekt für die Spiellogik.
-     * @param tickRate  Die Taktgeschwindigkeit des Spiels.
-     */
-    public void movePlayer(Utils utils, int tickRate) {
+    public void movePlayer(Utils utils, double Tickrate) {
         // Spielerbewegung
-        if (playerMoveInt >= (3 / (100 / tickRate))) { // Zähler
+        if (playerMoveInt >= (3 / (100 / Tickrate))) { // Zähler
             xPosition = xPosition + 1;
             int yPosition = (GameUI.instance.player.getY() - utils.calculateGravity(xPosition));
             GameUI.instance.player.setLocation(utils.xPlayerPosition(GameUI.instance.mainPanel), yPosition);
@@ -60,49 +40,32 @@ public class Movement {
         playerMoveInt++; // Zähler erhöhen
     }
 
-    /**
-     * Bewegt die Hindernisse auf dem Bildschirm.
-     *
-     * @param utils             Das Hilfsobjekt für die Spiellogik.
-     * @param percentage        Die Prozentsatzchance für das Auftreten von Hindernissen.
-     * @param verticalGap       Der vertikale Abstand zwischen den Hindernissen.
-     * @param obstacleTopImage  Der Dateiname des Bildes für das obere Hindernis.
-     * @param obstacleBottomImage  Der Dateiname des Bildes für das untere Hindernis.
-     * @param tickRate          Die Taktgeschwindigkeit des Spiels.
-     */
-    public void moveObstacles(Utils utils, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, int tickRate) {
+    public void moveObstacles(Utils utils, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, double Tickrate, int points) {
         for (JLabel component : GameUI.instance.obstacles) {
             if (component != null && component.getIcon() != null) {
                 int x = component.getX();
-                int newX = x - (100 / tickRate);
+                int newX = x - (int) Math.round(100 / Tickrate * (1 + ((double) points / 500)));
                 component.setLocation(newX, component.getY());
             }
         }
 
-        moveRectangles(tickRate, GameUI.instance.rObstacles, GameUI.instance.greenZones);
+        moveRectangles(Tickrate, points, GameUI.instance.rObstacles, GameUI.instance.greenZones);
         obstacleMoveInt = obstacleMoveInt + 1;
 
         // Periodisch neue Hindernisse generieren
-        if (obstacleMoveInt >= (200 / (100 / tickRate))) {
+        if (obstacleMoveInt >= ((200 / (100 / Tickrate)* (1 - ((double) points / 500))))) {
             GameUI.instance.generateObstacles(utils, percentage, verticalGap, obstacleTopImage, obstacleBottomImage);
             obstacleMoveInt = 0;
         }
     }
-
-    /**
-     * Bewegt die Rechtecke auf dem Bildschirm.
-     *
-     * @param tickRate         Die Taktgeschwindigkeit des Spiels.
-     * @param rectangleList    Eine Liste von Rechteck-Arrays.
-     */
     @SafeVarargs
-    private final void moveRectangles(int tickRate, ArrayList<Rectangle>... rectangleList) {
+    private final void moveRectangles(double Tickrate, int points, ArrayList<Rectangle>... rectangleList) {
         for (ArrayList<Rectangle> rectangles : rectangleList) {
             for (Rectangle component : rectangles) {
                 if (component != null) {
                     component.getBounds();
                     int x = (int) component.getX();
-                    int newX = x - (100 / tickRate);
+                    int newX = x - (int) Math.round(100 / Tickrate * (1 + ((double) points / 500)));
                     component.setLocation(newX, (int) component.getY());
                 }
             }

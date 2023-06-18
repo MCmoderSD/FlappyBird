@@ -24,9 +24,9 @@ public class GameUI extends JFrame {
     public final JPanel mainPanel;
 
     // Konstruktor
-    public GameUI(UI ui, Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, String playerImage, String rainbowImage, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreenImage, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, int Tickrate, boolean sound, String[] args) {
+    public GameUI(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, String playerImage, String rainbowImage, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreenImage, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, double Tickrate, boolean sound, String[] args) {
         instance = this;
-        logic = new Logic(this, ui, utils, movement);
+        logic = new Logic(this);
 
         // Initialisiere das Fenster
         setTitle(title);
@@ -112,10 +112,10 @@ public class GameUI extends JFrame {
         mainPanel.add(pauseScreen);
 
         // Initialisiere den Timer
-        tickrate = new Timer(utils.getTPS(Tickrate), e -> {
+        tickrate = new Timer((int) Math.round(1000/Tickrate), e -> {
             if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
             logic.handleTimerTick(utils, movement, height, playerImage, rainbowImage, percentage, verticalGap, obstacleTopImage, obstacleBottomImage, dieSound, hitSound, pointSound, rainbowSound,Tickrate, sound);
-            System.out.println(utils.calculateSystemLatency());
+            if (logic.developerMode) System.out.println(utils.calculateSystemLatency());
         });
 
         // Initialisiere die Steuerung

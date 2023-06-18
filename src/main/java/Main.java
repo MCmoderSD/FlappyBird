@@ -1,7 +1,3 @@
-/**
- * Diese Klasse ist die Hauptklasse des Spiels. Sie enthält die Main-Methode, die das Spiel startet.
- * Außerdem enthält sie die Attribute für die Spielkonfiguration.
- */
 public class Main {
     // Attribute für die Spielkonfiguration
     public static final int JumpHeight = 7; // Die Sprunghöhe des Spielers
@@ -23,15 +19,10 @@ public class Main {
     private static final int WindowsSizeY = 800; // Fensterhöhe
     private static final boolean Resizeable = false; // Gibt an, ob das Fenster in der Größe verändert werden kann
     private static final int TPS = 100; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde) Maximum: 100
+    private static final double osMultiplier = 0.936745818; // Multiplikator für die Tickrate, um die Tickrate auf dem Betriebssystem anzupassen
 
-    /**
-
-     Die main-Methode zum Starten des Spiels.
-
-     @param args Die Befehlszeilenargumente.
-     */
     public static void main(String[] args) {
-        new Utils(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, Background, TPS, true, args, -10);
+        new Utils(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, Background, TPS, true, args, -10, osMultiplier);
     }
 
     /**
@@ -42,12 +33,11 @@ public class Main {
      @param sound Gibt an, ob Sound aktiviert ist.
      @param args Die Befehlszeilenargumente.
      */
-    public void run(UI ui, Utils utils, Movement movement, int Tickrate, boolean sound, String[] args) {
+    public void run(Utils utils, Movement movement, double Tickrate, boolean sound, String[] args) {
 
         // Starte die Spiellogik mit den angegebenen Parametern
         if (args.length == 0) {
             new GameUI(
-                    ui,
                     utils,
                     movement,
                     WindowSizeX,
