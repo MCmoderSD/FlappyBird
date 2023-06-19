@@ -30,7 +30,7 @@ public class UI extends JFrame {
     private JLabel score;
     private JSpinner spinnerTPS;
     private JScrollPane scrollPane;
-    private double TPS = 100;
+    private double TPS;
     private boolean newGame = true, isUploaded = true;
 
     public UI(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, double Tickrate, boolean sound , String[] args, int points) {
@@ -40,9 +40,12 @@ public class UI extends JFrame {
         this.backgroundImage = backgroundImage;
         this.utils = utils;
         this.movement = movement;
+        this.TPS = Tickrate;
 
         // Initialisierung des Fensters
         initFrame(utils, movement, width, height, title, icon, resizable, backgroundImage, args, scoredPoints, Tickrate);
+        TPS = TPS + (1 + Tickrate - utils.calculateOSspecifcTickrate(Tickrate));
+        if (TPS > 100) TPS = 100;
         spinnerTPS.setValue((int) TPS);
         score.setVisible(true);
         playerName.setVisible(true);

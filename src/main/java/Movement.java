@@ -11,7 +11,7 @@ public class Movement {
     public Movement(Utils utils, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, int Tickrate, boolean sound , String[] args, int points) {
         this.backgroundImage = backgroundImage;
         xPosition = - JumpHeight;
-        new UI(utils, this, width, height, title, icon, resizable, backgroundImage, Tickrate, JumpHeight, sound, args, points);
+        new UI(utils, this, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, sound, args, points);
     }
 
     public void moveBackground(Utils utils, double Tickrate) {
