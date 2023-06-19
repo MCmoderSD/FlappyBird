@@ -176,10 +176,9 @@ public class Utils {
 
     public double calculateOSspecifcTickrate(double Tickrate) {
         String os = System.getProperty("os.name").toLowerCase();
-        // if (os.contains("windows")) return Tickrate;
-        return (Tickrate * osMultiplier); // Windows Lag Compensation
-        //if (os.contains("linux")) return (Tickrate * osMultiplier); // Windows Lag Compensation
-        //return Tickrate;
+        if (os.contains("windows")) return Tickrate;
+        if (os.contains("linux")) return (Tickrate * osMultiplier); // Windows Lag Compensation
+        return Tickrate;
     }
 
     public long calculateSystemLatency() {
