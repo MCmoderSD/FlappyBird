@@ -87,7 +87,7 @@ public class Logic {
     }
 
     private void handleRainbowMode(Utils utils, String rainbowSound, boolean sound) {
-        new Thread(() -> {
+        Thread rainbow = new Thread(() -> {
             try {
                 rainbowMode = true;
                 utils.audioPlayer(rainbowSound, sound);
@@ -96,6 +96,12 @@ public class Logic {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }).start();
+        });
+        long startTime = System.currentTimeMillis();
+        rainbow.start();
+        if (System.currentTimeMillis() > startTime + 7000) {
+            rainbowMode = false;
+            rainbow.interrupt();
+        }
     }
 }
