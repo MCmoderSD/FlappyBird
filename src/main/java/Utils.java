@@ -19,9 +19,9 @@ public class Utils {
     private long startTime = System.currentTimeMillis();
     private final double osMultiplier;
 
-    public Utils(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, boolean sound , String[] args, int points, double osMultiplier) {
+    public Utils(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, int Tickrate, boolean sound , String[] args, int points, double osMultiplier) {
         this.osMultiplier = osMultiplier;
-        new Movement(this, width, height, title, icon, resizable, backgroundImage, Tickrate, sound, args, points);
+        new Movement(this, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, sound, args, points);
     }
 
     public int calculateGravity(int x) {

@@ -1,6 +1,6 @@
 public class Main {
     // Attribute für die Spielkonfiguration
-    public static final int JumpHeight = 7; // Die Sprunghöhe des Spielers
+    private static final int JumpHeight = 7; // Die Sprunghöhe des Spielers
     private static final String Title = "Flappy Bird"; // Titel des Spiels
     private static final String Background = "911/Skyline.png"; // Dateipfad für den Hintergrund
     private static final String Player = "911/Plane.png"; // Dateipfad für das Spielerbild
@@ -22,7 +22,7 @@ public class Main {
     private static final double osMultiplier = 0.936745818; // Multiplikator für die Tickrate, um die Tickrate auf dem Betriebssystem anzupassen
 
     public static void main(String[] args) {
-        new Utils(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, Background, TPS, true, args, -10, osMultiplier);
+        new Utils(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, Background, JumpHeight, TPS, true, args, -10, osMultiplier);
     }
 
     /**
@@ -33,7 +33,7 @@ public class Main {
      @param sound Gibt an, ob Sound aktiviert ist.
      @param args Die Befehlszeilenargumente.
      */
-    public void run(Utils utils, Movement movement, double Tickrate, boolean sound, String[] args) {
+    public void run(Utils utils, Movement movement, int JumpHeight, double Tickrate, boolean sound, String[] args) {
 
         // Starte die Spiellogik mit den angegebenen Parametern
         if (args.length == 0) {
@@ -48,6 +48,7 @@ public class Main {
                     Background,
                     Player,
                     Rainbow,
+                    JumpHeight,
                     25,
                     200,
                     ObstacleTop,

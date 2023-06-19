@@ -33,7 +33,7 @@ public class UI extends JFrame {
     private double TPS = 100;
     private boolean newGame = true, isUploaded = true;
 
-    public UI(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, double Tickrate, boolean sound , String[] args, int points) {
+    public UI(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, double Tickrate, boolean sound , String[] args, int points) {
         scoredPoints = points;
         frameWidth = width;
         frameHeight= height;
@@ -49,12 +49,12 @@ public class UI extends JFrame {
         soundCheckBox.setSelected(sound);
 
         // Timer für die Aktualisierung der Bestenliste
-        updateDatabase = new Timer(5000, e -> initLeaderBoard(utils, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, args, points));
+        updateDatabase = new Timer(5000, e -> initLeaderBoard(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, args, points));
 
         // Initialisierung der Datenbankverbindung und der Bestenliste
         if (utils.checkSQLConnection(host, port)) {
             database = new Database(host, port, "FlappyBirdLeaderboard", "flappy", "c93fee41f754fc69715285fb605c474bdd4b7c0f43e62fb6e8c4daeaea6fa3747333b6348e730bc6ed1e8ec993130407bf958b758642cd09074c6c0e4561be1f");
-            initLeaderBoard(utils, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
+            initLeaderBoard(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, args, points);
             updateDatabase.start();
         }
 
@@ -63,16 +63,16 @@ public class UI extends JFrame {
             if (newGame) {
                 int spinnerValue = (int) spinnerTPS.getValue();
                 if (spinnerValue <= 100 && spinnerValue > 0) TPS = spinnerValue;
-                play(TPS, args);
+                play(JumpHeight, TPS, args);
             } else if (scoredPoints >= 0 && !isUploaded) {
-                upload(utils, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
+                upload(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, args, points);
             }
         });
     }
 
     // Methode zum Starten des Spiels
-    private void play(double Tickrate, String[] args) {
-        new Main().run(utils, movement, utils.calculateOSspecifcTickrate(Tickrate), soundCheckBox.isSelected(), args);
+    private void play(int JumpHeight, double Tickrate, String[] args) {
+        new Main().run(utils, movement, JumpHeight, utils.calculateOSspecifcTickrate(Tickrate), soundCheckBox.isSelected(), args);
         updateDatabase.stop();
         dispose();
     }
@@ -105,7 +105,7 @@ public class UI extends JFrame {
     }
 
     // Methode zum Hochladen des Scores
-    private void upload(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, double Tickrate, String[] args, int points) {
+    private void upload(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, double Tickrate, String[] args, int points) {
         bStart.setText("Nochmal Spielen");
         bStart.setToolTipText("Nochmal Spielen");
         isUploaded = true;
@@ -119,13 +119,13 @@ public class UI extends JFrame {
                         writeLeaderBoard(playerName.getText(), points); // Hochladen des Scores
                     } else { // Fehlermeldung bei unerlaubtem Username
                         JOptionPane.showMessageDialog(null, "Der Username ist nicht erlaubt!", "Fehler", JOptionPane.ERROR_MESSAGE);
-                        new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, soundCheckBox.isSelected(), args, points);
+                        new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, soundCheckBox.isSelected(), args, points);
                         updateDatabase.stop();
                         dispose();
                     }
                 } else { // Fehlermeldung bei zu langem Username
                     JOptionPane.showMessageDialog(null, "Der Username ist zu lang!", "Fehler", JOptionPane.ERROR_MESSAGE);
-                    new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, soundCheckBox.isSelected(), args, points);
+                    new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, soundCheckBox.isSelected(), args, points);
                     updateDatabase.stop();
                     dispose();
                 }
@@ -210,7 +210,7 @@ public class UI extends JFrame {
     }
 
     // Methode zum Aktualisieren des Leaderboards
-    private void initLeaderBoard(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, double Tickrate, String[] args, int points) {
+    private void initLeaderBoard(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, double Tickrate, String[] args, int points) {
         if (utils.checkSQLConnection(host, port)) {
             leaderBoard.setVisible(true);
             scrollPane.setVisible(true);
@@ -254,7 +254,7 @@ public class UI extends JFrame {
             adjustRowHeight(leaderBoard);
             adjustColumnWidths(leaderBoard);
         } else { // Wenn keine Verbindung zur Datenbank besteht
-            handleNoSQLConnection(utils, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, args, points);
+            handleNoSQLConnection(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, args, points);
         }
     }
 
@@ -322,11 +322,11 @@ public class UI extends JFrame {
     }
 
     // Methode zum Anzeigen einer Fehlermeldung, wenn keine Verbindung zum SQL Server hergestellt werden konnte
-    private void handleNoSQLConnection(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, double Tickrate, String[] args, int points) {
+    private void handleNoSQLConnection(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, double Tickrate, String[] args, int points) {
         if (!updateDatabase.isRunning()) JOptionPane.showMessageDialog(null, "Es konnte keine Verbindung zum SQL Server hergestellt werden!", "Fehler", JOptionPane.ERROR_MESSAGE);
         if (updateDatabase.isRunning()) JOptionPane.showMessageDialog(null, "Verbindung zum SQL Server verloren, überprüfe deine Internetverbindung!", "Fehler", JOptionPane.ERROR_MESSAGE);
         updateDatabase.stop();
-        new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, soundCheckBox.isSelected(),args, points);
+        new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, soundCheckBox.isSelected(),args, points);
         dispose();
     }
 

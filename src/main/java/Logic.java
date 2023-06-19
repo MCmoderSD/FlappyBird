@@ -9,7 +9,7 @@ public class Logic {
         instance = this;
     }
 
-    public void handleSpaceKeyPress(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, String flapSound, double Tickrate, boolean sound, String[] args) {
+    public void handleSpaceKeyPress(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, String flapSound, double Tickrate, boolean sound, String[] args) {
 
         // Wenn das Spiel nicht läuft und nicht beendet ist
         if (!gameUI.tickrate.isRunning() && !gameState && !gameOver) {
@@ -21,13 +21,13 @@ public class Logic {
 
         // Wenn das Spiel nicht läuft und beendet ist
         if (!gameUI.tickrate.isRunning() && !gameState && gameOver) {
-            new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, Tickrate, sound, args, gameUI.points); // Fenster erneut initialisieren
+            new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, sound, args, gameUI.points); // Fenster erneut initialisieren
             gameUI.dispose(); // Aktuelles Fenster schließen
         }
 
         // Wenn das Spiel nicht beendet ist, Sprung ausführen
         if (!gameOver) {
-            handleBounce(utils, movement, flapSound, sound);
+            handleBounce(utils, movement, JumpHeight, flapSound, sound);
         }
     }
 
@@ -62,9 +62,9 @@ public class Logic {
         gameUI.gameOver.setVisible(true);
     }
 
-    public void handleBounce(Utils utils, Movement movement, String flapSound, boolean sound) {
+    public void handleBounce(Utils utils, Movement movement, int JumpHeight, String flapSound, boolean sound) {
         utils.audioPlayer(flapSound, sound);
-        if (gameUI.player.getY() > 32) movement.xPosition = -Main.JumpHeight; // Spieler nach oben bewegen
+        if (gameUI.player.getY() > 32) movement.xPosition = - JumpHeight; // Spieler nach oben bewegen
     }
 
     public void handlePoint(Utils utils, String pointSound, String rainbowSound, boolean sound) {

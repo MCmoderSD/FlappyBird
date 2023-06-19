@@ -3,14 +3,15 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class Movement {
-    public int backgroundResetX = 0, xPosition = -Main.JumpHeight;
+    public int backgroundResetX = 0, xPosition;
     private int obstacleMoveInt = 200;
     private short playerMoveInt = 0, backgroundCount = 0;
     private final String backgroundImage;
 
-    public Movement(Utils utils, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int Tickrate, boolean sound , String[] args, int points) {
+    public Movement(Utils utils, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, int Tickrate, boolean sound , String[] args, int points) {
         this.backgroundImage = backgroundImage;
-        new UI(utils, this, width, height, title, icon, resizable, backgroundImage, Tickrate, sound, args, points);
+        xPosition = - JumpHeight;
+        new UI(utils, this, width, height, title, icon, resizable, backgroundImage, Tickrate, JumpHeight, sound, args, points);
     }
 
     public void moveBackground(Utils utils, double Tickrate) {

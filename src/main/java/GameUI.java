@@ -24,7 +24,7 @@ public class GameUI extends JFrame {
     public final JPanel mainPanel;
 
     // Konstruktor
-    public GameUI(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, String playerImage, String rainbowImage, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreenImage, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, double Tickrate, boolean sound, String[] args) {
+    public GameUI(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, String playerImage, String rainbowImage, int JumpHeight, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreenImage, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, double Tickrate, boolean sound, String[] args) {
         instance = this;
         logic = new Logic(this);
 
@@ -125,7 +125,7 @@ public class GameUI extends JFrame {
                 super.keyPressed(e);
 
                 // Steuerung
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) logic.handleSpaceKeyPress(utils, movement, width, height, title, icon, resizable, backgroundImage, flapSound, Tickrate, sound, args);
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) logic.handleSpaceKeyPress(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, flapSound, Tickrate, sound, args);
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) logic.handleGamePause();
 
 
@@ -165,7 +165,7 @@ public class GameUI extends JFrame {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                logic.handleSpaceKeyPress(utils, movement, width, height, title, icon, resizable, backgroundImage, flapSound, Tickrate, sound, args);
+                logic.handleSpaceKeyPress(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, flapSound, Tickrate, sound, args);
             }
 
             @Override
