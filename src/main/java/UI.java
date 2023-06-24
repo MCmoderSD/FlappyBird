@@ -8,6 +8,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Objects;
 
 /**
  * Diese Klasse enthält alle Methoden für verschiedene Berechnungen.
@@ -75,7 +76,7 @@ public class UI extends JFrame {
 
     // Methode zum Starten des Spiels
     private void play(int JumpHeight, double Tickrate, String[] args) {
-        new Main().run(utils, movement, JumpHeight, utils.calculateOSspecifcTickrate(Tickrate), soundCheckBox.isSelected(), args);
+        new Main(args).run(utils, movement, JumpHeight, utils.calculateOSspecifcTickrate(Tickrate), soundCheckBox.isSelected(), args);
         updateDatabase.stop();
         dispose();
     }
@@ -96,6 +97,9 @@ public class UI extends JFrame {
         movement.backgroundResetX = 0;
 
         score.setText("Global Leaderboard");
+
+        if (Objects.equals(backgroundImage, "911/Skyline.png")) playerName.setForeground(Color.WHITE); // ToDo: Fixen
+        else playerName.setForeground(Color.BLACK);
 
         if (points >= 0) {
             isUploaded = false;

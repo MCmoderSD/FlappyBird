@@ -86,6 +86,7 @@ public class Logic {
         }
     }
 
+    @SuppressWarnings("BlockingMethodInNonBlockingContext")
     private void handleRainbowMode(Utils utils, String rainbowSound, boolean sound) {
         Thread rainbow = new Thread(() -> {
             try {

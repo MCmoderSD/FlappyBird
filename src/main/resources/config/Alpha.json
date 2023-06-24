@@ -1,0 +1,19 @@
+{
+  "Title": "Flappy Bird",
+  "Background": "",
+  "Player": "Images/Bird.png",
+  "Rainbow": "",
+  "ObstacleTop": "tests/ObstaclePlaceHolderGreen.png",
+  "ObstacleBottom": "tests/ObstaclePlaceHolderRed.png",
+  "Icon": "tests/Icon.png",
+  "GameOver": "",
+  "Pause": "",
+  "dieSound": "",
+  "flapSound": "",
+  "hitSound": "",
+  "pointSound": "",
+  "rainbowSound": "",
+  "WindowSizeX": 800,
+  "WindowSizeY": 800,
+  "Resizeable": false
+}

@@ -1,38 +1,69 @@
+import org.json.JSONObject;
+
 public class Main {
     // Attribute für die Spielkonfiguration
     private static final int JumpHeight = 7; // Die Sprunghöhe des Spielers
-    private static final String Title = "Flappy Bird"; // Titel des Spiels
-    private static final String Background = "911/Skyline.png"; // Dateipfad für den Hintergrund
-    private static final String Player = "911/Plane.png"; // Dateipfad für das Spielerbild
-    private static final String Rainbow = "Lena/rainbowBird.gif"; // Dateipfad für das Regenbogenbild
-    private static final String ObstacleTop = "911/TowerTop.png"; // Dateipfad für das Hindernis von oben
-    private static final String ObstacleBottom = "911/TowerBottom.png"; // Dateipfad für das Hindernis von unten
-    private static final String Icon = "Images/Icon.png"; // Dateipfad für das Spielsymbol
-    private static final String GameOver = "tests/GameOver.png"; // Dateipfad für das Game Over-Bild
-    private static final String Pause = "tests/Paused.png"; // Dateipfad für das Pause-Bild
-    private static final String dieSound = "sounds/mono/die.wav"; // Dateipfad für den Sterbesound
-    private static final String flapSound = "sounds/mono/flap.wav"; // Dateipfad für den Flügelschlag-Sound
-    private static final String hitSound = "sounds/mono/hit.wav"; // Dateipfad für den Aufprall-Sound
-    private static final String pointSound = "sounds/mono/point.wav"; // Dateipfad für den Punkte-Sound
-    private static final String RainbowSound = "sounds/mono/rainbow.wav"; // Dateipfad für den Regenbogen-Sound
-    private static final int WindowSizeX = 800; // Fensterbreite
-    private static final int WindowsSizeY = 800; // Fensterhöhe
-    private static final boolean Resizeable = false; // Gibt an, ob das Fenster in der Größe verändert werden kann
+    private static final int percentage = 25; // Regelt die höhe der Hindernisse
+    private static final int Gap = 200; // Der Abstand zwischen den Hindernissen
     private static final int TPS = 100; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde) Maximum: 100
     private static final double osMultiplier = 0.936745818; // Multiplikator für die Tickrate, um die Tickrate auf dem Betriebssystem anzupassen
+    // Attribute für Graphics
+    private int WindowSizeX;
+    private int WindowSizeY;
+    private String Title;
+    private  String Icon;
+    private  boolean Resizeable;
+    private  String Background;
+    private  String Player;
+    private  String Rainbow;
+    private  String ObstacleTop;
+    private  String ObstacleBottom;
+    private  String GameOver;
+    private  String Pause;
 
-    public static void main(String[] args) {
-        new Utils(WindowSizeX, WindowsSizeY, Title, Icon, Resizeable, Background, JumpHeight, TPS, true, args, -10, osMultiplier);
+    // Attribute für Sound
+    private  String dieSound;
+    private  String flapSound;
+    private  String hitSound;
+    private  String pointSound;
+    private  String RainbowSound;
+
+    public Main(String[] args) {
+        Utils utils = new Utils(osMultiplier);
+        JSONObject config = utils.checkDate("LenaBeta");
+
+        if (config != null) {
+            // Settings
+            WindowSizeX = config.getInt("WindowSizeX");
+            WindowSizeY = config.getInt("WindowSizeY");
+            Title = config.getString("Title");
+            Icon = config.getString("Icon");
+            Resizeable = config.getBoolean("Resizeable");
+
+            // Graphics
+            Background = config.getString("Background");
+            Player = config.getString("Player");
+            Rainbow = config.getString("Rainbow");
+            ObstacleTop = config.getString("ObstacleTop");
+            ObstacleBottom = config.getString("ObstacleBottom");
+            GameOver = config.getString("GameOver");
+            Pause = config.getString("Pause");
+
+            // Sound
+            dieSound = config.getString("dieSound");
+            flapSound = config.getString("flapSound");
+            hitSound = config.getString("hitSound");
+            pointSound = config.getString("pointSound");
+            RainbowSound = config.getString("rainbowSound");
+
+            new Movement(utils, WindowSizeX, WindowSizeY, Title, Icon, Resizeable, Background, JumpHeight, TPS, true, args, -10);
+        }
     }
 
-    /**
-     Methode zum Starten des Spiels.
-     @param utils Das Utils-Objekt.
-     @param movement Das Movement-Objekt.
-     @param Tickrate Die Tickrate des Spiels.
-     @param sound Gibt an, ob Sound aktiviert ist.
-     @param args Die Befehlszeilenargumente.
-     */
+    public static void main(String[] args) {
+        new Main(args);
+    }
+
     public void run(Utils utils, Movement movement, int JumpHeight, double Tickrate, boolean sound, String[] args) {
 
         // Starte die Spiellogik mit den angegebenen Parametern
@@ -41,7 +72,7 @@ public class Main {
                     utils,
                     movement,
                     WindowSizeX,
-                    WindowsSizeY,
+                    WindowSizeY,
                     Title,
                     Icon,
                     Resizeable,
@@ -49,8 +80,8 @@ public class Main {
                     Player,
                     Rainbow,
                     JumpHeight,
-                    25,
-                    200,
+                    percentage,
+                    Gap,
                     ObstacleTop,
                     ObstacleBottom,
                     GameOver,

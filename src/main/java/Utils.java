@@ -1,3 +1,6 @@
+import org.apache.commons.io.IOUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -10,7 +13,10 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.Objects;
+@SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class Utils {
     private int getWidthSave;
     private String getWidthPath, readerPath, createImageIconPath;
@@ -19,9 +25,8 @@ public class Utils {
     private long startTime = System.currentTimeMillis();
     private final double osMultiplier;
 
-    public Utils(int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, int Tickrate, boolean sound , String[] args, int points, double osMultiplier) {
+    public Utils(double osMultiplier) {
         this.osMultiplier = osMultiplier;
-        new Movement(this, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, sound, args, points);
     }
 
     public int calculateGravity(int x) {
@@ -172,6 +177,28 @@ public class Utils {
     public int xPlayerPosition(JPanel frame) {
         int x = frame.getWidth() / 4;
         return Math.min(x, 200);
+    }
+
+    public JSONObject checkDate(String Default) {
+        JSONObject config;
+        LocalDate date = LocalDate.now();
+        if (date.getMonthValue() == 9 && date.getDayOfMonth() == 11 ) config = loadConfig("config/911.json");
+        else config = loadConfig("config/" + Default + ".json");
+        return config;
+    }
+
+    public JSONObject loadConfig(String path) {
+        try {
+            InputStream inputStream = Main.class.getClassLoader().getResourceAsStream(path);
+            if (inputStream == null) {
+                throw new FileNotFoundException("Die Konfigurationsdatei konnte nicht gefunden werden: " + path);
+            }
+            String jsonString = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+            return new JSONObject(jsonString);
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public double calculateOSspecifcTickrate(double Tickrate) {
