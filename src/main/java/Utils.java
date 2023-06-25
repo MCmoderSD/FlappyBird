@@ -1,6 +1,7 @@
-import org.apache.commons.io.IOUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jdk.internal.util.xml.impl.Input;
+
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -13,8 +14,6 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.util.Objects;
 @SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class Utils {
@@ -179,26 +178,14 @@ public class Utils {
         return Math.min(x, 200);
     }
 
-    public JSONObject checkDate(String Default) {
-        JSONObject config;
-        LocalDate date = LocalDate.now();
-        if (date.getMonthValue() == 9 && date.getDayOfMonth() == 11 ) config = loadConfig("config/911.json");
-        else config = loadConfig("config/" + Default + ".json");
-        return config;
-    }
-
-    public JSONObject loadConfig(String path) {
-        try {
-            InputStream inputStream = Main.class.getClassLoader().getResourceAsStream(path);
-            if (inputStream == null) {
-                throw new FileNotFoundException("Die Konfigurationsdatei konnte nicht gefunden werden: " + path);
-            }
-            String jsonString = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-            return new JSONObject(jsonString);
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
+    public JsonNode loadConfig(String path) {
+        ObjectMapper mapper = new ObjectMapper();
+        try (InputStream inputStream = Main.class.getClassLoader().getResourceAsStream(path)) {
+            assert inputStream != null;
+            return mapper.readTree(inputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     public double calculateOSspecifcTickrate(double Tickrate) {
