@@ -1,7 +1,5 @@
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jdk.internal.util.xml.impl.Input;
-
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -14,8 +12,8 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.Objects;
-@SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class Utils {
     private int getWidthSave;
     private String getWidthPath, readerPath, createImageIconPath;
@@ -176,6 +174,14 @@ public class Utils {
     public int xPlayerPosition(JPanel frame) {
         int x = frame.getWidth() / 4;
         return Math.min(x, 200);
+    }
+
+    public JsonNode checkDate(String Default) {
+        JsonNode config;
+        LocalDate date = LocalDate.now();
+        if (date.getMonthValue() == 9 && date.getDayOfMonth() == 11 ) config = loadConfig("config/911.json");
+        else config = loadConfig("config/" + Default + ".json");
+        return config;
     }
 
     public JsonNode loadConfig(String path) {
