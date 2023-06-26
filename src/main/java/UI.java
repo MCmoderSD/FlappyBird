@@ -76,7 +76,7 @@ public class UI extends JFrame {
 
     // Methode zum Starten des Spiels
     private void play(int JumpHeight, double Tickrate, String[] args) {
-        new Main(args).run(utils, movement, JumpHeight, utils.calculateOSspecifcTickrate(Tickrate), soundCheckBox.isSelected(), args);
+        new Main().run(utils, movement, JumpHeight, utils.calculateOSspecifcTickrate(Tickrate), soundCheckBox.isSelected(), args);
         updateDatabase.stop();
         dispose();
     }
