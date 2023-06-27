@@ -8,10 +8,10 @@ public class Movement {
     private short playerMoveInt = 0, backgroundCount = 0;
     private final String backgroundImage;
 
-    public Movement(Utils utils, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, int Tickrate, boolean sound , String[] args, int points) {
+    public Movement(Utils utils, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, int Tickrate, boolean sound , String[] args, int points, ConfigurationLauncher config) {
         this.backgroundImage = backgroundImage;
         xPosition = - JumpHeight;
-        new UI(utils, this, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, sound, args, points);
+        new UI(utils, this, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, sound, args, points, config);
     }
 
     public void moveBackground(Utils utils, double Tickrate) {

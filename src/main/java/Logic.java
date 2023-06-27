@@ -9,7 +9,7 @@ public class Logic {
         instance = this;
     }
 
-    public void handleSpaceKeyPress(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, String flapSound, double Tickrate, boolean sound, String[] args) {
+    public void handleSpaceKeyPress(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, String flapSound, double Tickrate, boolean sound, String[] args, ConfigurationLauncher config) {
 
         // Wenn das Spiel nicht läuft und nicht beendet ist
         if (!gameUI.tickrate.isRunning() && !gameState && !gameOver) {
@@ -21,7 +21,7 @@ public class Logic {
 
         // Wenn das Spiel nicht läuft und beendet ist
         if (!gameUI.tickrate.isRunning() && !gameState && gameOver) {
-            new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, sound, args, gameUI.points); // Fenster erneut initialisieren
+            new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, sound, args, gameUI.points, config); // Fenster erneut initialisieren
             gameUI.dispose(); // Aktuelles Fenster schließen
         }
 

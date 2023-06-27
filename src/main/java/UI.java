@@ -1,3 +1,6 @@
+import com.fasterxml.jackson.databind.JsonNode;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -5,6 +8,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -16,10 +20,14 @@ import java.util.Objects;
 @SuppressWarnings("unused")
 public class UI extends JFrame {
     private final String backgroundImage;
-    private final int scoredPoints;
+    private final int points;
     private final Timer updateDatabase;
-    private final String host = "MCmoderSD.de", port = "3306";
-    private final int frameWidth, frameHeight;
+    private final String host;
+    private final String port;
+    private final int width, height;
+    private final boolean resizable;
+    private final String title;
+    private final String icon;
     private Database database;
     private final Utils utils;
     private final Movement movement;
@@ -34,65 +42,27 @@ public class UI extends JFrame {
     private double TPS;
     private boolean newGame = true, isUploaded = true;
 
-    public UI(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, double Tickrate, boolean sound , String[] args, int points) {
-        scoredPoints = points;
-        frameWidth = width;
-        frameHeight= height;
-        this.backgroundImage = backgroundImage;
+    public UI(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, double Tickrate, boolean sound , String[] args, int points, ConfigurationLauncher config) {
         this.utils = utils;
         this.movement = movement;
+        this.width = width;
+        this.height= height;
+        this.title = title;
+        this.icon = icon;
+        this.resizable = resizable;
+        this.backgroundImage = backgroundImage;
         this.TPS = Tickrate;
+        this.points = points;
 
-        // Initialisierung des Fensters
-        initFrame(utils, movement, width, height, title, icon, resizable, backgroundImage, args, scoredPoints, Tickrate);
-        TPS = TPS + (1 + Tickrate - utils.calculateOSspecifcTickrate(Tickrate));
-        if (TPS > 100) TPS = 100;
-        spinnerTPS.setValue((int) TPS);
-        score.setVisible(true);
-        playerName.setVisible(true);
-        soundCheckBox.setSelected(sound);
+        JsonNode json = utils.readJson("config/Database.json");
+        host = json.get("host").asText();
+        port = json.get("port").asText();
+        String databaseName = json.get("database").asText();
+        String user = json.get("user").asText();
+        String password = json.get("password").asText();
 
-        // Timer für die Aktualisierung der Bestenliste
-        updateDatabase = new Timer(5000, e -> initLeaderBoard(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, args, points));
-
-        // Initialisierung der Datenbankverbindung und der Bestenliste
-        if (utils.checkSQLConnection(host, port)) {
-            database = new Database(host, port, "FlappyBirdLeaderboard", "flappy", "c93fee41f754fc69715285fb605c474bdd4b7c0f43e62fb6e8c4daeaea6fa3747333b6348e730bc6ed1e8ec993130407bf958b758642cd09074c6c0e4561be1f");
-            initLeaderBoard(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, args, points);
-            updateDatabase.start();
-        }
-
-        // ActionListener für den Start-Button
-        bStart.addActionListener(e -> {
-            if (newGame) {
-                int spinnerValue = (int) spinnerTPS.getValue();
-                if (spinnerValue <= 100 && spinnerValue > 0) TPS = spinnerValue;
-                play(JumpHeight, TPS, args);
-            } else if (scoredPoints >= 0 && !isUploaded) {
-                upload(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, args, points);
-            }
-        });
-    }
-
-    // Methode zum Starten des Spiels
-    private void play(int JumpHeight, double Tickrate, String[] args) {
-        new Main().run(utils, movement, JumpHeight, utils.calculateOSspecifcTickrate(Tickrate), soundCheckBox.isSelected(), args);
-        updateDatabase.stop();
-        dispose();
-    }
-
-    // Methode zum Initialisieren des Fensters
-    public void initFrame(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, String[] args, int points, double Tickrate) {
         if (Tickrate <= TPS)
             TPS = Tickrate;
-
-        add(UI);
-        setTitle(title);
-        setSize(width, height);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
-        setResizable(resizable);
-        setIconImage(utils.reader(icon));
 
         movement.backgroundResetX = 0;
 
@@ -109,10 +79,45 @@ public class UI extends JFrame {
             bStart.setText("Score Bestätigen");
             bStart.setToolTipText("Lade deinen Score hoch");
         }
+
+        TPS = TPS + (1 + Tickrate - utils.calculateOSspecifcTickrate(Tickrate));
+        if (TPS > 100) TPS = 100;
+        spinnerTPS.setValue((int) TPS);
+        score.setVisible(true);
+        playerName.setVisible(true);
+        soundCheckBox.setSelected(sound);
+
+        // Timer für die Aktualisierung der Bestenliste
+        updateDatabase = new Timer(5000, e -> initLeaderBoard(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, args, points, config));
+
+        // Initialisierung der Datenbankverbindung und der Bestenliste
+        if (utils.checkSQLConnection(host, port)) {
+            database = new Database(host, port, databaseName, user, password);
+            initLeaderBoard(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, args, points, config);
+            updateDatabase.start();
+        }
+
+        // ActionListener für den Start-Button
+        bStart.addActionListener(e -> {
+            if (newGame) {
+                int spinnerValue = (int) spinnerTPS.getValue();
+                if (spinnerValue <= 100 && spinnerValue > 0) TPS = spinnerValue;
+                play(JumpHeight, TPS, args, config);
+            } else if (this.points >= 0 && !isUploaded) {
+                upload(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, args, points, config);
+            }
+        });
+    }
+
+    // Methode zum Starten des Spiels
+    private void play(int JumpHeight, double Tickrate, String[] args, ConfigurationLauncher config) {
+        config.run(utils, movement, JumpHeight, utils.calculateOSspecifcTickrate(Tickrate), soundCheckBox.isSelected(), args);
+        updateDatabase.stop();
+        dispose();
     }
 
     // Methode zum Hochladen des Scores
-    private void upload(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, double Tickrate, String[] args, int points) {
+    private void upload(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, double Tickrate, String[] args, int points, ConfigurationLauncher config) {
         bStart.setText("Nochmal Spielen");
         bStart.setToolTipText("Nochmal Spielen");
         isUploaded = true;
@@ -126,13 +131,13 @@ public class UI extends JFrame {
                         writeLeaderBoard(playerName.getText(), points); // Hochladen des Scores
                     } else { // Fehlermeldung bei unerlaubtem Username
                         JOptionPane.showMessageDialog(null, "Der Username ist nicht erlaubt!", "Fehler", JOptionPane.ERROR_MESSAGE);
-                        new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, soundCheckBox.isSelected(), args, points);
+                        new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, soundCheckBox.isSelected(), args, points, config);
                         updateDatabase.stop();
                         dispose();
                     }
                 } else { // Fehlermeldung bei zu langem Username
                     JOptionPane.showMessageDialog(null, "Der Username ist zu lang!", "Fehler", JOptionPane.ERROR_MESSAGE);
-                    new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, soundCheckBox.isSelected(), args, points);
+                    new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, soundCheckBox.isSelected(), args, points, config);
                     updateDatabase.stop();
                     dispose();
                 }
@@ -148,14 +153,27 @@ public class UI extends JFrame {
             @Override
             protected void paintComponent(Graphics gUI) {
                 super.paintComponent(gUI);
-                gUI.drawImage(utils.reader(backgroundImage), movement.backgroundResetX, 0, utils.getBackgroundWidth(backgroundImage), getHeight(), this);
+                try {
+                    gUI.drawImage(ImageIO.read(Objects.requireNonNull(getClass().getResource(backgroundImage))), movement.backgroundResetX, 0, utils.getBackgroundWidth(backgroundImage), getHeight(), this); // ToDo Ist nur ne Notlösung
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 repaint();
             }
         };
 
+        // Initialisierung des JFrames
+        add(UI);
+        setTitle(title);
+        setSize(width, height);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
+        setResizable(resizable);
+        setIconImage(utils.reader(icon));
+
         // Initialisierung der Fensterposition
         Dimension frameDimension = Toolkit.getDefaultToolkit().getScreenSize();
-        setLocation((frameDimension.width - frameWidth) / 2, (frameDimension.height - frameHeight) / 2);
+        setLocation((frameDimension.width - width) / 2, (frameDimension.height - height) / 2);
 
         // Initialisierung des Start-Buttons
         bStart = new JButton();
@@ -217,7 +235,7 @@ public class UI extends JFrame {
     }
 
     // Methode zum Aktualisieren des Leaderboards
-    private void initLeaderBoard(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, double Tickrate, String[] args, int points) {
+    private void initLeaderBoard(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, double Tickrate, String[] args, int points, ConfigurationLauncher config) {
         if (utils.checkSQLConnection(host, port)) {
             leaderBoard.setVisible(true);
             scrollPane.setVisible(true);
@@ -261,7 +279,7 @@ public class UI extends JFrame {
             adjustRowHeight(leaderBoard);
             adjustColumnWidths(leaderBoard);
         } else { // Wenn keine Verbindung zur Datenbank besteht
-            handleNoSQLConnection(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, args, points);
+            handleNoSQLConnection(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, args, points, config);
         }
     }
 
@@ -329,11 +347,11 @@ public class UI extends JFrame {
     }
 
     // Methode zum Anzeigen einer Fehlermeldung, wenn keine Verbindung zum SQL Server hergestellt werden konnte
-    private void handleNoSQLConnection(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, double Tickrate, String[] args, int points) {
+    private void handleNoSQLConnection(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, double Tickrate, String[] args, int points, ConfigurationLauncher config) {
         if (!updateDatabase.isRunning()) JOptionPane.showMessageDialog(null, "Es konnte keine Verbindung zum SQL Server hergestellt werden!", "Fehler", JOptionPane.ERROR_MESSAGE);
         if (updateDatabase.isRunning()) JOptionPane.showMessageDialog(null, "Verbindung zum SQL Server verloren, überprüfe deine Internetverbindung!", "Fehler", JOptionPane.ERROR_MESSAGE);
         updateDatabase.stop();
-        new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, soundCheckBox.isSelected(),args, points);
+        new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, soundCheckBox.isSelected(),args, points, config);
         dispose();
     }
 

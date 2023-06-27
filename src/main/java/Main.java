@@ -1,78 +1,53 @@
 import com.fasterxml.jackson.databind.JsonNode;
-public class Main {
-    private final Config config;
-    public Main() {
-        double osMultiplier = 0.936745818;
-        Utils utils = new Utils(osMultiplier);
-        JsonNode json = utils.checkDate("LenaBeta");
-        config = new Config(
-                utils,
-                // Attribute für das Fenster
-                json.get("Title").asText(),
-                json.get("WindowSizeX").asInt(),
-                json.get("WindowSizeY").asInt(),
-                json.get("Resizeable").asBoolean(),
 
-                // Attribute für die Assets
-                json.get("Background").asText(),
-                json.get("Player").asText(),
-                json.get("Rainbow").asText(),
-                json.get("ObstacleTop").asText(),
-                json.get("ObstacleBottom").asText(),
-                json.get("Icon").asText(),
-                json.get("GameOver").asText(),
-                json.get("Pause").asText(),
-                json.get("dieSound").asText(),
-                json.get("flapSound").asText(),
-                json.get("hitSound").asText(),
-                json.get("pointSound").asText(),
-                json.get("rainbowSound").asText()
+public class Main {
+    public Main(String[] args) {
+
+        String defaultConfig = "LenaBeta"; // Standardkonfiguration
+        double osMultiplier = 0.936745818; // Multiplikator für die Tickrate, um die Tickrate auf dem Betriebssystem anzupassen
+        int JumpHeight = 7; // Die Sprunghöhe des Spielers
+        int Percentage = 25; // Prozentzahl, die die Größe des Hindernisses von der Fensterhöhe ausmacht
+        int Gap = 200; // Vertikaler Abstand zwischen den Hindernissen
+        int TPS = 100; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde) Maximum: 100
+
+
+        Utils utils = new Utils(osMultiplier);
+
+        JsonNode config = utils.checkDate(defaultConfig);
+
+        new ConfigurationLauncher(
+                utils,
+
+                // Spiellogik
+                JumpHeight,
+                Percentage,
+                Gap,
+                TPS,
+
+                // Fenster
+                config.get("Title").asText(),
+                config.get("WindowSizeX").asInt(),
+                config.get("WindowSizeY").asInt(),
+                config.get("Resizeable").asBoolean(),
+
+                // Assets
+                config.get("Background").asText(),
+                config.get("Player").asText(),
+                config.get("Rainbow").asText(),
+                config.get("ObstacleTop").asText(),
+                config.get("ObstacleBottom").asText(),
+                config.get("Icon").asText(),
+                config.get("GameOver").asText(),
+                config.get("Pause").asText(),
+                config.get("dieSound").asText(),
+                config.get("flapSound").asText(),
+                config.get("hitSound").asText(),
+                config.get("pointSound").asText(),
+                config.get("rainbowSound").asText(),
+                args
         );
     }
-
     public static void main(String[] args) {
-        new Main().init(args);
-    }
-
-    private void init(String[] args) {
-        int jumpHeight = 7;
-        int TPS = 100;
-
-        new Movement(config.utils, config.WindowSizeX, config.WindowsSizeY, config.Title, config.Icon, config.Resizeable, config.Background, jumpHeight, TPS, true, args, -10);
-    }
-
-    public void run(Utils utils, Movement movement, int JumpHeight, double Tickrate, boolean sound, String[] args) {
-        int Gap = 200;
-        int Percentage = 25;
-
-        if (args.length == 0) {
-            new GameUI(
-                    utils,
-                    movement,
-                    config.WindowSizeX,
-                    config.WindowsSizeY,
-                    config.Title,
-                    config.Icon,
-                    config.Resizeable,
-                    config.Background,
-                    config.Player,
-                    config.Rainbow,
-                    JumpHeight,
-                    Percentage,
-                    Gap,
-                    config.ObstacleTop,
-                    config.ObstacleBottom,
-                    config.GameOver,
-                    config.Pause,
-                    config.dieSound,
-                    config.flapSound,
-                    config.hitSound,
-                    config.pointSound,
-                    config.RainbowSound,
-                    Tickrate,
-                    sound,
-                    args
-            );
-        }
+        new Main(args);
     }
 }

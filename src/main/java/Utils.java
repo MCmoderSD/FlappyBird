@@ -1,5 +1,6 @@
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -24,6 +25,7 @@ public class Utils {
 
     public Utils(double osMultiplier) {
         this.osMultiplier = osMultiplier;
+
     }
 
     public int calculateGravity(int x) {
@@ -176,24 +178,6 @@ public class Utils {
         return Math.min(x, 200);
     }
 
-    public JsonNode checkDate(String Default) {
-        JsonNode config;
-        LocalDate date = LocalDate.now();
-        if (date.getMonthValue() == 9 && date.getDayOfMonth() == 11 ) config = loadConfig("config/911.json");
-        else config = loadConfig("config/" + Default + ".json");
-        return config;
-    }
-
-    public JsonNode loadConfig(String path) {
-        ObjectMapper mapper = new ObjectMapper();
-        try (InputStream inputStream = Main.class.getClassLoader().getResourceAsStream(path)) {
-            assert inputStream != null;
-            return mapper.readTree(inputStream);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public double calculateOSspecifcTickrate(double Tickrate) {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("windows")) return Tickrate;
@@ -205,6 +189,36 @@ public class Utils {
         long currentTime = System.currentTimeMillis();
         long latency = currentTime - startTime;
         startTime = currentTime;
+        soutLogger("latency.txt", String.valueOf(latency));
         return latency;
+    }
+
+    public void soutLogger(String file, String message) {
+        if (Logic.instance.developerMode) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+                writer.append(message);
+                writer.newLine();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public JsonNode readJson(String path) {
+        ObjectMapper mapper = new ObjectMapper();
+        try (InputStream inputStream = Main.class.getClassLoader().getResourceAsStream(path)) {
+            assert inputStream != null;
+            return mapper.readTree(inputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public JsonNode checkDate(String Default) {
+        JsonNode config;
+        LocalDate date = LocalDate.now();
+        if (date.getMonthValue() == 9 && date.getDayOfMonth() == 11 ) config = readJson("config/911.json");
+        else config = readJson("config/" + Default + ".json");
+        return config;
     }
 }
