@@ -1,5 +1,4 @@
 import com.fasterxml.jackson.databind.JsonNode;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -14,10 +13,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
 
-/**
- * Diese Klasse enthält alle Methoden für verschiedene Berechnungen.
- */
-@SuppressWarnings("unused")
 public class UI extends JFrame {
     private final String backgroundImage;
     private final int points;
@@ -291,7 +286,7 @@ public class UI extends JFrame {
         for (int i = 0; i < model.getRowCount(); i++) {
             String user = model.getValueAt(i, 1).toString();
             int score = Integer.parseInt(model.getValueAt(i, 2).toString());
-            RowData rowData = new RowData(i + 1, user, score);
+            RowData rowData = new RowData(user, score);
             rowDataList.add(rowData);
         }
 
@@ -392,7 +387,7 @@ public class UI extends JFrame {
         private final int score;
 
         // Konstruktor
-        public RowData(int index, String user, int score) {
+        public RowData(String user, int score) {
             this.user = user;
             this.score = score;
         }

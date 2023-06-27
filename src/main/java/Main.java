@@ -1,7 +1,11 @@
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class Main {
-    public Main(String[] args) {
+    public static void main(String[] args) {
+        new Main().run(args);
+    }
+
+    private void run(String[] args) {
 
         String defaultConfig = "LenaBeta"; // Standardkonfiguration
         double osMultiplier = 0.936745818; // Multiplikator für die Tickrate, um die Tickrate auf dem Betriebssystem anzupassen
@@ -46,8 +50,5 @@ public class Main {
                 config.get("rainbowSound").asText(),
                 args
         );
-    }
-    public static void main(String[] args) {
-        new Main(args);
     }
 }
