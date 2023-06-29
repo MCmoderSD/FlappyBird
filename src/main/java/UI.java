@@ -22,9 +22,9 @@ public class UI extends JFrame {
     private final boolean resizable;
     private final String title;
     private final String icon;
-    private Database database;
     private final Utils utils;
     private final Movement movement;
+    private Database database;
     private JButton bStart;
     private JPanel backgroundFrame, tablePanel;
     private JCheckBox soundCheckBox;
@@ -48,6 +48,8 @@ public class UI extends JFrame {
         this.TPS = Tickrate;
         this.points = points;
 
+
+
         JsonNode json = utils.readJson("config/Database.json");
         host = json.get("host").asText();
         port = json.get("port").asText();
@@ -62,7 +64,7 @@ public class UI extends JFrame {
 
         score.setText("Global Leaderboard");
 
-        if (Objects.equals(backgroundImage, "911/Skyline.png")) playerName.setForeground(Color.WHITE); // ToDo: Fixen
+        if (Objects.equals(backgroundImage, "911/Skyline.png")) playerName.setForeground(Color.WHITE);
         else playerName.setForeground(Color.BLACK);
 
         if (points >= 0) {
@@ -118,19 +120,19 @@ public class UI extends JFrame {
         newGame = true;
 
         // Überprüfung der Eingabe
-        if (!Logic.instance.developerMode && !Logic.instance.cheatsEnabled) {
+        if (!Logic.instance.developerMode && !Logic.instance.cheatsEnabled && points > 0) {
             if (playerName.getText().length() != 0 && !playerName.getText().contains("Username")) {
                 if (playerName.getText().length() <= 32) {
                     if (!utils.checkUserName(playerName.getText()) && !playerName.getText().contains(" ")) {
                         writeLeaderBoard(playerName.getText(), points); // Hochladen des Scores
                     } else { // Fehlermeldung bei unerlaubtem Username
-                        JOptionPane.showMessageDialog(null, "Der Username ist nicht erlaubt!", "Fehler", JOptionPane.ERROR_MESSAGE);
+                        // JOptionPane.showMessageDialog(null, "Der Username ist nicht erlaubt!", "Fehler", JOptionPane.ERROR_MESSAGE);
                         new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, soundCheckBox.isSelected(), args, points, config);
                         updateDatabase.stop();
                         dispose();
                     }
                 } else { // Fehlermeldung bei zu langem Username
-                    JOptionPane.showMessageDialog(null, "Der Username ist zu lang!", "Fehler", JOptionPane.ERROR_MESSAGE);
+                    // JOptionPane.showMessageDialog(null, "Der Username ist zu lang!", "Fehler", JOptionPane.ERROR_MESSAGE);
                     new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, soundCheckBox.isSelected(), args, points, config);
                     updateDatabase.stop();
                     dispose();
@@ -175,12 +177,17 @@ public class UI extends JFrame {
         soundCheckBox.setOpaque(false);
         soundCheckBox.setToolTipText("Aktiviere oder deaktiviere den Sound");
         soundCheckBox.setBorder(BorderFactory.createEmptyBorder());
+        soundCheckBox.setFont(new Font("Roboto", Font.PLAIN, 24));
+        if (Objects.equals(backgroundImage, "911/Skyline.png")) soundCheckBox.setForeground(Color.WHITE);
+        else soundCheckBox.setForeground(Color.BLACK);
 
         // Initialisierung des Username-Textfeldes
         playerName = new JTextField();
         playerName.setOpaque(false);
         playerName.setEnabled(false);
         playerName.setFont(new Font("Roboto", Font.PLAIN, 22));
+        if (Objects.equals(backgroundImage, "911/Skyline.png")) playerName.setForeground(Color.WHITE);
+        else playerName.setForeground(Color.BLACK);
         playerName.setToolTipText("Gib deinen Username ein");
         playerName.setHorizontalAlignment(JTextField.CENTER);
         playerName.setBorder(BorderFactory.createEmptyBorder());

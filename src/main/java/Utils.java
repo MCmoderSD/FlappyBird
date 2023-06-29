@@ -112,6 +112,8 @@ public class Utils {
     }
 
     public void setPlaceholder(JTextField textField, String placeholder) {
+
+        Color foregroundColor = textField.getForeground();
         Font originalFont = textField.getFont();
 
         textField.setForeground(Color.GRAY);
@@ -122,7 +124,7 @@ public class Utils {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 if (textField.getText().equals(placeholder)) {
                     textField.setText("");
-                    textField.setForeground(Color.BLACK);
+                    textField.setForeground(foregroundColor);
                     textField.setFont(originalFont);
                 }
             }
