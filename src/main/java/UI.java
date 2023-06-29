@@ -1,5 +1,5 @@
 import com.fasterxml.jackson.databind.JsonNode;
-import javax.imageio.ImageIO;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -7,7 +7,6 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -27,7 +26,7 @@ public class UI extends JFrame {
     private final Utils utils;
     private final Movement movement;
     private JButton bStart;
-    private JPanel UI, tablePanel;
+    private JPanel backgroundFrame, tablePanel;
     private JCheckBox soundCheckBox;
     private JTable leaderBoard;
     private JTextField playerName;
@@ -142,29 +141,25 @@ public class UI extends JFrame {
 
     // Methode zum Initialisieren der Fensterelemente
     private void createUIComponents() {
-
-        // Initialisierung JPanels mit Hintergrundbild
-        UI = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics gUI) {
-                super.paintComponent(gUI);
-                try {
-                    gUI.drawImage(ImageIO.read(Objects.requireNonNull(getClass().getResource(backgroundImage))), movement.backgroundResetX, 0, utils.getBackgroundWidth(backgroundImage), getHeight(), this); // ToDo Ist nur ne Notlösung
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                repaint();
-            }
-        };
-
         // Initialisierung des JFrames
-        add(UI);
         setTitle(title);
         setSize(width, height);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         setResizable(resizable);
         setIconImage(utils.reader(icon));
+
+        // Initialisierung JPanels mit Hintergrundbild
+        backgroundFrame = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(utils.reader(backgroundImage), movement.backgroundResetX, 0, utils.getBackgroundWidth(backgroundImage), getHeight(), this);
+                repaint();
+            }
+        };
+        // Add panel to Frame
+        add(backgroundFrame);
 
         // Initialisierung der Fensterposition
         Dimension frameDimension = Toolkit.getDefaultToolkit().getScreenSize();
