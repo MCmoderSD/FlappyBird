@@ -7,6 +7,36 @@
   <component name="EntryPointsManager">
     <entry_points version="2.0">
       <entry_point TYPE="field" FQNAME="UI instance" />
+      <entry_point TYPE="field" FQNAME="Config Background" />
+      <entry_point TYPE="field" FQNAME="Database connection" />
+      <entry_point TYPE="field" FQNAME="Database database" />
+      <entry_point TYPE="field" FQNAME="Database.Table database" />
+      <entry_point TYPE="field" FQNAME="Config dieSound" />
+      <entry_point TYPE="field" FQNAME="Database ERROR" />
+      <entry_point TYPE="field" FQNAME="Config flapSound" />
+      <entry_point TYPE="field" FQNAME="Config GameOver" />
+      <entry_point TYPE="field" FQNAME="Config hitSound" />
+      <entry_point TYPE="field" FQNAME="Database host" />
+      <entry_point TYPE="field" FQNAME="Config Icon" />
+      <entry_point TYPE="field" FQNAME="Database.Table name" />
+      <entry_point TYPE="field" FQNAME="Database.Table.Column name" />
+      <entry_point TYPE="field" FQNAME="Database NOTING_FOUND" />
+      <entry_point TYPE="field" FQNAME="Config ObstacleBottom" />
+      <entry_point TYPE="field" FQNAME="Config ObstacleTop" />
+      <entry_point TYPE="field" FQNAME="Database password" />
+      <entry_point TYPE="field" FQNAME="Config Pause" />
+      <entry_point TYPE="field" FQNAME="Config Player" />
+      <entry_point TYPE="field" FQNAME="Config pointSound" />
+      <entry_point TYPE="field" FQNAME="Database port" />
+      <entry_point TYPE="field" FQNAME="Config Rainbow" />
+      <entry_point TYPE="field" FQNAME="Config RainbowSound" />
+      <entry_point TYPE="field" FQNAME="Config Resizeable" />
+      <entry_point TYPE="field" FQNAME="Database.Table.Column table" />
+      <entry_point TYPE="field" FQNAME="Config Title" />
+      <entry_point TYPE="field" FQNAME="Database username" />
+      <entry_point TYPE="field" FQNAME="Config utils" />
+      <entry_point TYPE="field" FQNAME="Config WindowSizeX" />
+      <entry_point TYPE="field" FQNAME="Config WindowsSizeY" />
     </entry_points>
     <pattern value="Methods" method="containsString" />
     <pattern value="UI" method="createUIComponents" />
@@ -14,6 +44,31 @@
     <pattern value="Main" method="main" />
     <pattern value="Methods" />
     <pattern value="UI" />
+    <pattern value="Database.Table.Column" method="addLine" />
+    <pattern value="Database.Table.Column" />
+    <pattern value="Database.Table.Column" method="Column" />
+    <pattern value="Config" />
+    <pattern value="Config" method="Config" />
+    <pattern value="Database" method="connect" />
+    <pattern value="Database.Table.Column" method="contains" />
+    <pattern value="Database.Table.Column" method="containsLC" />
+    <pattern value="Database" />
+    <pattern value="Database" method="Database" />
+    <pattern value="Database.Table.Column" method="get" />
+    <pattern value="Database.Table" method="getColumn" />
+    <pattern value="Database" method="getConnection" />
+    <pattern value="Database.Table" method="getDatabase" />
+    <pattern value="Database.Table" method="getName" />
+    <pattern value="Database.Table.Column" method="getName" />
+    <pattern value="Database.Table.Column" method="getTable" />
+    <pattern value="Database" method="getTable" />
+    <pattern value="Database.Table.Column" method="getValues" />
+    <pattern value="Database" method="isConnected" />
+    <pattern value="Database.Table.Column" method="set" />
+    <pattern value="Database.Table" />
+    <pattern value="Database.Table" method="Table" />
+    <pattern value="Database.Table" method="toString" />
+    <pattern value="Database.Table.Column" method="toString" />
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="MavenProjectsManager">

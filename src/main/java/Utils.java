@@ -1,6 +1,5 @@
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -15,13 +14,16 @@ import java.net.Socket;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 public class Utils {
+    private final double osMultiplier;
     private int getWidthSave;
     private String getWidthPath, readerPath, createImageIconPath;
     private BufferedImage readerSave;
     private ImageIcon createImageIconSave;
     private long startTime = System.currentTimeMillis();
-    private final double osMultiplier;
 
     public Utils(double osMultiplier) {
         this.osMultiplier = osMultiplier;
@@ -34,17 +36,27 @@ public class Utils {
 
     public BufferedImage reader(String resource) {
         if (!Objects.equals(readerPath, resource)) {
-            try {
-                if (resource.endsWith(".png")) {
-                    readerPath = resource;
-                    readerSave = ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)));
+            CompletableFuture<BufferedImage> future = CompletableFuture.supplyAsync(() -> {
+                try {
+                    if (resource.endsWith(".png")) {
+                        readerPath = resource;
+                        return ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)));
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (IOException e) {
+                return null;
+            });
+
+            try {
+                readerSave = future.get(); // Warten auf das Ergebnis des asynchronen Aufrufs
+            } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
         }
         return readerSave;
     }
+
 
     public ImageIcon createImageIcon(String resource) {
         if (!Objects.equals(createImageIconPath, resource)) {
@@ -68,38 +80,40 @@ public class Utils {
 
     public void audioPlayer(String audioFilePath, boolean sound) {
         if (sound && !Logic.instance.gamePaused) {
-            try {
-                ClassLoader classLoader = getClass().getClassLoader();
-                InputStream audioFileInputStream = classLoader.getResourceAsStream(audioFilePath);
+            CompletableFuture.runAsync(() -> {
+                try {
+                    ClassLoader classLoader = getClass().getClassLoader();
+                    InputStream audioFileInputStream = classLoader.getResourceAsStream(audioFilePath);
 
-                // Überprüfen, ob die Audiodatei gefunden wurde
-                if (audioFileInputStream == null) {
-                    throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
-                }
-
-                BufferedInputStream bufferedInputStream = new BufferedInputStream(audioFileInputStream);
-                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(bufferedInputStream);
-
-                Clip clip = AudioSystem.getClip();
-                clip.open(audioInputStream);
-
-                // Hinzufügen eines LineListeners, um die Ressourcen freizugeben, wenn die Wiedergabe beendet ist
-                clip.addLineListener(event -> {
-                    if (event.getType() == LineEvent.Type.STOP) {
-                        try {
-                            clip.close();
-                            audioInputStream.close();
-                            bufferedInputStream.close();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                    // Überprüfen, ob die Audiodatei gefunden wurde
+                    if (audioFileInputStream == null) {
+                        throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
                     }
-                });
-                clip.start();
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+                    BufferedInputStream bufferedInputStream = new BufferedInputStream(audioFileInputStream);
+                    AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(bufferedInputStream);
+
+                    Clip clip = AudioSystem.getClip();
+                    clip.open(audioInputStream);
+
+                    // Hinzufügen eines LineListeners, um die Ressourcen freizugeben, wenn die Wiedergabe beendet ist
+                    clip.addLineListener(event -> {
+                        if (event.getType() == LineEvent.Type.STOP) {
+                            try {
+                                clip.close();
+                                audioInputStream.close();
+                                bufferedInputStream.close();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    });
+                    clip.start();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
         }
     }
 
@@ -140,34 +154,46 @@ public class Utils {
     }
 
     public boolean checkSQLConnection(String ip, String port) {
-        try (Socket socket = new Socket()) {
-            // Verbindungsversuch zum Server
-            socket.connect(new InetSocketAddress(ip, Integer.parseInt(port)), 1000); // Timeout von 1 Sekunde
-            return true;
-        } catch (IOException e) {
-            return false;
+        CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> {
+            try (Socket socket = new Socket()) {
+                // Verbindungsversuch zum Server
+                socket.connect(new InetSocketAddress(ip, Integer.parseInt(port)), 1000); // Timeout von 1 Sekunde
+                return true;
+            } catch (IOException e) {
+                return false;
+            }
+        });
+
+        try {
+            return future.get(); // Warten auf das Ergebnis des asynchronen Aufrufs
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
         }
     }
 
     public boolean checkUserName(String userName) {
-        try (InputStream inputStream = getClass().getResourceAsStream("data/blockedTerms.txt")) {
-            assert inputStream != null;
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-                String line;
-                int lineNumber = 1;
-                while ((line = reader.readLine()) != null) {
-                    if (userName.contains(line)) {
-                        System.out.println("Match found in line: " + lineNumber);
-                        return true;
+        CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> {
+            try (InputStream inputStream = getClass().getResourceAsStream("data/blockedTerms.txt")) {
+                assert inputStream != null;
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        if (userName.contains(line)) {
+                            return true;
+                        }
                     }
-                    lineNumber++;
                 }
-                System.out.println("No match found.");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            return false;
+        });
+
+        try {
+            return future.get(); // Warten auf das Ergebnis des asynchronen Aufrufs
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
         }
-        return false;
     }
 
     public Point centerFrame(JFrame frame) {
@@ -197,14 +223,17 @@ public class Utils {
 
     public void soutLogger(String file, String message) {
         if (Logic.instance.developerMode) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
-                writer.append(message);
-                writer.newLine();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            CompletableFuture.runAsync(() -> {
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+                    writer.append(message);
+                    writer.newLine();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
         }
     }
+
 
     public JsonNode readJson(String path) {
         ObjectMapper mapper = new ObjectMapper();

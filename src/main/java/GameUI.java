@@ -10,18 +10,18 @@ import java.util.Iterator;
 
 public class GameUI extends JFrame {
     public static GameUI instance;
-    private final Logic logic;
     public final ArrayList<JLabel> obstacles = new ArrayList<>();
     public final ArrayList<Rectangle> rObstacles = new ArrayList<>();
     public final ArrayList<Rectangle> greenZones = new ArrayList<>();
     public final Timer tickrate;
+    public final JLabel player, score, gameOver, pauseScreen;
+    public final Rectangle rPlayer;
+    public final JPanel mainPanel;
+    private final Logic logic;
     private final ArrayList<Integer> userInput = new ArrayList<>();
     private final int[] KONAMI_CODE = { KeyEvent.VK_UP, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_DOWN,
             KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_B, KeyEvent.VK_A };
-    public final JLabel player, score, gameOver, pauseScreen;
     public int points;
-    public final Rectangle rPlayer;
-    public final JPanel mainPanel;
 
     // Konstruktor
     public GameUI(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, String playerImage, String rainbowImage, int JumpHeight, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreenImage, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, double Tickrate, boolean sound, String[] args, ConfigurationLauncher config) {
@@ -280,7 +280,6 @@ public class GameUI extends JFrame {
         if (logic.rainbowMode && !logic.rainbowModeActive) {
             player.setIcon(utils.createImageIcon((rainbowImage)));
             logic.rainbowModeActive = true;
-            System.out.println("Rainbow Mode Active");
             } else if (!logic.rainbowMode && logic.rainbowModeActive){
                 player.setIcon(utils.createImageIcon((playerImage)));
                 logic.rainbowModeActive = false;

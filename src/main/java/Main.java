@@ -17,7 +17,14 @@ public class Main {
 
         Utils utils = new Utils(osMultiplier);
 
-        JsonNode config = utils.checkDate(defaultConfig);
+        JsonNode config;
+
+        if (args.length > 0) {
+            System.out.println("Args: " + args[0].toLowerCase());
+            config = utils.checkDate(args[0].toLowerCase());
+        } else {
+            config = utils.checkDate(defaultConfig);
+        }
 
         new ConfigurationLauncher(
                 utils,

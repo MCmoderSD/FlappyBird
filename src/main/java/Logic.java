@@ -1,8 +1,8 @@
 public class Logic {
     public static Logic instance;
+    private final GameUI gameUI;
     public boolean gamePaused = false, rainbowMode = false, rainbowModeActive = false, developerMode = false, cheatsEnabled = false;
     private boolean gameState = false, gameOver = false;
-    private final GameUI gameUI;
 
     public Logic(GameUI gameUI) {
         this.gameUI = gameUI;
@@ -53,7 +53,6 @@ public class Logic {
     }
 
     public void handleCollision(Utils utils, String dieSound, boolean sound) {
-        System.out.println("Kollision");
         utils.audioPlayer(dieSound, sound);
 
         gameOver = true;
