@@ -1,7 +1,7 @@
 public class ConfigurationLauncher {
+    public final String Background; // Dateipfad für den Hintergrund
     // Attribute für die Spielkonfiguration
     private final String Title; // Titel des Spiels
-    public final String Background; // Dateipfad für den Hintergrund
     private final String Player ; // Dateipfad für das Spielerbild
     private final String Rainbow; // Dateipfad für das Regenbogenbild
     private final String ObstacleTop; // Dateipfad für das Hindernis von oben
@@ -21,8 +21,6 @@ public class ConfigurationLauncher {
     private final int Gap; // Vertikaler Abstand zwischen den Hindernissen
 
     public ConfigurationLauncher(Utils utils, int JumpHeight, int Percentage, int Gap, int TPS, String title, int windowSizeX, int windowSizeY, boolean resizeable, String background, String player, String rainbow, String obstacleTop, String obstacleBottom, String icon, String gameOver, String pause, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, String[] args) {
-
-
         this.Gap = Gap;
         this.Percentage = Percentage;
         Title = title;
@@ -49,8 +47,7 @@ public class ConfigurationLauncher {
     public void run(Utils utils, Movement movement, int JumpHeight, double Tickrate, boolean sound, String[] args) {
 
         // Starte die Spiellogik mit den angegebenen Parametern
-        if (args.length == 0) {
-            new GameUI(
+        new GameUI(
                     utils,
                     movement,
                     WindowSizeX,
@@ -77,7 +74,6 @@ public class ConfigurationLauncher {
                     sound,
                     args,
                     this
-            );
-        }
+        );
     }
 }

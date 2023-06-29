@@ -7,7 +7,7 @@ public class Main {
 
     private void run(String[] args) {
 
-        String defaultConfig = "LenaBeta"; // Standardkonfiguration
+        String defaultConfig = "lenabeta"; // Standardkonfiguration
         double osMultiplier = 0.936745818; // Multiplikator für die Tickrate, um die Tickrate auf dem Betriebssystem anzupassen
         int JumpHeight = 7; // Die Sprunghöhe des Spielers
         int Percentage = 25; // Prozentzahl, die die Größe des Hindernisses von der Fensterhöhe ausmacht

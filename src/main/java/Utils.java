@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+@SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class Utils {
     private final double osMultiplier;
     private int getWidthSave;
@@ -217,7 +218,7 @@ public class Utils {
         long currentTime = System.currentTimeMillis();
         long latency = currentTime - startTime;
         startTime = currentTime;
-        soutLogger("latency.txt", String.valueOf(latency));
+        soutLogger("latency-log.txt", String.valueOf(latency));
         return latency;
     }
 
@@ -237,8 +238,10 @@ public class Utils {
 
     public JsonNode readJson(String path) {
         ObjectMapper mapper = new ObjectMapper();
-        try (InputStream inputStream = Main.class.getClassLoader().getResourceAsStream(path)) {
-            assert inputStream != null;
+        try (InputStream inputStream = getClass().getResourceAsStream(path)) {
+            if (inputStream == null) {
+                throw new IllegalArgumentException("Die Ressource konnte nicht gefunden werden: " + path);
+            }
             return mapper.readTree(inputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
