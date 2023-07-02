@@ -3,17 +3,19 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class Movement {
+    private final String backgroundImage;
     public int backgroundResetX = 0, xPosition;
     private int obstacleMoveInt = 200;
-    private short playerMoveInt = 0, backgroundCount = 0;
-    private final String backgroundImage;
+    private byte playerMoveInt = 0, backgroundCount = 0;
 
-    public Movement(Utils utils, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, int Tickrate, boolean sound , String[] args, int points, ConfigurationLauncher config) {
+    // Konstruktor und UI initialisieren
+    public Movement(Utils utils, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, int Tickrate, boolean sound , String[] args, int points, Config config) {
         this.backgroundImage = backgroundImage;
         xPosition = - JumpHeight;
         new UI(utils, this, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, sound, args, points, config);
     }
 
+    // Bewegt den Hintergrund;
     public void moveBackground(Utils utils, double Tickrate) {
         // Hintergrund bewegen
         if (backgroundCount >= (2 / (100 / Tickrate))) {
@@ -29,6 +31,7 @@ public class Movement {
         backgroundCount++;
     }
 
+    // Bewegt den Spieler
     public void movePlayer(Utils utils, double Tickrate) {
         // Spielerbewegung
         if (playerMoveInt >= (3 / (100 / Tickrate))) { // Zähler
@@ -41,6 +44,7 @@ public class Movement {
         playerMoveInt++; // Zähler erhöhen
     }
 
+    // Bewegt die Hindernisse
     public void moveObstacles(Utils utils, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, double Tickrate, int points) {
         for (JLabel component : GameUI.instance.obstacles) {
             if (component != null && component.getIcon() != null) {

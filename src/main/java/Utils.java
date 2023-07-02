@@ -18,30 +18,34 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @SuppressWarnings("BlockingMethodInNonBlockingContext")
+
+// Klasse für alle Utensiien
 public class Utils {
     private final double osMultiplier;
-    private int getWidthSave;
-    private String getWidthPath, readerPath, createImageIconPath;
-    private BufferedImage readerSave;
-    private ImageIcon createImageIconSave;
+    private int getWidthSave; // Speichert Backup Werte
+    private String getWidthPath, readerPath, createImageIconPath; // Speichert Backup Pfade
+    private BufferedImage readerSave; // Speichert Backup Bilder
+    private ImageIcon createImageIconSave; // Speichert Backup Icons
     private long startTime = System.currentTimeMillis();
 
+    // Konstruktor und Multiplikator für die Tickrate
     public Utils(double osMultiplier) {
         this.osMultiplier = osMultiplier;
-
     }
 
+    // Berechnet die Flugbahn des Spielers
     public int calculateGravity(int x) {
         return -2 * x + 4;
     }
 
+    // Läd Bilddateien
     public BufferedImage reader(String resource) {
-        if (!Objects.equals(readerPath, resource)) {
-            CompletableFuture<BufferedImage> future = CompletableFuture.supplyAsync(() -> {
+        if (!Objects.equals(readerPath, resource)) { // Überprüft, ob der Pfad bereits geladen wurde
+            CompletableFuture<BufferedImage> future = CompletableFuture.supplyAsync(() -> { // Asynchroner Aufruf
                 try {
                     if (resource.endsWith(".png")) {
-                        readerPath = resource;
-                        return ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)));
+                        readerPath = resource; // Speichert den Pfad
+                        return ImageIO.read(Objects.requireNonNull(getClass().getResource(resource))); // Läd das Bild
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -55,12 +59,12 @@ public class Utils {
                 throw new RuntimeException(e);
             }
         }
-        return readerSave;
+        return readerSave; // Gibt das Bild zurück
     }
 
-
+    // Erstellt ein ImageIcon aus Bildern
     public ImageIcon createImageIcon(String resource) {
-        if (!Objects.equals(createImageIconPath, resource)) {
+        if (!Objects.equals(createImageIconPath, resource)) { // Überprüft, ob der Pfad bereits geladen wurde
             if (resource.endsWith(".png")) {
                 createImageIconPath = resource;
                 createImageIconSave = new ImageIcon(reader(resource));
@@ -74,42 +78,46 @@ public class Utils {
         return createImageIconSave;
     }
 
+    // Zentriert ein Bild mittig
     public Point locatePoint(String image, int width, int height) {
         BufferedImage img = reader(image);
         return new Point((width -  img.getWidth()) / 2, (height - img.getHeight()) / 2);
     }
 
-    public void audioPlayer(String audioFilePath, boolean sound) {
+    // Läd Musikdateien und spielt sie ab
+    public void audioPlayer(String audioFilePath, boolean sound, boolean loop) {
         if (sound && !Logic.instance.gamePaused) {
             CompletableFuture.runAsync(() -> {
                 try {
-                    ClassLoader classLoader = getClass().getClassLoader();
-                    InputStream audioFileInputStream = classLoader.getResourceAsStream(audioFilePath);
+                ClassLoader classLoader = getClass().getClassLoader();
+                InputStream audioFileInputStream = classLoader.getResourceAsStream(audioFilePath);
 
-                    // Überprüfen, ob die Audiodatei gefunden wurde
-                    if (audioFileInputStream == null) {
-                        throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
-                    }
+                // Überprüfen, ob die Audiodatei gefunden wurde
+                if (audioFileInputStream == null) {
+                    throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
+                }
 
-                    BufferedInputStream bufferedInputStream = new BufferedInputStream(audioFileInputStream);
-                    AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(bufferedInputStream);
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(audioFileInputStream);
+                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(bufferedInputStream);
 
-                    Clip clip = AudioSystem.getClip();
-                    clip.open(audioInputStream);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioInputStream);
 
-                    // Hinzufügen eines LineListeners, um die Ressourcen freizugeben, wenn die Wiedergabe beendet ist
-                    clip.addLineListener(event -> {
-                        if (event.getType() == LineEvent.Type.STOP) {
-                            try {
-                                clip.close();
-                                audioInputStream.close();
-                                bufferedInputStream.close();
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
+                // Hinzufügen eines LineListeners, um die Ressourcen freizugeben, wenn die Wiedergabe beendet ist
+                clip.addLineListener(event -> {
+                    if (event.getType() == LineEvent.Type.STOP) {
+                        try {
+                            clip.close();
+                            audioInputStream.close();
+                            bufferedInputStream.close();
+                            if (loop && Objects.equals(audioFilePath, "error/emtpy.wav")) audioPlayer(audioFilePath, true, true);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
                         }
-                    });
-                    clip.start();
+                    }
+                });
+
+                clip.start();
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -126,6 +134,7 @@ public class Utils {
         return getWidthSave;
     }
 
+    // Placeholder für Textfelder (den Username)
     public void setPlaceholder(JTextField textField, String placeholder) {
 
         Color foregroundColor = textField.getForeground();
@@ -154,6 +163,7 @@ public class Utils {
         });
     }
 
+    // Überprüft die Internetverbindung zum SQL Server
     public boolean checkSQLConnection(String ip, String port) {
         CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> {
             try (Socket socket = new Socket()) {
@@ -172,9 +182,10 @@ public class Utils {
         }
     }
 
+    // Überprüft, ob der Username blockierte Begriffe enthält
     public boolean checkUserName(String userName) {
-        CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> {
-            try (InputStream inputStream = getClass().getResourceAsStream("data/blockedTerms.txt")) {
+        CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> { // Asynchroner Aufruf
+            try (InputStream inputStream = getClass().getResourceAsStream("data/blockedTerms.txt")) { // Läd die blockierten Begriffe
                 assert inputStream != null;
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
                     String line;
@@ -197,16 +208,19 @@ public class Utils {
         }
     }
 
+    // Zentrirt das Fenster mittig auf dem Bildschirm
     public Point centerFrame(JFrame frame) {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Bildschirmgröße
         return new Point(((screenSize.width - frame.getWidth()) / 2), ((screenSize.height - frame.getHeight()) / 2));
     }
 
+    // Zentriert das Fenster mittig auf dem Bildschirm
     public int xPlayerPosition(JPanel frame) {
         int x = frame.getWidth() / 4;
         return Math.min(x, 200);
     }
 
+    // Berechnet die Tickrate je nach Betriebssystem
     public double calculateOSspecifcTickrate(double Tickrate) {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("windows")) return Tickrate;
@@ -214,17 +228,19 @@ public class Utils {
         return Tickrate;
     }
 
+    // Berechnet die Latenz des Systems
     public long calculateSystemLatency() {
-        long currentTime = System.currentTimeMillis();
-        long latency = currentTime - startTime;
+        long currentTime = System.currentTimeMillis(); // Aktuelle Zeit
+        long latency = currentTime - startTime; // Latenz
         startTime = currentTime;
         soutLogger("latency-log.txt", String.valueOf(latency));
         return latency;
     }
 
+    // Schreibt Strings in eine Log-Datei
     public void soutLogger(String file, String message) {
         if (Logic.instance.developerMode) {
-            CompletableFuture.runAsync(() -> {
+            CompletableFuture.runAsync(() -> { // Asynchroner Aufruf
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
                     writer.append(message);
                     writer.newLine();
@@ -235,7 +251,7 @@ public class Utils {
         }
     }
 
-
+    // Liest eine JSON-Datei aus
     public JsonNode readJson(String path) {
         ObjectMapper mapper = new ObjectMapper();
         try (InputStream inputStream = getClass().getResourceAsStream(path)) {
@@ -248,10 +264,11 @@ public class Utils {
         }
     }
 
+    // Überprüft ob der 11. September ist
     public JsonNode checkDate(String Default) {
         JsonNode config;
         LocalDate date = LocalDate.now();
-        if (date.getMonthValue() == 9 && date.getDayOfMonth() == 11 ) config = readJson("config/911.json");
+        if (date.getMonthValue() == 9 && date.getDayOfMonth() == 11 ) config = readJson("config/911beta.json");
         else config = readJson("config/" + Default + ".json");
         return config;
     }

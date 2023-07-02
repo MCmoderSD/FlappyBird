@@ -1,18 +1,25 @@
+import java.util.Objects;
+import static java.lang.Thread.sleep;
+
+@SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class Logic {
     public static Logic instance;
     private final GameUI gameUI;
     public boolean gamePaused = false, rainbowMode = false, rainbowModeActive = false, developerMode = false, cheatsEnabled = false;
     private boolean gameState = false, gameOver = false;
 
+    // Konstruktor und Intanz bildung der Klasse
     public Logic(GameUI gameUI) {
         this.gameUI = gameUI;
         instance = this;
     }
 
-    public void handleSpaceKeyPress(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, String flapSound, double Tickrate, boolean sound, String[] args, ConfigurationLauncher config) {
+    // Handler für die Leertaste
+    public void handleSpaceKeyPress(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, String flapSound, String music, double Tickrate, boolean sound, String[] args, Config config) {
 
         // Wenn das Spiel nicht läuft und nicht beendet ist
         if (!gameUI.tickrate.isRunning() && !gameState && !gameOver) {
+            if (!(Objects.equals(music, "error/empty.wav"))) utils.audioPlayer(music, sound, true); // Musik abspielen
             gameUI.tickrate.start(); // Timer starten
             gameUI.gameOver.setVisible(false);
             gameState = true;
@@ -31,6 +38,7 @@ public class Logic {
         }
     }
 
+    // Handler für den Timer Tick
     public void handleTimerTick(Utils utils, Movement movement, int height, String playerImage, String rainbowImage,
                                 int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, String dieSound,
                                 String hitSound, String pointSound, String rainbowSound, double Tickrate, boolean sound) {
@@ -52,8 +60,9 @@ public class Logic {
         }
     }
 
+    // Handler für die Kollision
     public void handleCollision(Utils utils, String dieSound, boolean sound) {
-        utils.audioPlayer(dieSound, sound);
+        utils.audioPlayer(dieSound, sound, false);
 
         gameOver = true;
         gameState = false;
@@ -61,18 +70,21 @@ public class Logic {
         gameUI.gameOver.setVisible(true);
     }
 
+    // Handler für den Jump
     public void handleBounce(Utils utils, Movement movement, int JumpHeight, String flapSound, boolean sound) {
-        utils.audioPlayer(flapSound, sound);
+        utils.audioPlayer(flapSound, sound, false);
         if (gameUI.player.getY() > 32) movement.xPosition = - JumpHeight; // Spieler nach oben bewegen
     }
 
+    // Handler für die Punkte
     public void handlePoint(Utils utils, String pointSound, String rainbowSound, boolean sound) {
-        utils.audioPlayer(pointSound, sound);
+        utils.audioPlayer(pointSound, sound, false);
         gameUI.points++;
         if (gameUI.points > 0 && gameUI.points % 5 == 0 && (int) (Math.random() * 6 + 1) == 3) handleRainbowMode(utils, rainbowSound, sound);
         gameUI.score.setText("Score: " + gameUI.points);
     }
 
+    // Handler für die Pause
     public void handleGamePause() {
         if (gamePaused) {
             gameUI.pauseScreen.setVisible(false);
@@ -85,13 +97,13 @@ public class Logic {
         }
     }
 
-    @SuppressWarnings("BlockingMethodInNonBlockingContext")
+    // Handler für den Rainbow Mode
     private void handleRainbowMode(Utils utils, String rainbowSound, boolean sound) {
         Thread rainbow = new Thread(() -> {
             try {
                 rainbowMode = true;
-                utils.audioPlayer(rainbowSound, sound);
-                Thread.sleep(7000);
+                utils.audioPlayer(rainbowSound, sound, false);
+                sleep(7000);
                 rainbowMode = false;
             } catch (InterruptedException e) {
                 e.printStackTrace();

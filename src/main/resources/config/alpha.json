@@ -13,6 +13,7 @@
   "hitSound": "error/empty.wav",
   "pointSound": "error/empty.wav",
   "rainbowSound": "error/empty.wav",
+  "backgroundMusic": "error/empty.wav",
   "WindowSizeX": 800,
   "WindowSizeY": 800,
   "Resizeable": false

@@ -12,7 +12,6 @@ import java.util.List;
 
  This API is not finished yet, so it is not recommended to use it in production.
  */
-@SuppressWarnings("ALL")
 public class Database {
     public static String NOTING_FOUND = "N/A";
     public static String ERROR = "ERROR";
@@ -24,23 +23,10 @@ public class Database {
 
     private Connection connection;
 
-    /**
-     Constructor for the Database class.
-     Initializes the database connection.
-     */
     public Database() {
         connect();
     }
 
-    /**
-     Constructor for the Database class.
-     Initializes the database connection with the provided parameters.
-     @param host the host address of the database server
-     @param port the port number of the database server
-     @param database the name of the database
-     @param username the username for connecting to the database
-     @param password the password for connecting to the database
-     */
     public Database(String host, String port, String database, String username, String password) {
         this.host = host;
         this.port = port;
@@ -50,9 +36,6 @@ public class Database {
         connect();
     }
 
-    /**
-     Establishes a connection to the database.
-     */
     public void connect() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -64,10 +47,6 @@ public class Database {
         }
     }
 
-    /**
-     Checks if a connection to the database is established.
-     @return true if connected, false otherwise
-     */
     public boolean isConnected() {
         try {
             return connection != null && !connection.isClosed();
@@ -76,11 +55,6 @@ public class Database {
         }
     }
 
-    /**
-     Retrieves the database connection.
-     If not connected, establishes a connection before returning.
-     @return the Connection object representing the database connection
-     */
     public Connection getConnection() {
         if (!isConnected()) {
             connect();
@@ -88,44 +62,23 @@ public class Database {
         return connection;
     }
 
-    /**
-     Retrieves a table from the database.
-     @param name the name of the table
-     @return the Table object representing the specified table
-     */
     public Table getTable(String name) {
         return new Table(name, this);
     }
 
-    /**
-     Class representing operations on a database table.
-     */
     static class Table {
         private final String name;
         private final Database database;
 
-        /**
-         Constructor for the Table class.
-         @param name the name of the table
-         @param database the Database object representing the parent database
-         */
         public Table(String name, Database database) {
             this.name = name;
             this.database = database;
         }
 
-        /**
-         Retrieves the parent Database object.
-         @return the parent Database object
-         */
         public Database getDatabase() {
             return database;
         }
 
-        /**
-         Retrieves the name of the table.
-         @return the name of the table
-         */
         public String getName() {
             return name;
         }
@@ -134,38 +87,19 @@ public class Database {
             return getName();
         }
 
-        /**
-         Retrieves a column from the table.
-         @param name the name of the column
-         @return the Column object representing the specified column
-         */
         public Column getColumn(String name) {
             return new Column(name, this);
         }
 
-        /**
-         Class representing operations on a table column.
-         */
         static class Column {
             private final String name;
             private final Table table;
 
-            /**
-             Constructor for the Column class.
-             @param name the name of the column
-             @param table the Table object representing the parent table
-             */
             public Column(String name, Table table) {
                 this.name = name;
                 this.table = table;
             }
 
-            /**
-
-             Checks if a specific string is present in the column.
-             @param name the string to check
-             @return true if the string is present, false otherwise
-             */
             public boolean contains(String name) {
                 for (String value : getValues()) {
                     if (value.equals(name)) {
@@ -184,12 +118,6 @@ public class Database {
                 return false;
             }
 
-            /**
-             Retrieves the value of a specific row and column.
-             @param column the Column object representing the column
-             @param key the key identifying the row
-             @return the value of the specified row and column, or NOTING_FOUND if not found, or ERROR in case of an exception
-             */
             public String get(Column column, String key) {
                 try (Connection conn = getTable().getDatabase().getConnection(); PreparedStatement stmt = conn.prepareStatement(
                         "SELECT " + this + " FROM " + getTable() + " WHERE " + column + " = ?;"
@@ -207,10 +135,6 @@ public class Database {
                 }
             }
 
-            /**
-             Retrieves all values in the column.
-             @return an array of strings containing all the values in the column
-             */
             public String[] getValues() {
                 try (Connection conn = getTable().getDatabase().getConnection(); PreparedStatement stmt = conn.prepareStatement(
                         "SELECT " + this + " FROM " + getTable() + ";"
@@ -229,18 +153,6 @@ public class Database {
                 return null;
             }
 
-            /**
-
-             Sets the value of a specific row and column.
-
-             @param column the Column object representing the column
-
-             @param key the key identifying the row
-
-             @param value the new value to set
-
-             @return true if the update was successful, false otherwise
-             */
             public boolean set(Column column, String key, String value) {
                 try (Connection conn = getTable().getDatabase().getConnection(); PreparedStatement stmt = conn.prepareStatement(
                         "UPDATE " + getTable() + " SET " + this + " = ? WHERE " + column + " = ?"
@@ -255,11 +167,6 @@ public class Database {
                 return false;
             }
 
-            /**
-             Adds a new row to the column.
-             @param value the value to add
-             @return true if the addition was successful, false otherwise
-             */
             public boolean addLine(String value) {
                 try (Connection conn = getTable().getDatabase().getConnection(); PreparedStatement stmt = conn.prepareStatement(
                         "INSERT INTO " + table + "(" + this + ") select '" + value + "'"
@@ -271,18 +178,10 @@ public class Database {
                 return false;
             }
 
-            /**
-             Retrieves the name of the column.
-             @return the name of the column
-             */
             public String getName() {
                 return name;
             }
 
-            /**
-             Retrieves the parent Table object.
-             @return the parent Table object
-             */
             public Table getTable() {
                 return table;
             }

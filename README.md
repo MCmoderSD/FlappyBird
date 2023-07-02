@@ -4,7 +4,7 @@ A Flappy Bird Project in Java
 
 ## Features
 
-- [ ] Assets
+- [x] Assets
 - [x] Player movement
 - [x] Pipe movement
 - [x] Pipe generation
@@ -18,7 +18,7 @@ A Flappy Bird Project in Java
 - [x] Sounds
 - [x] Rainbow Mode (PowerUp)
 - [x] Developer Mode
-- [ ] Music
+- [x] Music
 - [x] Variable Tickrate
 - [x] Pause
 - [x] Username Checker
@@ -27,4 +27,4 @@ A Flappy Bird Project in Java
 - [x] MySQL Database 
 - [x] Offline Mode
 - [x] Game Optimization
-- [ ] Further Optimization
+- [x] Further Optimization

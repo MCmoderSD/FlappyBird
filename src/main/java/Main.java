@@ -7,26 +7,24 @@ public class Main {
 
     private void run(String[] args) {
 
-        String defaultConfig = "lenabeta"; // Standardkonfiguration
+        String defaultConfig = "lena"; // Standardkonfiguration
         double osMultiplier = 0.936745818; // Multiplikator für die Tickrate, um die Tickrate auf dem Betriebssystem anzupassen
         int JumpHeight = 7; // Die Sprunghöhe des Spielers
         int Percentage = 25; // Prozentzahl, die die Größe des Hindernisses von der Fensterhöhe ausmacht
         int Gap = 200; // Vertikaler Abstand zwischen den Hindernissen
         int TPS = 100; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde) Maximum: 100
 
-
         Utils utils = new Utils(osMultiplier);
 
         JsonNode config;
 
         if (args.length > 0) {
-            System.out.println("Args: " + args[0].toLowerCase());
             config = utils.checkDate(args[0].toLowerCase());
         } else {
             config = utils.checkDate(defaultConfig);
         }
 
-        new ConfigurationLauncher(
+        new Config(
                 utils,
 
                 // Spiellogik
@@ -55,6 +53,7 @@ public class Main {
                 config.get("hitSound").asText(),
                 config.get("pointSound").asText(),
                 config.get("rainbowSound").asText(),
+                config.get("backgroundMusic").asText(),
                 args
         );
     }

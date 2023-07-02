@@ -24,7 +24,7 @@ public class GameUI extends JFrame {
     public int points;
 
     // Konstruktor
-    public GameUI(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, String playerImage, String rainbowImage, int JumpHeight, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreenImage, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, double Tickrate, boolean sound, String[] args, ConfigurationLauncher config) {
+    public GameUI(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, String playerImage, String rainbowImage, int JumpHeight, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreenImage, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, String music, double Tickrate, boolean sound, String[] args, Config config) {
         instance = this;
         logic = new Logic(this);
 
@@ -38,7 +38,7 @@ public class GameUI extends JFrame {
         setResizable(resizable);
         setIconImage((utils.reader(icon)));
 
-        // Initialisiere das ConfigurationLauncher-Panel mit Hintergrund
+        // Initialisiere das Config-Panel mit Hintergrund
         final BufferedImage background = utils.reader(backgroundImage);
         final BufferedImage buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
         int imageWidth = background.getWidth();
@@ -125,7 +125,7 @@ public class GameUI extends JFrame {
                 super.keyPressed(e);
 
                 // Steuerung
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) logic.handleSpaceKeyPress(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, flapSound, Tickrate, sound, args, config);
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) logic.handleSpaceKeyPress(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, flapSound, music, Tickrate, sound, args, config);
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) logic.handleGamePause();
 
 
@@ -165,7 +165,7 @@ public class GameUI extends JFrame {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                logic.handleSpaceKeyPress(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, flapSound, Tickrate, sound, args, config);
+                logic.handleSpaceKeyPress(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, flapSound, music, Tickrate, sound, args, config);
             }
 
             @Override
@@ -259,7 +259,7 @@ public class GameUI extends JFrame {
             for (Rectangle component : rObstacles) {
                 if (component != null) {
                     if (rPlayer.intersects(component) && !logic.rainbowMode) {
-                        utils.audioPlayer(hitSound, sound);
+                        utils.audioPlayer(hitSound, sound, false);
                         logic.handleCollision(utils, dieSound, sound);
                     }
                 }
@@ -276,6 +276,7 @@ public class GameUI extends JFrame {
         }
     }
 
+    // Überprüft, ob der Spieler sich im Regenbogen-Modus befindet
     public void checkRainbowMode(Utils utils, String playerImage, String rainbowImage) {
         if (logic.rainbowMode && !logic.rainbowModeActive) {
             player.setIcon(utils.createImageIcon((rainbowImage)));

@@ -13,6 +13,7 @@
   "hitSound": "sounds/mono/hit.wav",
   "pointSound": "sounds/mono/point.wav",
   "rainbowSound": "sounds/mono/rainbow.wav",
+  "backgroundMusic": "error/empty.wav",
   "WindowSizeX": 800,
   "WindowSizeY": 800,
   "Resizeable": false

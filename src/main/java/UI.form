@@ -29,6 +29,7 @@
         </constraints>
         <properties>
           <font name="Roboto" size="36"/>
+          <labelFor value="16a80"/>
           <text value="Score"/>
         </properties>
       </component>
@@ -95,4 +96,7 @@
       </hspacer>
     </children>
   </grid>
+  <inspectionSuppressions>
+    <suppress inspection="NoLabelFor"/>
+  </inspectionSuppressions>
 </form>
