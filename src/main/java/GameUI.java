@@ -34,9 +34,9 @@ public class GameUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
         setLocation(utils.centerFrame(this));
-        setVisible(true);
         setResizable(resizable);
         setIconImage((utils.reader(icon)));
+        setVisible(true);
 
         // Initialisiere das Config-Panel mit Hintergrund
         final BufferedImage background = utils.reader(backgroundImage);

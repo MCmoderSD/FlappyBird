@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Config {
     // Alle Variablen und Assets für die Spielkonfiguration
     private final String Title; // Titel des Spiels
@@ -28,8 +30,24 @@ public class Config {
         Title = title;
         WindowSizeX = windowSizeX;
         WindowSizeY = windowSizeY;
-        Background = background;
         Resizeable = resizeable;
+
+        if (Objects.equals(background, "")) background = "error/empty.png";
+        if (Objects.equals(player, "")) player = "error/empty.png";
+        if (Objects.equals(rainbow, "")) rainbow = player;
+        if (Objects.equals(obstacleTop, "")) obstacleTop = "error/empty.png";
+        if (Objects.equals(obstacleBottom, "")) obstacleBottom = "error/empty.png";
+        if (Objects.equals(icon, "")) icon = "error/empty.png";
+        if (Objects.equals(gameOver, "")) gameOver = "error/empty.png";
+        if (Objects.equals(pause, "")) pause = "error/empty.png";
+        if (Objects.equals(dieSound, "")) dieSound = "error/empty.wav";
+        if (Objects.equals(flapSound, "")) flapSound = "error/empty.wav";
+        if (Objects.equals(hitSound, "")) hitSound = "error/empty.wav";
+        if (Objects.equals(pointSound, "")) pointSound = "error/empty.wav";
+        if (Objects.equals(rainbowSound, "")) rainbowSound = "error/empty.wav";
+        if (Objects.equals(music, "")) music = "error/empty.wav";
+
+        Background = background;
         Player = player;
         Rainbow = rainbow;
         ObstacleTop = obstacleTop;

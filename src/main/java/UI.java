@@ -146,7 +146,6 @@ public class UI extends JFrame {
         setTitle(title);
         setSize(width, height);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
         setResizable(resizable);
         setIconImage(utils.reader(icon));
 
@@ -163,8 +162,8 @@ public class UI extends JFrame {
         add(backgroundFrame);
 
         // Initialisierung der Fensterposition
-        Dimension frameDimension = Toolkit.getDefaultToolkit().getScreenSize();
-        setLocation((frameDimension.width - width) / 2, (frameDimension.height - height) / 2);
+        setLocation(utils.centerFrame(this));
+        setVisible(true);
 
         // Initialisierung des Start-Buttons
         bStart = new JButton();

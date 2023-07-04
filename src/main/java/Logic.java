@@ -62,6 +62,7 @@ public class Logic {
 
     // Handler für die Kollision
     public void handleCollision(Utils utils, String dieSound, boolean sound) {
+        utils.stopAudio();
         utils.audioPlayer(dieSound, sound, false);
 
         gameOver = true;
@@ -90,7 +91,7 @@ public class Logic {
             gameUI.pauseScreen.setVisible(false);
             gamePaused = false;
         } else {
-            if (!rainbowMode) {
+            if (!rainbowMode && !gameOver) {
                 gameUI.pauseScreen.setVisible(true);
                 gamePaused = true;
             }

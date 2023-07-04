@@ -13,19 +13,20 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-@SuppressWarnings("BlockingMethodInNonBlockingContext")
-
 // Klasse für alle Utensiien
+@SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class Utils {
     private final double osMultiplier;
-    private int getWidthSave; // Speichert Backup Werte
-    private String getWidthPath, readerPath, createImageIconPath; // Speichert Backup Pfade
-    private BufferedImage readerSave; // Speichert Backup Bilder
-    private ImageIcon createImageIconSave; // Speichert Backup Icons
+    private final HashMap<String, Clip> AudioClips = new HashMap<>(); // Speichert alle AudioClips
+    private final HashMap<String, BufferedImage> BufferedImages = new HashMap<>(); // Speichert alle BufferedImages
+    private final HashMap<String, ImageIcon> ImageIcons = new HashMap<>(); // Speichert alle ImageIcons
+    private final HashMap<String, BufferedInputStream> BufferedInputStreams = new HashMap<>(); // Speichert alle BufferedInputStreams
+    private final HashMap<String, AudioInputStream> AudioInputStreams = new HashMap<>(); // Speichert alle AudioInputStreams
     private long startTime = System.currentTimeMillis();
 
     // Konstruktor und Multiplikator für die Tickrate
@@ -40,42 +41,30 @@ public class Utils {
 
     // Läd Bilddateien
     public BufferedImage reader(String resource) {
-        if (!Objects.equals(readerPath, resource)) { // Überprüft, ob der Pfad bereits geladen wurde
-            CompletableFuture<BufferedImage> future = CompletableFuture.supplyAsync(() -> { // Asynchroner Aufruf
-                try {
-                    if (resource.endsWith(".png")) {
-                        readerPath = resource; // Speichert den Pfad
-                        return ImageIO.read(Objects.requireNonNull(getClass().getResource(resource))); // Läd das Bild
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                return null;
-            });
-
+        if (!BufferedImages.containsKey(resource)) { // Überprüft, ob das Bild bereits geladen wurde
             try {
-                readerSave = future.get(); // Warten auf das Ergebnis des asynchronen Aufrufs
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
+                if (resource.endsWith(".png")) {
+                    BufferedImages.put(resource, ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)))); // Läd das Bild
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
-        return readerSave; // Gibt das Bild zurück
+        return BufferedImages.get(resource); // Gibt das Bild zurück
     }
 
     // Erstellt ein ImageIcon aus Bildern
     public ImageIcon createImageIcon(String resource) {
-        if (!Objects.equals(createImageIconPath, resource)) { // Überprüft, ob der Pfad bereits geladen wurde
+        if (!ImageIcons.containsKey(resource)) { // Überprüft, ob der Pfad bereits geladen wurde
             if (resource.endsWith(".png")) {
-                createImageIconPath = resource;
-                createImageIconSave = new ImageIcon(reader(resource));
+                ImageIcons.put(resource, new ImageIcon(reader(resource))); // Erstellt ein ImageIcon
             }
             if (resource.endsWith(".gif")) {
                 URL imageUrl = getClass().getClassLoader().getResource(resource);
-                createImageIconPath = resource;
-                createImageIconSave = new ImageIcon(Objects.requireNonNull(imageUrl));
+                ImageIcons.put(resource, new ImageIcon(Objects.requireNonNull(imageUrl))); // Erstellt ein ImageIcon
             }
         }
-        return createImageIconSave;
+        return ImageIcons.get(resource); // Gibt das ImageIcon zurück
     }
 
     // Zentriert ein Bild mittig
@@ -93,30 +82,25 @@ public class Utils {
                 InputStream audioFileInputStream = classLoader.getResourceAsStream(audioFilePath);
 
                 // Überprüfen, ob die Audiodatei gefunden wurde
-                if (audioFileInputStream == null) {
-                    throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
-                }
+                if (audioFileInputStream == null) throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
 
-                BufferedInputStream bufferedInputStream = new BufferedInputStream(audioFileInputStream);
-                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(bufferedInputStream);
+                BufferedInputStreams.put(audioFilePath, new BufferedInputStream(audioFileInputStream));
+                AudioInputStreams.put(audioFilePath, AudioSystem.getAudioInputStream(BufferedInputStreams.get(audioFilePath)));
 
                 Clip clip = AudioSystem.getClip();
-                clip.open(audioInputStream);
+                clip.open(AudioInputStreams.get(audioFilePath));
 
                 // Hinzufügen eines LineListeners, um die Ressourcen freizugeben, wenn die Wiedergabe beendet ist
                 clip.addLineListener(event -> {
                     if (event.getType() == LineEvent.Type.STOP) {
-                        try {
-                            clip.close();
-                            audioInputStream.close();
-                            bufferedInputStream.close();
-                            if (loop && Objects.equals(audioFilePath, "error/emtpy.wav")) audioPlayer(audioFilePath, true, true);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                        AudioClips.remove(audioFilePath);
+                        clip.close();
+
+                        if (loop && Objects.equals(audioFilePath, "error/emtpy.wav")) audioPlayer(audioFilePath, true, true);
                     }
                 });
 
+                AudioClips.put(audioFilePath, clip);
                 clip.start();
 
                 } catch (Exception e) {
@@ -126,12 +110,41 @@ public class Utils {
         }
     }
 
-    public int getBackgroundWidth(String path) {
-        if (!Objects.equals(path, getWidthPath)) {
-            getWidthPath = path;
-            getWidthSave = reader(path).getWidth();
+    // Stopt alle AudioClips
+    public void stopAudio() {
+
+        // Kopiert die HashMap, um ConcurrentModificationException zu vermeiden
+        HashMap<String, Clip> audioClipsCopy = new HashMap<>(AudioClips);
+        HashMap<String, BufferedInputStream> bufferedInputStreamsCopy = new HashMap<>(BufferedInputStreams);
+        HashMap<String, AudioInputStream> audioInputStreamsCopy = new HashMap<>(AudioInputStreams);
+
+        // Schleife, um alle AudioClips zu stoppen
+        try {
+            for (String audioClip : audioClipsCopy.keySet()) {
+                AudioClips.get(audioClip).stop();
+            }
+
+            for (String bufferedInputStream : bufferedInputStreamsCopy.keySet()) {
+                BufferedInputStreams.get(bufferedInputStream).close();
+            }
+
+            for (String audioInputStream : audioInputStreamsCopy.keySet()) {
+                AudioInputStreams.get(audioInputStream).close();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return getWidthSave;
+
+        // Leert die HashMaps
+        AudioClips.clear();
+        BufferedInputStreams.clear();
+        AudioInputStreams.clear();
+    }
+
+    // Berechnet die Breite des Hintergrunds
+    public int getBackgroundWidth(String path) {
+        return BufferedImages.get(path).getWidth();
     }
 
     // Placeholder für Textfelder (den Username)
