@@ -22,11 +22,11 @@ import java.util.concurrent.ExecutionException;
 @SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class Utils {
     private final double osMultiplier;
-    private final HashMap<String, Clip> AudioClips = new HashMap<>(); // Speichert alle AudioClips
-    private final HashMap<String, BufferedImage> BufferedImages = new HashMap<>(); // Speichert alle BufferedImages
-    private final HashMap<String, ImageIcon> ImageIcons = new HashMap<>(); // Speichert alle ImageIcons
-    private final HashMap<String, BufferedInputStream> BufferedInputStreams = new HashMap<>(); // Speichert alle BufferedInputStreams
-    private final HashMap<String, AudioInputStream> AudioInputStreams = new HashMap<>(); // Speichert alle AudioInputStreams
+    private final HashMap<String, Clip> audioClipCache = new HashMap<>(); // Cache für AudioClips
+    private final HashMap<String, BufferedImage> bufferedImageCache = new HashMap<>(); // Cache für BufferedImages
+    private final HashMap<String, ImageIcon> imageIconCache = new HashMap<>(); // Cache für ImageIcons
+    private final HashMap<String, BufferedInputStream> bufferedInputStreamCache = new HashMap<>(); // Cache für BufferedInputStreams
+    private final HashMap<String, AudioInputStream> audioInputStreamCache = new HashMap<>(); // Cache für AudioInputStreams
     private long startTime = System.currentTimeMillis();
 
     // Konstruktor und Multiplikator für die Tickrate
@@ -41,30 +41,30 @@ public class Utils {
 
     // Läd Bilddateien
     public BufferedImage reader(String resource) {
-        if (!BufferedImages.containsKey(resource)) { // Überprüft, ob das Bild bereits geladen wurde
+        if (!bufferedImageCache.containsKey(resource)) { // Überprüft, ob das Bild bereits geladen wurde
             try {
                 if (resource.endsWith(".png")) {
-                    BufferedImages.put(resource, ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)))); // Läd das Bild
+                    bufferedImageCache.put(resource, ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)))); // Läd das Bild
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        return BufferedImages.get(resource); // Gibt das Bild zurück
+        return bufferedImageCache.get(resource); // Gibt das Bild zurück
     }
 
     // Erstellt ein ImageIcon aus Bildern
     public ImageIcon createImageIcon(String resource) {
-        if (!ImageIcons.containsKey(resource)) { // Überprüft, ob der Pfad bereits geladen wurde
+        if (!imageIconCache.containsKey(resource)) { // Überprüft, ob der Pfad bereits geladen wurde
             if (resource.endsWith(".png")) {
-                ImageIcons.put(resource, new ImageIcon(reader(resource))); // Erstellt ein ImageIcon
+                imageIconCache.put(resource, new ImageIcon(reader(resource))); // Erstellt ein ImageIcon
             }
             if (resource.endsWith(".gif")) {
                 URL imageUrl = getClass().getClassLoader().getResource(resource);
-                ImageIcons.put(resource, new ImageIcon(Objects.requireNonNull(imageUrl))); // Erstellt ein ImageIcon
+                imageIconCache.put(resource, new ImageIcon(Objects.requireNonNull(imageUrl))); // Erstellt ein ImageIcon
             }
         }
-        return ImageIcons.get(resource); // Gibt das ImageIcon zurück
+        return imageIconCache.get(resource); // Gibt das ImageIcon zurück
     }
 
     // Zentriert ein Bild mittig
@@ -75,10 +75,10 @@ public class Utils {
 
     // Läd Musikdateien und spielt sie ab
     public void audioPlayer(String audioFilePath, boolean sound, boolean loop) {
-        if (sound && !Logic.instance.gamePaused) {
+        if (sound && !Logic.instance.gamePaused && !Objects.equals(audioFilePath, "error/emtpy.wav")) {
             CompletableFuture.runAsync(() -> {
                 try {
-                    if (!AudioInputStreams.containsKey(audioFilePath)) { // Überprüft, ob die Audiodatei bereits geladen wurde
+                    if (!audioInputStreamCache.containsKey(audioFilePath)) { // Überprüft, ob die Audiodatei bereits geladen wurde
 
                         // Läd die Audiodatei
                         ClassLoader classLoader = getClass().getClassLoader();
@@ -87,27 +87,27 @@ public class Utils {
                         // Überprüfen, ob die Audiodatei gefunden wurde
                         if (audioFileInputStream == null) throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
 
-                        // Erstellen eines BufferedInputStreams und eines AudioInputStreams
-                        BufferedInputStreams.put(audioFilePath, new BufferedInputStream(audioFileInputStream));
-                        AudioInputStreams.put(audioFilePath, AudioSystem.getAudioInputStream(BufferedInputStreams.get(audioFilePath)));
+                        // Erstellen eines bufferedInputStreamCache und eines audioInputStreamCache
+                        bufferedInputStreamCache.put(audioFilePath, new BufferedInputStream(audioFileInputStream));
+                        audioInputStreamCache.put(audioFilePath, AudioSystem.getAudioInputStream(bufferedInputStreamCache.get(audioFilePath)));
                     }
 
                     // Erstellen eines Clips und abspielen der Audiodatei
                     Clip clip = AudioSystem.getClip();
-                    clip.open(AudioInputStreams.get(audioFilePath));
+                    clip.open(audioInputStreamCache.get(audioFilePath));
 
                     // Hinzufügen eines LineListeners, um die Ressourcen freizugeben, wenn die Wiedergabe beendet ist
                     clip.addLineListener(event -> {
                         if (event.getType() == LineEvent.Type.STOP) {
-                            AudioClips.remove(audioFilePath);
+                            audioClipCache.remove(audioFilePath);
                             clip.close();
 
-                            if (loop && Objects.equals(audioFilePath, "error/emtpy.wav")) audioPlayer(audioFilePath, true, true);
+                            if (loop && !Objects.equals(audioFilePath, "error/emtpy.wav")) audioPlayer(audioFilePath, true, true);
                         }
                     });
 
                     // Hinzufügen des Clips zur HashMap und abspielen
-                    AudioClips.put(audioFilePath, clip);
+                    audioClipCache.put(audioFilePath, clip);
                     clip.start();
 
                 } catch (Exception e) {
@@ -117,40 +117,40 @@ public class Utils {
         }
     }
 
-    // Stopt alle AudioClips
+    // Stopt alle audioClipCache
     public void stopAudio() {
 
         // Kopiert die HashMap, um ConcurrentModificationException zu vermeiden
-        HashMap<String, Clip> audioClipsCopy = new HashMap<>(AudioClips);
-        HashMap<String, BufferedInputStream> bufferedInputStreamsCopy = new HashMap<>(BufferedInputStreams);
-        HashMap<String, AudioInputStream> audioInputStreamsCopy = new HashMap<>(AudioInputStreams);
+        HashMap<String, Clip> audioClipsCopy = new HashMap<>(audioClipCache);
+        HashMap<String, BufferedInputStream> bufferedInputStreamsCopy = new HashMap<>(bufferedInputStreamCache);
+        HashMap<String, AudioInputStream> audioInputStreamsCopy = new HashMap<>(audioInputStreamCache);
 
-        // Schleife, um alle AudioClips zu stoppen
+        // Schleife, um alle audioClipCache zu stoppen
         try {
             for (String audioClip : audioClipsCopy.keySet()) {
-                AudioClips.get(audioClip).stop();
+                audioClipCache.get(audioClip).stop();
             }
 
             for (String bufferedInputStream : bufferedInputStreamsCopy.keySet()) {
-                BufferedInputStreams.get(bufferedInputStream).close();
+                bufferedInputStreamCache.get(bufferedInputStream).close();
             }
 
             for (String audioInputStream : audioInputStreamsCopy.keySet()) {
-                AudioInputStreams.get(audioInputStream).close();
+                audioInputStreamCache.get(audioInputStream).close();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         // Leert die HashMaps
-        AudioClips.clear();
-        BufferedInputStreams.clear();
-        AudioInputStreams.clear();
+        audioClipCache.clear();
+        bufferedInputStreamCache.clear();
+        audioInputStreamCache.clear();
     }
 
     // Berechnet die Breite des Hintergrunds
     public int getBackgroundWidth(String path) {
-        return BufferedImages.get(path).getWidth();
+        return bufferedImageCache.get(path).getWidth();
     }
 
     // Placeholder für Textfelder (den Username)

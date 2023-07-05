@@ -1,4 +1,3 @@
-import java.util.Objects;
 import static java.lang.Thread.sleep;
 
 @SuppressWarnings("BlockingMethodInNonBlockingContext")
@@ -17,9 +16,14 @@ public class Logic {
     // Handler für die Leertaste
     public void handleSpaceKeyPress(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, String flapSound, String music, double Tickrate, boolean sound, String[] args, Config config) {
 
+        // Wenn das Spiel nicht beendet ist, Sprung ausführen
+        if (!gameOver) {
+            handleBounce(utils, movement, JumpHeight, flapSound, sound);
+        }
+
         // Wenn das Spiel nicht läuft und nicht beendet ist
         if (!gameUI.tickrate.isRunning() && !gameState && !gameOver) {
-            if (!(Objects.equals(music, "error/empty.wav"))) utils.audioPlayer(music, sound, true); // Musik abspielen
+            utils.audioPlayer(music, sound, true); // Musik abspielen
             gameUI.tickrate.start(); // Timer starten
             gameUI.gameOver.setVisible(false);
             gameState = true;
@@ -30,11 +34,6 @@ public class Logic {
         if (!gameUI.tickrate.isRunning() && !gameState && gameOver) {
             new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, sound, args, gameUI.points, config); // Fenster erneut initialisieren
             gameUI.dispose(); // Aktuelles Fenster schließen
-        }
-
-        // Wenn das Spiel nicht beendet ist, Sprung ausführen
-        if (!gameOver) {
-            handleBounce(utils, movement, JumpHeight, flapSound, sound);
         }
     }
 
