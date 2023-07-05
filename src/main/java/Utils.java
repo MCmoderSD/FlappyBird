@@ -78,30 +78,37 @@ public class Utils {
         if (sound && !Logic.instance.gamePaused) {
             CompletableFuture.runAsync(() -> {
                 try {
-                ClassLoader classLoader = getClass().getClassLoader();
-                InputStream audioFileInputStream = classLoader.getResourceAsStream(audioFilePath);
+                    if (!AudioInputStreams.containsKey(audioFilePath)) { // Überprüft, ob die Audiodatei bereits geladen wurde
 
-                // Überprüfen, ob die Audiodatei gefunden wurde
-                if (audioFileInputStream == null) throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
+                        // Läd die Audiodatei
+                        ClassLoader classLoader = getClass().getClassLoader();
+                        InputStream audioFileInputStream = classLoader.getResourceAsStream(audioFilePath);
 
-                BufferedInputStreams.put(audioFilePath, new BufferedInputStream(audioFileInputStream));
-                AudioInputStreams.put(audioFilePath, AudioSystem.getAudioInputStream(BufferedInputStreams.get(audioFilePath)));
+                        // Überprüfen, ob die Audiodatei gefunden wurde
+                        if (audioFileInputStream == null) throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
 
-                Clip clip = AudioSystem.getClip();
-                clip.open(AudioInputStreams.get(audioFilePath));
-
-                // Hinzufügen eines LineListeners, um die Ressourcen freizugeben, wenn die Wiedergabe beendet ist
-                clip.addLineListener(event -> {
-                    if (event.getType() == LineEvent.Type.STOP) {
-                        AudioClips.remove(audioFilePath);
-                        clip.close();
-
-                        if (loop && Objects.equals(audioFilePath, "error/emtpy.wav")) audioPlayer(audioFilePath, true, true);
+                        // Erstellen eines BufferedInputStreams und eines AudioInputStreams
+                        BufferedInputStreams.put(audioFilePath, new BufferedInputStream(audioFileInputStream));
+                        AudioInputStreams.put(audioFilePath, AudioSystem.getAudioInputStream(BufferedInputStreams.get(audioFilePath)));
                     }
-                });
 
-                AudioClips.put(audioFilePath, clip);
-                clip.start();
+                    // Erstellen eines Clips und abspielen der Audiodatei
+                    Clip clip = AudioSystem.getClip();
+                    clip.open(AudioInputStreams.get(audioFilePath));
+
+                    // Hinzufügen eines LineListeners, um die Ressourcen freizugeben, wenn die Wiedergabe beendet ist
+                    clip.addLineListener(event -> {
+                        if (event.getType() == LineEvent.Type.STOP) {
+                            AudioClips.remove(audioFilePath);
+                            clip.close();
+
+                            if (loop && Objects.equals(audioFilePath, "error/emtpy.wav")) audioPlayer(audioFilePath, true, true);
+                        }
+                    });
+
+                    // Hinzufügen des Clips zur HashMap und abspielen
+                    AudioClips.put(audioFilePath, clip);
+                    clip.start();
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -131,7 +138,6 @@ public class Utils {
             for (String audioInputStream : audioInputStreamsCopy.keySet()) {
                 AudioInputStreams.get(audioInputStream).close();
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
