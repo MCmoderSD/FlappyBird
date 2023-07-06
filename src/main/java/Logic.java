@@ -4,8 +4,7 @@ import static java.lang.Thread.sleep;
 public class Logic {
     public static Logic instance;
     private final GameUI gameUI;
-    public boolean gamePaused = false, rainbowMode = false, rainbowModeActive = false, developerMode = false, cheatsEnabled = false;
-    private boolean gameState = false, gameOver = false;
+    public boolean gamePaused = false, gameState = false, gameOver = false, rainbowMode = false, rainbowModeActive = false, developerMode = false, cheatsEnabled = false;
 
     // Konstruktor und Intanz bildung der Klasse
     public Logic(GameUI gameUI) {
@@ -17,9 +16,7 @@ public class Logic {
     public void handleSpaceKeyPress(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, String flapSound, String music, double Tickrate, boolean sound, String[] args, Config config) {
 
         // Wenn das Spiel nicht beendet ist, Sprung ausführen
-        if (!gameOver) {
-            handleBounce(utils, movement, JumpHeight, flapSound, sound);
-        }
+        if (!gameOver) handleBounce(utils, movement, JumpHeight, flapSound, sound);
 
         // Wenn das Spiel nicht läuft und nicht beendet ist
         if (!gameUI.tickrate.isRunning() && !gameState && !gameOver) {

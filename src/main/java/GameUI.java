@@ -111,6 +111,15 @@ public class GameUI extends JFrame {
         pauseScreen.setIcon(pauseScreenIcon);
         mainPanel.add(pauseScreen);
 
+        // Initialisiere das Soundsystem
+        utils.stopAudio();
+        utils.audioPlayer(dieSound, false, false);
+        utils.audioPlayer(flapSound, false, false);
+        utils.audioPlayer(hitSound, false, false);
+        utils.audioPlayer(pointSound, false, false);
+        utils.audioPlayer(rainbowSound, false, false);
+        utils.audioPlayer(music, false, false);
+
         // Initialisiere den Timer
         tickrate = new Timer((int) Math.round(1000/Tickrate), e -> {
             if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
