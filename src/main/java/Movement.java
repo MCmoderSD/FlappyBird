@@ -63,6 +63,14 @@ public class Movement {
             obstacleMoveInt = 0;
         }
     }
+
+    public void init() {
+        backgroundResetX = 0;
+        obstacleMoveInt = 200;
+        playerMoveInt = 0;
+        backgroundCount = 0;
+    }
+
     @SafeVarargs
     private final void moveRectangles(double Tickrate, int points, ArrayList<Rectangle>... rectangleList) {
         for (ArrayList<Rectangle> rectangles : rectangleList) {

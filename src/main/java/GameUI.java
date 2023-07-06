@@ -28,6 +28,8 @@ public class GameUI extends JFrame {
         instance = this;
         logic = new Logic(this);
 
+        movement.init();
+
         // Initialisiere das Fenster
         setTitle(title);
         setSize(width, height);
@@ -133,9 +135,7 @@ public class GameUI extends JFrame {
                 userInput.add(e.getKeyCode());
 
                 // Die Eingabe begrenzen, um Speicherplatz zu sparen
-                if (userInput.size() > KONAMI_CODE.length) {
-                    userInput.remove(0); // Die Eingabe begrenzen, um Speicherplatz zu sparen
-                }
+                if (userInput.size() > KONAMI_CODE.length) userInput.remove(0); // Die Eingabe begrenzen, um Speicherplatz zu sparen
 
                 // Prüfen, ob der Konami-Code eingegeben wurde
                 if (userInput.size() == KONAMI_CODE.length) {
@@ -177,6 +177,7 @@ public class GameUI extends JFrame {
             @Override
             public void mouseExited(MouseEvent e) {}
         });
+
     }
 
     // Erzeugt Hindernisse basierend auf den übergebenen Parametern

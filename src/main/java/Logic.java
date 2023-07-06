@@ -4,8 +4,7 @@ import static java.lang.Thread.sleep;
 public class Logic {
     public static Logic instance;
     private final GameUI gameUI;
-    public boolean gamePaused = false, rainbowMode = false, rainbowModeActive = false, developerMode = false, cheatsEnabled = false;
-    private boolean gameState = false, gameOver = false;
+    public boolean gamePaused = false, rainbowMode = false, rainbowModeActive = false, developerMode = false, cheatsEnabled = false, gameState = false, gameOver = false;
 
     // Konstruktor und Intanz bildung der Klasse
     public Logic(GameUI gameUI) {
@@ -16,13 +15,8 @@ public class Logic {
     // Handler für die Leertaste
     public void handleSpaceKeyPress(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, String flapSound, String music, double Tickrate, boolean sound, String[] args, Config config) {
 
-        // Wenn das Spiel nicht beendet ist, Sprung ausführen
-        if (!gameOver) {
-            handleBounce(utils, movement, JumpHeight, flapSound, sound);
-        }
-
         // Wenn das Spiel nicht läuft und nicht beendet ist
-        if (!gameUI.tickrate.isRunning() && !gameState && !gameOver) {
+        if (!(gameUI.tickrate.isRunning() || gameState || gameOver)) {
             utils.audioPlayer(music, sound, true); // Musik abspielen
             gameUI.tickrate.start(); // Timer starten
             gameUI.gameOver.setVisible(false);
@@ -35,6 +29,9 @@ public class Logic {
             new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, sound, args, gameUI.points, config); // Fenster erneut initialisieren
             gameUI.dispose(); // Aktuelles Fenster schließen
         }
+
+        // Wenn das Spiel nicht beendet ist, Sprung ausführen
+        if (!gameOver) handleBounce(utils, movement, JumpHeight, flapSound, sound);
     }
 
     // Handler für den Timer Tick

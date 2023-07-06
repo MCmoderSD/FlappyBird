@@ -13,6 +13,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -22,22 +23,19 @@ import java.util.concurrent.ExecutionException;
 @SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class Utils {
     private final double osMultiplier;
-    private final HashMap<String, Clip> audioClipCache = new HashMap<>(); // Cache für AudioClips
+    private final ArrayList<Clip> audioClipCache = new ArrayList<>(); // Cache für AudioClips
     private final HashMap<String, BufferedImage> bufferedImageCache = new HashMap<>(); // Cache für BufferedImages
     private final HashMap<String, ImageIcon> imageIconCache = new HashMap<>(); // Cache für ImageIcons
-    private final HashMap<String, BufferedInputStream> bufferedInputStreamCache = new HashMap<>(); // Cache für BufferedInputStreams
-    private final HashMap<String, AudioInputStream> audioInputStreamCache = new HashMap<>(); // Cache für AudioInputStreams
+    private final ArrayList<BufferedInputStream> bufferedInputStreamCache = new ArrayList<>(); // Cache für BufferedInputStreams
+    private final ArrayList<AudioInputStream> audioInputStreamCache = new ArrayList<>(); // Cache für AudioInputStreams
     private long startTime = System.currentTimeMillis();
+    private boolean audioIsStopped;
 
     // Konstruktor und Multiplikator für die Tickrate
-    public Utils(double osMultiplier) {
-        this.osMultiplier = osMultiplier;
-    }
+    public Utils(double osMultiplier) { this.osMultiplier = osMultiplier; }
 
     // Berechnet die Flugbahn des Spielers
-    public int calculateGravity(int x) {
-        return -2 * x + 4;
-    }
+    public int calculateGravity(int x) { return -2 * x + 4; }
 
     // Läd Bilddateien
     public BufferedImage reader(String resource) {
@@ -76,38 +74,41 @@ public class Utils {
     // Läd Musikdateien und spielt sie ab
     public void audioPlayer(String audioFilePath, boolean sound, boolean loop) {
         if (sound && !Logic.instance.gamePaused && !Objects.equals(audioFilePath, "error/emtpy.wav")) {
+            if (!loop) audioIsStopped = false;
             CompletableFuture.runAsync(() -> {
                 try {
-                    if (!audioInputStreamCache.containsKey(audioFilePath)) { // Überprüft, ob die Audiodatei bereits geladen wurde
+                    ClassLoader classLoader = getClass().getClassLoader();
+                    InputStream audioFileInputStream = classLoader.getResourceAsStream(audioFilePath);
 
-                        // Läd die Audiodatei
-                        ClassLoader classLoader = getClass().getClassLoader();
-                        InputStream audioFileInputStream = classLoader.getResourceAsStream(audioFilePath);
+                    // Überprüfen, ob die Audiodatei gefunden wurde
+                    if (audioFileInputStream == null) throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
 
-                        // Überprüfen, ob die Audiodatei gefunden wurde
-                        if (audioFileInputStream == null) throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
+                    BufferedInputStream bufferedInputStream = new BufferedInputStream(audioFileInputStream);
+                    AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(bufferedInputStream);
 
-                        // Erstellen eines bufferedInputStreamCache und eines audioInputStreamCache
-                        bufferedInputStreamCache.put(audioFilePath, new BufferedInputStream(audioFileInputStream));
-                        audioInputStreamCache.put(audioFilePath, AudioSystem.getAudioInputStream(bufferedInputStreamCache.get(audioFilePath)));
-                    }
-
-                    // Erstellen eines Clips und abspielen der Audiodatei
                     Clip clip = AudioSystem.getClip();
-                    clip.open(audioInputStreamCache.get(audioFilePath));
+                    clip.open(audioInputStream);
+
+                    // Hinzufügen des Clips zum Cache
+                    audioClipCache.add(clip);
+                    bufferedInputStreamCache.add(bufferedInputStream);
+                    audioInputStreamCache.add(audioInputStream);
 
                     // Hinzufügen eines LineListeners, um die Ressourcen freizugeben, wenn die Wiedergabe beendet ist
                     clip.addLineListener(event -> {
                         if (event.getType() == LineEvent.Type.STOP) {
-                            audioClipCache.remove(audioFilePath);
-                            clip.close();
+                            try {
+                                clip.close();
+                                audioInputStream.close();
+                                bufferedInputStream.close();
 
-                            if (loop && !Objects.equals(audioFilePath, "error/emtpy.wav")) audioPlayer(audioFilePath, true, true);
+                                if (loop && Logic.instance.gameOver && !audioIsStopped) audioPlayer(audioFilePath, true, true);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
                     });
 
-                    // Hinzufügen des Clips zur HashMap und abspielen
-                    audioClipCache.put(audioFilePath, clip);
                     clip.start();
 
                 } catch (Exception e) {
@@ -119,33 +120,29 @@ public class Utils {
 
     // Stopt alle audioClipCache
     public void stopAudio() {
+        CompletableFuture.runAsync(() -> {
+            audioIsStopped = true;
+            // Kopiert die HashMap, um ConcurrentModificationException zu vermeiden
+            ArrayList<Clip> audioClips = new ArrayList<>(audioClipCache);
+            ArrayList<BufferedInputStream> bufferedInputStreams = new ArrayList<>(bufferedInputStreamCache);
+            ArrayList<AudioInputStream> audioInputStreams = new ArrayList<>(audioInputStreamCache);
 
-        // Kopiert die HashMap, um ConcurrentModificationException zu vermeiden
-        HashMap<String, Clip> audioClipsCopy = new HashMap<>(audioClipCache);
-        HashMap<String, BufferedInputStream> bufferedInputStreamsCopy = new HashMap<>(bufferedInputStreamCache);
-        HashMap<String, AudioInputStream> audioInputStreamsCopy = new HashMap<>(audioInputStreamCache);
+            // Schleife, um alle audioClipCache zu stoppen
+            try {
 
-        // Schleife, um alle audioClipCache zu stoppen
-        try {
-            for (String audioClip : audioClipsCopy.keySet()) {
-                audioClipCache.get(audioClip).stop();
+                for (Clip clip : audioClips) clip.close();
+                for (BufferedInputStream bufferedInputStream : bufferedInputStreams) bufferedInputStream.close();
+                for (AudioInputStream audioInputStream : audioInputStreams) audioInputStream.close();
+
+                // Leeren des Caches
+                audioClipCache.clear();
+                bufferedInputStreamCache.clear();
+                audioInputStreamCache.clear();
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-            for (String bufferedInputStream : bufferedInputStreamsCopy.keySet()) {
-                bufferedInputStreamCache.get(bufferedInputStream).close();
-            }
-
-            for (String audioInputStream : audioInputStreamsCopy.keySet()) {
-                audioInputStreamCache.get(audioInputStream).close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Leert die HashMaps
-        audioClipCache.clear();
-        bufferedInputStreamCache.clear();
-        audioInputStreamCache.clear();
+        });
     }
 
     // Berechnet die Breite des Hintergrunds
