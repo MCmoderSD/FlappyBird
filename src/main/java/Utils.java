@@ -129,6 +129,7 @@ public class Utils {
         }
     }
 
+    // Stoppt die Musik
     public void stopHeavyAudio() {
         CompletableFuture.runAsync(() -> {
             try {
