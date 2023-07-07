@@ -58,7 +58,7 @@ public class Logic {
 
     // Handler für die Kollision
     public void handleCollision(Utils utils, String dieSound, boolean sound) {
-        utils.stopAudio();
+        utils.stopHeavyAudio();
         utils.audioPlayer(dieSound, sound, false);
 
         gameOver = true;

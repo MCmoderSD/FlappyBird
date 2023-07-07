@@ -23,11 +23,11 @@ import java.util.concurrent.ExecutionException;
 @SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class Utils {
     private final double osMultiplier;
-    private final ArrayList<Clip> audioClipCache = new ArrayList<>(); // Cache für AudioClips
+    private final HashMap<String, Clip> HeavyClipCache = new HashMap<>(); // Cache für AudioClips
     private final HashMap<String, BufferedImage> bufferedImageCache = new HashMap<>(); // Cache für BufferedImages
     private final HashMap<String, ImageIcon> imageIconCache = new HashMap<>(); // Cache für ImageIcons
-    private final ArrayList<BufferedInputStream> bufferedInputStreamCache = new ArrayList<>(); // Cache für BufferedInputStreams
-    private final ArrayList<AudioInputStream> audioInputStreamCache = new ArrayList<>(); // Cache für AudioInputStreams
+    private final ArrayList<BufferedInputStream> HeavyBufferedInputStreamCache = new ArrayList<>(); // Cache für BufferedInputStreams
+    private final ArrayList<AudioInputStream> HeavyAudioInputStreamCache = new ArrayList<>(); // Cache für AudioInputStreams
     private long startTime = System.currentTimeMillis();
     private boolean audioIsStopped;
 
@@ -77,6 +77,12 @@ public class Utils {
             if (!loop) audioIsStopped = false;
             CompletableFuture.runAsync(() -> {
                 try {
+                    if (HeavyClipCache.get(audioFilePath) != null) {
+                        Clip clip = HeavyClipCache.get(audioFilePath);
+                        clip.setFramePosition(0);
+                        clip.start();
+                        return;
+                    }
                     ClassLoader classLoader = getClass().getClassLoader();
                     InputStream audioFileInputStream = classLoader.getResourceAsStream(audioFilePath);
 
@@ -89,20 +95,25 @@ public class Utils {
                     Clip clip = AudioSystem.getClip();
                     clip.open(audioInputStream);
 
-                    // Hinzufügen des Clips zum Cache
-                    audioClipCache.add(clip);
-                    bufferedInputStreamCache.add(bufferedInputStream);
-                    audioInputStreamCache.add(audioInputStream);
+                    // Lange Audiodateien werden in den Cache geladen, um die Ressourcen freizugeben
+                    if (clip.getMicrosecondLength() > 1000000 || loop) {
+                        HeavyBufferedInputStreamCache.add(bufferedInputStream);
+                        HeavyAudioInputStreamCache.add(audioInputStream);
+                        HeavyClipCache.put(audioFilePath, clip);
+                    }
 
                     // Hinzufügen eines LineListeners, um die Ressourcen freizugeben, wenn die Wiedergabe beendet ist
                     clip.addLineListener(event -> {
                         if (event.getType() == LineEvent.Type.STOP) {
                             try {
-                                clip.close();
-                                audioInputStream.close();
-                                bufferedInputStream.close();
-
                                 if (loop && Logic.instance.gameOver && !audioIsStopped) audioPlayer(audioFilePath, true, true);
+                                if (!HeavyClipCache.containsKey(audioFilePath)) {
+                                    clip.close();
+                                    audioInputStream.close();
+                                    bufferedInputStream.close();
+                                }
+
+
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
@@ -118,26 +129,17 @@ public class Utils {
         }
     }
 
-    // Stopt alle audioClipCache
-    public void stopAudio() {
+    public void stopHeavyAudio() {
         CompletableFuture.runAsync(() -> {
-            audioIsStopped = true;
-            // Kopiert die HashMap, um ConcurrentModificationException zu vermeiden
-            ArrayList<Clip> audioClips = new ArrayList<>(audioClipCache);
-            ArrayList<BufferedInputStream> bufferedInputStreams = new ArrayList<>(bufferedInputStreamCache);
-            ArrayList<AudioInputStream> audioInputStreams = new ArrayList<>(audioInputStreamCache);
-
-            // Schleife, um alle audioClipCache zu stoppen
             try {
+                audioIsStopped = true;
+                for (Clip clip : HeavyClipCache.values()) clip.stop();
+                for (AudioInputStream audioInputStream : HeavyAudioInputStreamCache) audioInputStream.close();
+                for (BufferedInputStream bufferedInputStream : HeavyBufferedInputStreamCache) bufferedInputStream.close();
 
-                for (Clip clip : audioClips) clip.close();
-                for (BufferedInputStream bufferedInputStream : bufferedInputStreams) bufferedInputStream.close();
-                for (AudioInputStream audioInputStream : audioInputStreams) audioInputStream.close();
-
-                // Leeren des Caches
-                audioClipCache.clear();
-                bufferedInputStreamCache.clear();
-                audioInputStreamCache.clear();
+                HeavyBufferedInputStreamCache.clear();
+                HeavyAudioInputStreamCache.clear();
+                HeavyClipCache.clear();
 
             } catch (IOException e) {
                 e.printStackTrace();
