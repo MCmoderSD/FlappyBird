@@ -25,7 +25,7 @@ public class Logic {
         }
 
         // Wenn das Spiel nicht läuft und beendet ist
-        if (!gameUI.tickrate.isRunning() && !gameState && gameOver) {
+        if (!gameState && gameOver) {
             new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, sound, args, gameUI.points, config); // Fenster erneut initialisieren
             gameUI.dispose(); // Aktuelles Fenster schließen
         }

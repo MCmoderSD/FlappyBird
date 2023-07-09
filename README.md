@@ -28,3 +28,4 @@ A Flappy Bird Project in Java
 - [x] Offline Mode
 - [x] Game Optimization
 - [x] Further Optimization
+- [x] Reverse Mode 

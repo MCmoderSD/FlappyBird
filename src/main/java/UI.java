@@ -1,4 +1,5 @@
 import com.fasterxml.jackson.databind.JsonNode;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -53,11 +54,13 @@ public class UI extends JFrame {
         host = json.get("host").asText();
         port = json.get("port").asText();
         String databaseName = json.get("database").asText();
+        String table = json.get("table").asText();
         String user = json.get("user").asText();
         String password = json.get("password").asText();
 
-        if (Tickrate <= TPS)
-            TPS = Tickrate;
+        if (args.length >= 2) table = json.get("reversedTable").asText();
+
+        if (Tickrate <= TPS) TPS = Tickrate;
 
         movement.backgroundResetX = 0;
 
@@ -83,12 +86,13 @@ public class UI extends JFrame {
         soundCheckBox.setSelected(sound);
 
         // Timer für die Aktualisierung der Bestenliste
-        updateDatabase = new Timer(5000, e -> initLeaderBoard(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, args, points, config));
+        String finalTable = table;
+        updateDatabase = new Timer(5000, e -> initLeaderBoard(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, args, points, config, finalTable));
 
         // Initialisierung der Datenbankverbindung und der Bestenliste
         if (utils.checkSQLConnection(host, port)) {
             database = new Database(host, port, databaseName, user, password);
-            initLeaderBoard(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, args, points, config);
+            initLeaderBoard(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, args, points, config, table);
             updateDatabase.start();
         }
 
@@ -230,14 +234,14 @@ public class UI extends JFrame {
     }
 
     // Methode zum Aktualisieren des Leaderboards
-    private void initLeaderBoard(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, double Tickrate, String[] args, int points, Config config) {
+    private void initLeaderBoard(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, double Tickrate, String[] args, int points, Config config, String tableName) {
         if (utils.checkSQLConnection(host, port)) {
             leaderBoard.setVisible(true);
             scrollPane.setVisible(true);
             tablePanel.setVisible(true);
 
             // Initialisierung der Datenbank
-            Database.Table table = database.getTable("leaderboard");
+            Database.Table table = database.getTable(tableName);
             Database.Table.Column users = table.getColumn("users");
             Database.Table.Column highscores = table.getColumn("scores");
             leaderBoard.getTableHeader().setReorderingAllowed(false); // Spaltenverschiebung deaktivieren

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Movement {
     private final String backgroundImage;
+    private final String[] args;
     public int backgroundResetX = 0, xPosition;
     private int obstacleMoveInt = 200;
     private byte playerMoveInt = 0, backgroundCount = 0;
@@ -11,6 +12,7 @@ public class Movement {
     // Konstruktor und UI initialisieren
     public Movement(Utils utils, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, int Tickrate, boolean sound , String[] args, int points, Config config) {
         this.backgroundImage = backgroundImage;
+        this.args = args;
         xPosition = - JumpHeight;
         new UI(utils, this, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, sound, args, points, config);
     }
@@ -36,9 +38,39 @@ public class Movement {
         // Spielerbewegung
         if (playerMoveInt >= (3 / (100 / Tickrate))) { // Zähler
             xPosition = xPosition + 1;
-            int yPosition = (GameUI.instance.player.getY() - utils.calculateGravity(xPosition));
-            GameUI.instance.player.setLocation(utils.xPlayerPosition(GameUI.instance.mainPanel), yPosition);
-            GameUI.instance.rPlayer.setLocation(GameUI.instance.player.getX(), GameUI.instance.player.getY()); // Rechteck aktualisieren
+            if (args.length < 2) {
+                int yPosition = (GameUI.instance.player.getY() - utils.calculateGravity(xPosition));
+                GameUI.instance.player.setLocation(utils.xPlayerPosition(GameUI.instance.mainPanel), yPosition);
+                GameUI.instance.rPlayer.setLocation(GameUI.instance.player.getX(), GameUI.instance.player.getY()); // Rechteck aktualisieren
+            }
+
+            if (args.length > 1) {
+                int lastY = 0;
+
+                for (JLabel component : GameUI.instance.obstacles) {
+                    if (component != null && component.getIcon() != null) {
+                        if (lastY <= component.getY()) lastY = component.getY();
+                    }
+                }
+
+                int vertical = utils.calculateGravity(xPosition);
+
+                if (lastY > 1000 && vertical <= 0) vertical = 0;
+
+                for (JLabel component : GameUI.instance.obstacles) {
+                    if (component != null && component.getIcon() != null) {
+                        component.setLocation(component.getX(), component.getY() - vertical);
+                    }
+                }
+
+                for (Rectangle rectangle : GameUI.instance.rObstacles) {
+                    rectangle.setLocation(rectangle.x, rectangle.y - vertical);
+                }
+
+                for (Rectangle rectangle : GameUI.instance.greenZones) {
+                    rectangle.setLocation(rectangle.x, rectangle.y - vertical);
+                }
+            }
             playerMoveInt = 0; // Zähler zurücksetzen
         }
         playerMoveInt++; // Zähler erhöhen
