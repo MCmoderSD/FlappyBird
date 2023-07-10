@@ -1,19 +1,19 @@
 import static java.lang.Thread.sleep;
 
-@SuppressWarnings("BlockingMethodInNonBlockingContext")
+
 public class Logic {
     public static Logic instance;
     private final GameUI gameUI;
     public boolean gamePaused = false, rainbowMode = false, rainbowModeActive = false, developerMode = false, cheatsEnabled = false, gameState = false, gameOver = false;
 
-    // Konstruktor und Intanz bildung der Klasse
+
     public Logic(GameUI gameUI) {
         this.gameUI = gameUI;
         instance = this;
     }
 
     // Handler für die Leertaste
-    public void handleSpaceKeyPress(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, String flapSound, String music, double Tickrate, boolean sound, String[] args, Config config) {
+    public void handleSpaceKeyPress(Utils utils, Movement movement, int JumpHeight, String flapSound, String music, boolean sound) {
 
         // Wenn das Spiel nicht läuft und nicht beendet ist
         if (!(gameUI.tickrate.isRunning() || gameState || gameOver)) {
@@ -25,8 +25,8 @@ public class Logic {
         }
 
         // Wenn das Spiel nicht läuft und beendet ist
-        if (!gameState && gameOver) {
-            new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, sound, args, gameUI.points, config); // Fenster erneut initialisieren
+        if (!gameUI.tickrate.isRunning() && !gameState && gameOver) {
+            System.exit(0); // Programm beenden
             gameUI.dispose(); // Aktuelles Fenster schließen
         }
 
@@ -64,6 +64,7 @@ public class Logic {
         gameOver = true;
         gameState = false;
 
+        gameUI.tickrate.stop();
         gameUI.gameOver.setVisible(true);
     }
 

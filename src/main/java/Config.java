@@ -24,7 +24,7 @@ public class Config {
     private final int Gap; // Vertikaler Abstand zwischen den Hindernissen
 
     // Konstruktor zum Initialisieren der Variablen
-    public Config(Utils utils, int JumpHeight, int Percentage, int Gap, int TPS, String title, int windowSizeX, int windowSizeY, boolean resizeable, String background, String player, String rainbow, String obstacleTop, String obstacleBottom, String icon, String gameOver, String pause, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, String music, String[] args) {
+    public Config(Utils utils, int JumpHeight, int Percentage, int Gap, int TPS, String title, int windowSizeX, int windowSizeY, boolean resizeable, String background, String player, String rainbow, String obstacleTop, String obstacleBottom, String icon, String gameOver, String pause, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, String music) {
         this.Gap = Gap;
         this.Percentage = Percentage;
         Title = title;
@@ -63,11 +63,11 @@ public class Config {
         Music = music;
 
         // Starte die Bewegungslogik mit den angegebenen Parametern
-        new Movement(utils, WindowSizeX, WindowSizeY, Title, Icon, Resizeable, Background, JumpHeight, TPS, true, args, -10, this);
+        new Movement(utils, Background, JumpHeight, TPS, true, this);
     }
 
     // Methode zum Starten des Spiels
-    public void run(Utils utils, Movement movement, int JumpHeight, double Tickrate, boolean sound, String[] args) {
+    public void run(Utils utils, Movement movement, int JumpHeight, double Tickrate, boolean sound) {
 
         // Starte die Spiellogik mit den angegebenen Parametern
         new GameUI(
@@ -95,9 +95,7 @@ public class Config {
                     RainbowSound,
                     Music,
                     Tickrate,
-                    sound,
-                    args,
-                    this
+                    sound
         );
     }
 }
