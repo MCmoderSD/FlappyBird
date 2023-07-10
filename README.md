@@ -9,9 +9,9 @@ You need Java 8 installed on your computer to run this game.
 You can download it [here](https://www.java.com/de/download/manual.jsp).
 <br> <br>
 You can download the latest game release [here](https://github.com/MCmoderSD/FlappyBird/releases/latest).
-<br> <br>
+<br> <br> <br>
 To run with alternative assets, you need to run the game via command line.
-<br> <br>
+<br>
 1. Open the command line
 2. Navigate to the folder where the game is located
 3. Run the following command: `java -jar FlappyBird.jar <firstArgument> <secondArgument>`
