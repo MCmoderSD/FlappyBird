@@ -103,7 +103,7 @@ public class UI extends JFrame {
                 if (spinnerValue <= 100 && spinnerValue > 0) TPS = spinnerValue;
                 play(JumpHeight, TPS, args, config);
             } else if (this.points >= 0 && !isUploaded) {
-                upload(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, args, points, config);
+                upload(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, args, points, config, finalTable);
             }
         });
     }
@@ -116,7 +116,7 @@ public class UI extends JFrame {
     }
 
     // Methode zum Hochladen des Scores
-    private void upload(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, double Tickrate, String[] args, int points, Config config) {
+    private void upload(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, double Tickrate, String[] args, int points, Config config, String tableName) {
         bStart.setText("Nochmal Spielen");
         bStart.setToolTipText("Nochmal Spielen");
         isUploaded = true;
@@ -127,7 +127,7 @@ public class UI extends JFrame {
             if (playerName.getText().length() != 0 && !playerName.getText().contains("Username")) {
                 if (playerName.getText().length() <= 32) {
                     if (!utils.checkUserName(playerName.getText()) && !playerName.getText().contains(" ")) {
-                        writeLeaderBoard(playerName.getText(), points); // Hochladen des Scores
+                        writeLeaderBoard(playerName.getText(), points, tableName); // Hochladen des Scores
                     } else { // Fehlermeldung bei unerlaubtem Username
                         // JOptionPane.showMessageDialog(null, "Der Username ist nicht erlaubt!", "Fehler", JOptionPane.ERROR_MESSAGE);
                         new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, soundCheckBox.isSelected(), args, points, config);
@@ -355,10 +355,10 @@ public class UI extends JFrame {
     }
 
     // Methode zum Schreiben der Daten in die Tabelle
-    private void writeLeaderBoard(String username, int score) {
+    private void writeLeaderBoard(String username, int score, String tableName) {
 
         // Daten aus der Tabelle auslesen
-        Database.Table table = database.getTable("leaderboard");
+        Database.Table table = database.getTable(tableName);
         Database.Table.Column users = table.getColumn("users");
         Database.Table.Column highscores = table.getColumn("scores");
 

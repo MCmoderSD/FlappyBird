@@ -16,7 +16,8 @@ To run with alternative assets, you need to run the game via command line.
 2. Navigate to the folder where the game is located
 3. Run the following command: `java -jar FlappyBird.jar <firstArgument> <secondArgument>`
 4. Replace `<firstArgument>` with the path to the asset config file you want to run. `911`, `911beta`, `alpha`, `lenabeta`. <br> The Default-Config is: `lena`
-5. Put as second argument whatever you want, to run in reverse mode. As exambple put `reverse`
+5. Put as second argument whatever you want, to run in reverse mode.
+   As example put `reverse`
    <br> <br>
 ## How to play
 Press `Space` or any mouse button to jump.
@@ -53,7 +54,7 @@ If you don't want to submit your score, leave the username field empty and click
   "Resizeable": "true/false"
 }
 ```
-2. Replace the values with the path to your assets.
+2. Replace the values with the absolute path to your assets.
    <br> <br> For example: `"Background": "C:\\Users\\User\\Desktop\\MyBackground.png"`
    <br> You can only use `.png` files and for audio only `.wav` files encoded with 16 bit.
    <br> <br> The size of the assets should be the same as the default assets.
@@ -106,4 +107,4 @@ Special thanks to: <br>
 <Br> 
 [Leonard](https://github.com/Leo-160905) for small ideas and code improvements.
 <Br>
- [Redflame125](https://github.com/Redflame125) for being the main tester.
+[Redflame125](https://github.com/Redflame125) for being the main tester.
