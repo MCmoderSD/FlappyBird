@@ -91,3 +91,18 @@ If you don't want to submit your score, leave the username field empty and click
 - [x] Reverse Mode 
 - [x] Reverse Mode Leaderboard
 - [x] Mod Support (Custom Assets)
+
+## Credits
+
+Primary Developer: [MCmoderSD](https://github.com/MCmoderSD/) <br>
+Secondary Developer: [Hamburger](https://github.com/HamburgerPaul) <br> <br>
+Special thanks to: <br>
+[Nini](https://www.instagram.com/nini_125x/) the primary artist for the beautiful assets.
+<Br>
+[Rebix](https://github.com/Reebix) for the database driver and coding help.
+<Br>
+[RedSmileTV](https://github.com/RedSmileTV) for beeing my rubber duck.
+<Br> 
+[Leonard](https://github.com/Leo-160905) for small ideas and code improvements.
+<Br>
+ [Redflame125](https://github.com/Redflame125) for being the main tester.
