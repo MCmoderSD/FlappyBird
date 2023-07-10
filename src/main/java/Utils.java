@@ -12,6 +12,8 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +31,7 @@ public class Utils {
     private final ArrayList<BufferedInputStream> HeavyBufferedInputStreamCache = new ArrayList<>(); // Cache für BufferedInputStreams
     private final ArrayList<AudioInputStream> HeavyAudioInputStreamCache = new ArrayList<>(); // Cache für AudioInputStreams
     private long startTime = System.currentTimeMillis();
-    private boolean audioIsStopped;
+    private boolean audioIsStopped, customConfig = false;
 
     // Konstruktor und Multiplikator für die Tickrate
     public Utils(double osMultiplier) { this.osMultiplier = osMultiplier; }
@@ -42,8 +44,9 @@ public class Utils {
         if (!bufferedImageCache.containsKey(resource)) { // Überprüft, ob das Bild bereits geladen wurde
             try {
                 if (resource.endsWith(".png")) {
-                    bufferedImageCache.put(resource, ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)))); // Läd das Bild
-                }
+                    if (customConfig & !resource.startsWith("error")) bufferedImageCache.put(resource, ImageIO.read(Files.newInputStream(Paths.get(resource))));
+                    else bufferedImageCache.put(resource, ImageIO.read(Objects.requireNonNull(getClass().getResource(resource))));
+                } else throw new IllegalArgumentException("Das Bildformat wird nicht unterstützt: " + resource);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -56,11 +59,10 @@ public class Utils {
         if (!imageIconCache.containsKey(resource)) { // Überprüft, ob der Pfad bereits geladen wurde
             if (resource.endsWith(".png")) {
                 imageIconCache.put(resource, new ImageIcon(reader(resource))); // Erstellt ein ImageIcon
-            }
-            if (resource.endsWith(".gif")) {
+            } else if (resource.endsWith(".gif")) {
                 URL imageUrl = getClass().getClassLoader().getResource(resource);
                 imageIconCache.put(resource, new ImageIcon(Objects.requireNonNull(imageUrl))); // Erstellt ein ImageIcon
-            }
+            } else throw new IllegalArgumentException("Das Bildformat wird nicht unterstützt: " + resource);
         }
         return imageIconCache.get(resource); // Gibt das ImageIcon zurück
     }
@@ -73,7 +75,7 @@ public class Utils {
 
     // Läd Musikdateien und spielt sie ab
     public void audioPlayer(String audioFilePath, boolean sound, boolean loop) {
-        if (sound && !Logic.instance.gamePaused && !Objects.equals(audioFilePath, "error/emtpy.wav")) {
+        if (sound && !Logic.instance.gamePaused && !Objects.equals(audioFilePath, "error/empty.wav")) {
             if (!loop) audioIsStopped = false;
             CompletableFuture.runAsync(() -> {
                 try {
@@ -83,8 +85,12 @@ public class Utils {
                         clip.start();
                         return;
                     }
+
                     ClassLoader classLoader = getClass().getClassLoader();
-                    InputStream audioFileInputStream = classLoader.getResourceAsStream(audioFilePath);
+                    InputStream audioFileInputStream;
+
+                    if (customConfig) audioFileInputStream = Files.newInputStream(Paths.get(audioFilePath));
+                    else audioFileInputStream = classLoader.getResourceAsStream(audioFilePath);
 
                     // Überprüfen, ob die Audiodatei gefunden wurde
                     if (audioFileInputStream == null) throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
@@ -271,12 +277,15 @@ public class Utils {
     }
 
     // Liest eine JSON-Datei aus
-    public JsonNode readJson(String path) {
+    public JsonNode readJson(String json) {
         ObjectMapper mapper = new ObjectMapper();
-        try (InputStream inputStream = getClass().getResourceAsStream(path)) {
-            if (inputStream == null) {
-                throw new IllegalArgumentException("Die Ressource konnte nicht gefunden werden: " + path);
-            }
+        try {
+            InputStream inputStream;
+            if (json.endsWith(".json")) {
+                inputStream = Files.newInputStream(Paths.get(json));
+                customConfig = true;
+            } else inputStream = getClass().getResourceAsStream("config/" + json + ".json");
+            if (inputStream == null) throw new IllegalArgumentException("Die Config Datei konnte nicht gefunden werden: " + json);
             return mapper.readTree(inputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -287,8 +296,8 @@ public class Utils {
     public JsonNode checkDate(String Default) {
         JsonNode config;
         LocalDate date = LocalDate.now();
-        if (date.getMonthValue() == 9 && date.getDayOfMonth() == 11 ) config = readJson("config/911beta.json");
-        else config = readJson("config/" + Default + ".json");
+        if (date.getMonthValue() == 9 && date.getDayOfMonth() == 11 ) config = readJson("911");
+        else config = readJson(Default);
         return config;
     }
 }

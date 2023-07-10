@@ -37,11 +37,11 @@ public class Logic {
     // Handler für den Timer Tick
     public void handleTimerTick(Utils utils, Movement movement, int height, String playerImage, String rainbowImage,
                                 int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, String dieSound,
-                                String hitSound, String pointSound, String rainbowSound, double Tickrate, boolean sound) {
+                                String hitSound, String pointSound, String rainbowSound, double Tickrate, boolean sound, String[] args) {
 
         if (!gamePaused) {
 
-            if (gameUI.player.getY() >= height && gameOver && !gameState) gameUI.tickrate.stop(); // Stop the timer
+            if ((gameUI.player.getY() >= height && !gameState && gameOver) || (gameOver && args.length > 1)) gameUI.tickrate.stop(); // Stop the timer
             movement.movePlayer(utils, Tickrate); // Move the player
 
 

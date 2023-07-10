@@ -50,7 +50,7 @@ public class UI extends JFrame {
         this.points = points;
 
 
-        JsonNode json = utils.readJson("config/Database.json");
+        JsonNode json = utils.readJson("Database");
         host = json.get("host").asText();
         port = json.get("port").asText();
         String databaseName = json.get("database").asText();

@@ -28,6 +28,8 @@ public class GameUI extends JFrame {
         instance = this;
         logic = new Logic(this);
 
+        if (args.length > 0) if (args[0].toLowerCase().endsWith(".json")) logic.cheatsEnabled = true;
+
         movement.init();
 
         // Initialisiere das Fenster
@@ -116,7 +118,7 @@ public class GameUI extends JFrame {
         // Initialisiere den Timer
         tickrate = new Timer((int) Math.round(1000/Tickrate), e -> {
             if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
-            logic.handleTimerTick(utils, movement, height, playerImage, rainbowImage, percentage, verticalGap, obstacleTopImage, obstacleBottomImage, dieSound, hitSound, pointSound, rainbowSound,Tickrate, sound);
+            logic.handleTimerTick(utils, movement, height, playerImage, rainbowImage, percentage, verticalGap, obstacleTopImage, obstacleBottomImage, dieSound, hitSound, pointSound, rainbowSound,Tickrate, sound, args);
             if (logic.developerMode) System.out.println(utils.calculateSystemLatency());
         });
 

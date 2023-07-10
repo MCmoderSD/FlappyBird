@@ -18,11 +18,9 @@ public class Main {
 
         JsonNode config;
 
-        if (args.length > 0) {
-            config = utils.checkDate(args[0].toLowerCase());
-        } else {
-            config = utils.checkDate(defaultConfig);
-        }
+        if (args.length < 1) config = utils.checkDate(defaultConfig);
+        else if (args[0].toLowerCase().endsWith(".json") ) config = utils.readJson(args[0].toLowerCase());
+        else config = utils.readJson(args[0].toLowerCase());
 
         new Config(
                 utils,
