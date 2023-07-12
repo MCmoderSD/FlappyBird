@@ -2,22 +2,38 @@ import static java.lang.Thread.sleep;
 
 @SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class Logic {
+    // Klassenobjekte
     public static Logic instance;
+    private final Config config;
+    private final Utils utils;
+    private final Movement movement;
     private final GameUI gameUI;
-    public boolean gamePaused = false, rainbowMode = false, rainbowModeActive = false, developerMode = false, cheatsEnabled = false, gameState = false, gameOver = false;
+
+    // Klassenvariablen
+    public boolean
+            gamePaused = false,
+            rainbowMode = false,
+            rainbowModeActive = false,
+            developerMode = false,
+            cheatsEnabled = false,
+            gameState = false,
+            gameOver = false;
 
     // Konstruktor und Intanz bildung der Klasse
-    public Logic(GameUI gameUI) {
-        this.gameUI = gameUI;
+    public Logic(Config config, GameUI gameUI) {
         instance = this;
+        this.config = config;
+        this.utils = config.getUtils();
+        this.movement = config.getMovement();
+        this.gameUI = gameUI;
     }
 
     // Handler für die Leertaste
-    public void handleSpaceKeyPress(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, int JumpHeight, String flapSound, String music, double Tickrate, boolean sound, String[] args, Config config) {
+    public void handleSpaceKeyPress() {
 
         // Wenn das Spiel nicht läuft und nicht beendet ist
         if (!(gameUI.tickrate.isRunning() || gameState || gameOver)) {
-            utils.audioPlayer(music, sound, true); // Musik abspielen
+            utils.audioPlayer(config.getMusic(), config.isSound(), true); // Musik abspielen
             gameUI.tickrate.start(); // Timer starten
             gameUI.gameOver.setVisible(false);
             gameState = true;
@@ -26,40 +42,39 @@ public class Logic {
 
         // Wenn das Spiel nicht läuft und beendet ist
         if (!gameState && gameOver) {
-            new UI(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, Tickrate, sound, args, gameUI.points, config); // Fenster erneut initialisieren
+            config.setPoints(gameUI.points);
+            new UI(config, utils); // Neues UI erstellen
             gameUI.dispose(); // Aktuelles Fenster schließen
         }
 
         // Wenn das Spiel nicht beendet ist, Sprung ausführen
-        if (!gameOver) handleBounce(utils, movement, JumpHeight, flapSound, sound);
+        if (!gameOver) handleBounce();
     }
 
     // Handler für den Timer Tick
-    public void handleTimerTick(Utils utils, Movement movement, int height, String playerImage, String rainbowImage,
-                                int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, String dieSound,
-                                String hitSound, String pointSound, String rainbowSound, double Tickrate, boolean sound, String[] args) {
+    public void handleTimerTick() {
 
         if (!gamePaused) {
 
-            if ((gameUI.player.getY() >= height && !gameState && gameOver) || (gameOver && args.length > 1)) gameUI.tickrate.stop(); // Stop the timer
-            movement.movePlayer(utils, Tickrate); // Move the player
+            if ((gameUI.player.getY() >= gameUI.getHeight() && !gameState && gameOver) || (gameOver && config.getArgs().length > 1)) gameUI.tickrate.stop(); // Stop the timer
+            movement.movePlayer(); // Move the player
 
 
             if (gameState && !gameOver) {
-                movement.moveObstacles(utils, percentage, verticalGap, obstacleTopImage, obstacleBottomImage, Tickrate, gameUI.points); // Move the obstacles
-                movement.moveBackground(utils, Tickrate); // Move the background
+                movement.moveObstacles(); // Move the obstacles
+                movement.moveBackground(); // Move the background
 
                 gameUI.removeObstacles(); // Remove non-visible obstacles
-                gameUI.checkCollision(utils, dieSound, hitSound, pointSound, rainbowSound, sound); // Check for collisions
-                gameUI.checkRainbowMode(utils, playerImage, rainbowImage);
+                gameUI.checkCollision(); // Check for collisions
+                gameUI.checkRainbowMode(); // Check for rainbow mode
             }
         }
     }
 
     // Handler für die Kollision
-    public void handleCollision(Utils utils, String dieSound, boolean sound) {
+    public void handleCollision() {
         utils.stopHeavyAudio();
-        utils.audioPlayer(dieSound, sound, false);
+        utils.audioPlayer(config.getDieSound(), config.isSound(), false);
 
         gameOver = true;
         gameState = false;
@@ -68,16 +83,16 @@ public class Logic {
     }
 
     // Handler für den Jump
-    public void handleBounce(Utils utils, Movement movement, int JumpHeight, String flapSound, boolean sound) {
-        utils.audioPlayer(flapSound, sound, false);
-        if (gameUI.player.getY() > 32) movement.xPosition = - JumpHeight; // Spieler nach oben bewegen
+    public void handleBounce() {
+        utils.audioPlayer(config.getFlapSound(), config.isSound(), false);
+        if (gameUI.player.getY() > 32) movement.xPosition = - config.getJumpHeight(); // Spieler nach oben bewegen
     }
 
     // Handler für die Punkte
-    public void handlePoint(Utils utils, String pointSound, String rainbowSound, boolean sound) {
-        utils.audioPlayer(pointSound, sound, false);
+    public void handlePoint() {
+        utils.audioPlayer(config.getPointSound(), config.isSound(), false);
         gameUI.points++;
-        if (gameUI.points > 0 && gameUI.points % 5 == 0 && (int) (Math.random() * 6 + 1) == 3) handleRainbowMode(utils, rainbowSound, sound);
+        if (gameUI.points > 0 && gameUI.points % 5 == 0 && (int) (Math.random() * 6 + 1) == 3) handleRainbowMode();
         gameUI.score.setText("Score: " + gameUI.points);
     }
 
@@ -95,11 +110,11 @@ public class Logic {
     }
 
     // Handler für den Rainbow Mode
-    private void handleRainbowMode(Utils utils, String rainbowSound, boolean sound) {
+    private void handleRainbowMode() {
         Thread rainbow = new Thread(() -> {
             try {
                 rainbowMode = true;
-                utils.audioPlayer(rainbowSound, sound, false);
+                utils.audioPlayer(config.getRainbowSound(), config.isSound(), false);
                 sleep(7000);
                 rainbowMode = false;
             } catch (InterruptedException e) {

@@ -9,7 +9,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class GameUI extends JFrame {
+
+    // Objekte
     public static GameUI instance;
+    // Klassenattribute
     public final ArrayList<JLabel> obstacles = new ArrayList<>();
     public final ArrayList<Rectangle> rObstacles = new ArrayList<>();
     public final ArrayList<Rectangle> greenZones = new ArrayList<>();
@@ -17,6 +20,9 @@ public class GameUI extends JFrame {
     public final JLabel player, score, gameOver, pauseScreen;
     public final Rectangle rPlayer;
     public final JPanel mainPanel;
+    private final Config config;
+    private final Utils utils;
+    private final Movement movement;
     private final Logic logic;
     private final ArrayList<Integer> userInput = new ArrayList<>();
     private final int[] KONAMI_CODE = { KeyEvent.VK_UP, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_DOWN,
@@ -24,26 +30,32 @@ public class GameUI extends JFrame {
     public int points;
 
     // Konstruktor
-    public GameUI(Utils utils, Movement movement, int width, int height, String title, String icon, boolean resizable, String backgroundImage, String playerImage, String rainbowImage, int JumpHeight, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage, String gameOverImage, String pauseScreenImage, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, String music, double Tickrate, boolean sound, String[] args, Config config) {
+    public GameUI(Config config) {
         instance = this;
-        logic = new Logic(this);
 
-        if (args.length > 0) if (args[0].toLowerCase().endsWith(".json")) logic.cheatsEnabled = true;
+        this.config = config;
+        this.utils = config.getUtils();
+        this.movement = config.getMovement();
+
+        logic = new Logic(config, this);
+
+
+        if (config.getArgs().length > 0) if (config.getArgs()[0].toLowerCase().endsWith(".json")) logic.cheatsEnabled = true;
 
         movement.init();
 
         // Initialisiere das Fenster
-        setTitle(title);
-        setSize(width, height);
+        setTitle(config.getTitle());
+        setSize(config.getWindowSizeX(), config.getWindowSizeY());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
         setLocation(utils.centerFrame(this));
-        setResizable(resizable);
-        setIconImage((utils.reader(icon)));
+        setResizable(config.isResizeable());
+        setIconImage((utils.reader(config.getIcon())));
         setVisible(true);
 
         // Initialisiere das Config-Panel mit Hintergrund
-        final BufferedImage background = utils.reader(backgroundImage);
+        final BufferedImage background = utils.reader(config.getBackground());
         final BufferedImage buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
         int imageWidth = background.getWidth();
         mainPanel = new JPanel() {
@@ -80,7 +92,7 @@ public class GameUI extends JFrame {
 
         // Initialisiere den Spieler
         player = new JLabel();
-        final ImageIcon playerIcon = utils.createImageIcon(playerImage);
+        final ImageIcon playerIcon = utils.createImageIcon(config.getPlayer());
         player.setSize(playerIcon.getIconWidth(), playerIcon.getIconHeight());
         player.setLocation(utils.xPlayerPosition(mainPanel), getHeight() / 2);
         player.setIcon(playerIcon);
@@ -101,24 +113,24 @@ public class GameUI extends JFrame {
         // Initialisiere das Game Over Bild
         gameOver = new JLabel();
         gameOver.setSize(getWidth(), getHeight());
-        gameOver.setLocation(utils.locatePoint(gameOverImage, getWidth(), getHeight()));
-        gameOver.setIcon(utils.createImageIcon((gameOverImage)));
+        gameOver.setLocation(utils.locatePoint(config.getGameOver(), getWidth(), getHeight()));
+        gameOver.setIcon(utils.createImageIcon((config.getGameOver())));
         gameOver.setVisible(false);
         mainPanel.add(gameOver);
 
         // Initialisiere das Pause-Bild
         pauseScreen = new JLabel();
         pauseScreen.setVisible(false);
-        ImageIcon pauseScreenIcon = utils.createImageIcon(pauseScreenImage);
+        ImageIcon pauseScreenIcon = utils.createImageIcon(config.getPause());
         pauseScreen.setSize(pauseScreenIcon.getIconWidth(), pauseScreenIcon.getIconHeight());
-        pauseScreen.setLocation(utils.locatePoint(pauseScreenImage, getWidth(), getHeight()));
+        pauseScreen.setLocation(utils.locatePoint(config.getPause(), getWidth(), getHeight()));
         pauseScreen.setIcon(pauseScreenIcon);
         mainPanel.add(pauseScreen);
 
         // Initialisiere den Timer
-        tickrate = new Timer((int) Math.round(1000/Tickrate), e -> {
+        tickrate = new Timer((int) Math.round(1000/config.getTPS()), e -> {
             if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
-            logic.handleTimerTick(utils, movement, height, playerImage, rainbowImage, percentage, verticalGap, obstacleTopImage, obstacleBottomImage, dieSound, hitSound, pointSound, rainbowSound,Tickrate, sound, args);
+            logic.handleTimerTick();
             if (logic.developerMode) System.out.println(utils.calculateSystemLatency());
         });
 
@@ -129,7 +141,7 @@ public class GameUI extends JFrame {
                 super.keyPressed(e);
 
                 // Steuerung
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) logic.handleSpaceKeyPress(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, flapSound, music, Tickrate, sound, args, config);
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) logic.handleSpaceKeyPress();
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) logic.handleGamePause();
 
 
@@ -167,7 +179,7 @@ public class GameUI extends JFrame {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                logic.handleSpaceKeyPress(utils, movement, width, height, title, icon, resizable, backgroundImage, JumpHeight, flapSound, music, Tickrate, sound, args, config);
+                logic.handleSpaceKeyPress();
             }
 
             @Override
@@ -183,24 +195,24 @@ public class GameUI extends JFrame {
     }
 
     // Erzeugt Hindernisse basierend auf den übergebenen Parametern
-    public void generateObstacles(Utils utils, int percentage, int verticalGap, String obstacleTopImage, String obstacleBottomImage) {
+    public void generateObstacles() {
 
-        int minY = ((getHeight() * percentage) / 100);
-        int maxY = getHeight() - ((getHeight() * percentage) / 100);
+        int minY = ((getHeight() * config.getPercentage()) / 100);
+        int maxY = getHeight() - ((getHeight() * config.getPercentage()) / 100);
 
         JLabel obstacleTop = new JLabel(), obstacleBottom = new JLabel();
         mainPanel.add(obstacleTop);
         mainPanel.add(obstacleBottom);
 
-        ImageIcon obstacleTopIcon = utils.createImageIcon((obstacleTopImage));
-        ImageIcon obstacleBottomIcon = utils.createImageIcon((obstacleBottomImage));
+        ImageIcon obstacleTopIcon = utils.createImageIcon((config.getObstacleTop()));
+        ImageIcon obstacleBottomIcon = utils.createImageIcon((config.getObstacleBottom()));
 
         obstacleTop.setIcon(obstacleTopIcon);
         obstacleBottom.setIcon(obstacleBottomIcon);
 
         int obstacleWidth = obstacleTopIcon.getIconWidth(), obstacleHeight = obstacleTopIcon.getIconHeight();
         int yTop = (int) (Math.random() * (maxY - minY + 1) + minY) - obstacleHeight;
-        int yBottom = yTop + verticalGap + obstacleHeight;
+        int yBottom = yTop + config.getGap() + obstacleHeight;
 
         obstacleTop.setSize(obstacleWidth, obstacleHeight);
         obstacleTop.setBounds(getWidth(), yTop, obstacleWidth, obstacleHeight);
@@ -255,15 +267,15 @@ public class GameUI extends JFrame {
     }
 
     // Überprüft Kollisionen mit dem Spieler und anderen Objekten
-    public void checkCollision(Utils utils, String dieSound, String hitSound, String pointSound, String rainbowSound, boolean sound) {
+    public void checkCollision() {
         if (!logic.developerMode) {
-            if (player.getY() > getWidth()) logic.handleCollision(utils, dieSound, sound);
+            if (player.getY() > getWidth()) logic.handleCollision();
 
             for (Rectangle component : rObstacles) {
                 if (component != null) {
                     if (rPlayer.intersects(component) && !logic.rainbowMode) {
-                        utils.audioPlayer(hitSound, sound, false);
-                        logic.handleCollision(utils, dieSound, sound);
+                        utils.audioPlayer(config.getHitSound(), config.isSound(), false);
+                        logic.handleCollision();
                     }
                 }
             }
@@ -272,7 +284,7 @@ public class GameUI extends JFrame {
         for (int i = 0; i < greenZones.size(); i++) {
             Rectangle component = greenZones.get(i);
             if (component != null && rPlayer.intersects(component)) {
-                logic.handlePoint(utils, pointSound, rainbowSound, sound);
+                logic.handlePoint();
                 greenZones.remove(i);
                 i--;
             }
@@ -280,12 +292,12 @@ public class GameUI extends JFrame {
     }
 
     // Überprüft, ob der Spieler sich im Regenbogen-Modus befindet
-    public void checkRainbowMode(Utils utils, String playerImage, String rainbowImage) {
+    public void checkRainbowMode() {
         if (logic.rainbowMode && !logic.rainbowModeActive) {
-            player.setIcon(utils.createImageIcon((rainbowImage)));
+            player.setIcon(utils.createImageIcon((config.getRainbow())));
             logic.rainbowModeActive = true;
             } else if (!logic.rainbowMode && logic.rainbowModeActive){
-                player.setIcon(utils.createImageIcon((playerImage)));
+                player.setIcon(utils.createImageIcon((config.getPlayer())));
                 logic.rainbowModeActive = false;
         }
     }

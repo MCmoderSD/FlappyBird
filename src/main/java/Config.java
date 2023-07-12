@@ -17,20 +17,36 @@ public class Config {
     private final String pointSound; // Dateipfad für den Punkte-Sound
     private final String RainbowSound; // Dateipfad für den Regenbogen-Sound
     private final String Music; // Dateipfad für die Hintergrundmusik
-    private final int WindowSizeX; // Fensterbreite
-    private final int WindowSizeY; // Fensterhöhe
+    private final String[] args; // Argumente, die beim Starten des Spiels übergeben wurden
+    private final int width; // Fensterbreite
+    private final int height; // Fensterhöhe
     private final boolean Resizeable; // Gibt an, ob das Fenster in der Größe verändert werden kann
     private final int Percentage; // Prozentzahl, die die Größe des Hindernisses von der Fensterhöhe ausmacht
     private final int Gap; // Vertikaler Abstand zwischen den Hindernissen
+    private final int JumpHeight; // Die Sprunghöhe des Spielers
+
+    // Klassenobjekte
+    private final Utils utils;
+    private final Movement movement;
+
+    // Alle Variablen für die Spiellogik
+    private double TPS; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde) Maximum: 100
+    private int points = -10; // Punkte
+    private boolean sound = true; // Gibt an, ob Sounds abgespielt werden sollen
 
     // Konstruktor zum Initialisieren der Variablen
-    public Config(Utils utils, int JumpHeight, int Percentage, int Gap, int TPS, String title, int windowSizeX, int windowSizeY, boolean resizeable, String background, String player, String rainbow, String obstacleTop, String obstacleBottom, String icon, String gameOver, String pause, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, String music, String[] args) {
+    public Config(Utils utils, int JumpHeight, int Percentage, int Gap, int TPS, String title, int width, int height, boolean resizeable, String background, String player, String rainbow, String obstacleTop, String obstacleBottom, String icon, String gameOver, String pause, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, String music, String[] args) {
+
+        this.utils = utils;
         this.Gap = Gap;
         this.Percentage = Percentage;
         Title = title;
-        WindowSizeX = windowSizeX;
-        WindowSizeY = windowSizeY;
+        this.width = width;
+        this.height = height;
+        this.JumpHeight = JumpHeight;
+        this.TPS = TPS;
         Resizeable = resizeable;
+        this.args = args;
 
         if (Objects.equals(background, "")) background = "error/empty.png";
         if (Objects.equals(player, "")) player = "error/empty.png";
@@ -63,41 +79,98 @@ public class Config {
         Music = music;
 
         // Starte die Bewegungslogik mit den angegebenen Parametern
-        new Movement(utils, WindowSizeX, WindowSizeY, Title, Icon, Resizeable, Background, JumpHeight, TPS, true, args, -10, this);
+        movement = new  Movement(this);
+        new UI(this, utils);
     }
 
-    // Methode zum Starten des Spiels
-    public void run(Utils utils, Movement movement, int JumpHeight, double Tickrate, boolean sound, String[] args) {
-
-        // Starte die Spiellogik mit den angegebenen Parametern
-        new GameUI(
-                    utils,
-                    movement,
-                    WindowSizeX,
-                    WindowSizeY,
-                    Title,
-                    Icon,
-                    Resizeable,
-                    Background,
-                    Player,
-                    Rainbow,
-                    JumpHeight,
-                    Percentage,
-                    Gap,
-                    ObstacleTop,
-                    ObstacleBottom,
-                    GameOver,
-                    Pause,
-                    dieSound,
-                    flapSound,
-                    hitSound,
-                    pointSound,
-                    RainbowSound,
-                    Music,
-                    Tickrate,
-                    sound,
-                    args,
-                    this
-        );
+    public int getJumpHeight() {
+        return JumpHeight;
+    }
+    public int getPercentage() {
+        return Percentage;
+    }
+    public int getGap() {
+        return Gap;
+    }
+    public double getTPS() {
+        return TPS;
+    }
+    public void setTPS(double TPS) {
+        this.TPS = TPS;
+    }
+    public int getPoints() {
+        return points;
+    }
+    public void setPoints(int points) {
+        this.points = points;
+    }
+    public String getTitle() {
+        return Title;
+    }
+    public int getWindowSizeX() {
+        return width;
+    }
+    public int getWindowSizeY() {
+        return height;
+    }
+    public boolean isResizeable() {
+        return Resizeable;
+    }
+    public String getBackground() {
+        return Background;
+    }
+    public String getPlayer() {
+        return Player;
+    }
+    public String getRainbow() {
+        return Rainbow;
+    }
+    public String getObstacleTop() {
+        return ObstacleTop;
+    }
+    public String getObstacleBottom() {
+        return ObstacleBottom;
+    }
+    public String getIcon() {
+        return Icon;
+    }
+    public String getGameOver() {
+        return GameOver;
+    }
+    public String getPause() {
+        return Pause;
+    }
+    public String getDieSound() {
+        return dieSound;
+    }
+    public String getFlapSound() {
+        return flapSound;
+    }
+    public String getHitSound() {
+        return hitSound;
+    }
+    public String getPointSound() {
+        return pointSound;
+    }
+    public String getRainbowSound() {
+        return RainbowSound;
+    }
+    public String getMusic() {
+        return Music;
+    }
+    public String[] getArgs() {
+        return args;
+    }
+    public boolean isSound() {
+        return sound;
+    }
+    public void setSound(boolean sound) {
+        this.sound = sound;
+    }
+    public Utils getUtils() {
+        return utils;
+    }
+    public Movement getMovement() {
+        return movement;
     }
 }
