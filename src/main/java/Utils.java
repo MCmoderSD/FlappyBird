@@ -45,14 +45,14 @@ public class Utils {
             try {
                 if (resource.endsWith(".png")) {
                     if (customConfig & !resource.startsWith("error")) bufferedImageCache.put(resource, ImageIO.read(Files.newInputStream(Paths.get(resource))));
-                    else bufferedImageCache.put(resource, ImageIO.read(Objects.requireNonNull(getClass().getResource(resource))));
-                } else throw new IllegalArgumentException("Das Bildformat wird nicht unterstützt: " + resource);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return bufferedImageCache.get(resource); // Gibt das Bild zurück
-    }
+                         else bufferedImageCache.put(resource, ImageIO.read(Objects.requireNonNull(getClass().getResource(resource))));
+                     } else throw new IllegalArgumentException("Das Bildformat wird nicht unterstützt: " + resource);
+                 } catch (IOException e) {
+                     e.printStackTrace();
+                 }
+             }
+             return bufferedImageCache.get(resource); // Gibt das Bild zurück
+         }
 
     // Erstellt ein ImageIcon aus Bildern
     public ImageIcon createImageIcon(String resource) {
@@ -61,10 +61,10 @@ public class Utils {
                 imageIconCache.put(resource, new ImageIcon(reader(resource))); // Erstellt ein ImageIcon
             } else if (resource.endsWith(".gif")) {
                 URL imageUrl = getClass().getClassLoader().getResource(resource);
-                imageIconCache.put(resource, new ImageIcon(Objects.requireNonNull(imageUrl))); // Erstellt ein ImageIcon
+                imageIconCache.put(resource, new ImageIcon(Objects.requireNonNull(imageUrl)));
             } else throw new IllegalArgumentException("Das Bildformat wird nicht unterstützt: " + resource);
         }
-        return imageIconCache.get(resource); // Gibt das ImageIcon zurück
+        return imageIconCache.get(resource);
     }
 
     // Zentriert ein Bild mittig
@@ -233,13 +233,13 @@ public class Utils {
         }
     }
 
-    // Zentrirt das Fenster mittig auf dem Bildschirm
+    // Zentriert das Fenster mittig auf dem Bildschirm
     public Point centerFrame(JFrame frame) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Bildschirmgröße
         return new Point(((screenSize.width - frame.getWidth()) / 2), ((screenSize.height - frame.getHeight()) / 2));
     }
 
-    // Zentriert das Fenster mittig auf dem Bildschirm
+    // Berechent die Breite des Fensters
     public int xPlayerPosition(JPanel frame) {
         int x = frame.getWidth() / 4;
         return Math.min(x, 200);

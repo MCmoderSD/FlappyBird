@@ -267,7 +267,6 @@ public class UI extends JFrame {
                 }
             }
 
-            // Tabelle nach der Punktzahl sortieren
             sortTableByScore(model);
 
             // Tabelle configuieren
@@ -377,8 +376,6 @@ public class UI extends JFrame {
                 score = oldScore;
             }
         }
-
-        // Daten in die Tabelle schreiben
         highscores.set(users, username, String.valueOf(score));
     }
 }
