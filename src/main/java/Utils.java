@@ -74,8 +74,8 @@ public class Utils {
     }
 
     // Läd Musikdateien und spielt sie ab
-    public void audioPlayer(String audioFilePath, boolean sound, boolean loop) {
-        if (sound && !Logic.instance.gamePaused && !Objects.equals(audioFilePath, "error/empty.wav")) {
+    public void audioPlayer(String audioFilePath, boolean sound, boolean loop, Logic logic) {
+        if (sound && !logic.gamePaused && !Objects.equals(audioFilePath, "error/empty.wav")) {
             if (!loop) audioIsStopped = false;
             CompletableFuture.runAsync(() -> {
                 try {
@@ -112,7 +112,7 @@ public class Utils {
                     clip.addLineListener(event -> {
                         if (event.getType() == LineEvent.Type.STOP) {
                             try {
-                                if (loop && Logic.instance.gameOver && !audioIsStopped) audioPlayer(audioFilePath, true, true);
+                                if (loop && logic.gameOver && !audioIsStopped) audioPlayer(audioFilePath, true, true ,logic);
                                 if (!HeavyClipCache.containsKey(audioFilePath)) {
                                     clip.close();
                                     audioInputStream.close();
@@ -254,17 +254,17 @@ public class Utils {
     }
 
     // Berechnet die Latenz des Systems
-    public long calculateSystemLatency() {
+    public long calculateSystemLatency(Logic logic) {
         long currentTime = System.currentTimeMillis(); // Aktuelle Zeit
         long latency = currentTime - startTime; // Latenz
         startTime = currentTime;
-        soutLogger("latency-log.txt", String.valueOf(latency));
+        soutLogger("latency-log.txt", String.valueOf(latency), logic);
         return latency;
     }
 
     // Schreibt Strings in eine Log-Datei
-    public void soutLogger(String file, String message) {
-        if (Logic.instance.developerMode) {
+    public void soutLogger(String file, String message, Logic logic) {
+        if (logic.developerMode) {
             CompletableFuture.runAsync(() -> { // Asynchroner Aufruf
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
                     writer.append(message);

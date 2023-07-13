@@ -10,12 +10,9 @@ import java.util.Iterator;
 
 public class GameUI extends JFrame {
 
-    // Objekte
-    public static GameUI instance;
     // Klassenattribute
     public final ArrayList<JLabel> obstacles = new ArrayList<>();
-    public final ArrayList<Rectangle> rObstacles = new ArrayList<>();
-    public final ArrayList<Rectangle> greenZones = new ArrayList<>();
+    public final ArrayList<Rectangle> rObstacles = new ArrayList<>(), greenZones = new ArrayList<>();
     public final Timer tickrate;
     public final JLabel player, score, gameOver, pauseScreen;
     public final Rectangle rPlayer;
@@ -28,10 +25,10 @@ public class GameUI extends JFrame {
     private final int[] KONAMI_CODE = { KeyEvent.VK_UP, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_DOWN,
             KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_B, KeyEvent.VK_A };
     public int points;
+    private boolean rainbowModeActive = false;
 
     // Konstruktor
     public GameUI(Config config) {
-        instance = this;
 
         this.config = config;
         this.utils = config.getUtils();
@@ -40,7 +37,7 @@ public class GameUI extends JFrame {
         logic = new Logic(config, this);
 
 
-        if (config.getArgs().length > 0) if (config.getArgs()[0].toLowerCase().endsWith(".json")) logic.cheatsEnabled = true;
+        if (config.getArgs().length > 0) if (config.getArgs()[0].toLowerCase().endsWith(".json")) Logic.cheatsEnabled = true;
 
         movement.init();
 
@@ -131,7 +128,7 @@ public class GameUI extends JFrame {
         tickrate = new Timer((int) Math.round(1000/config.getTPS()), e -> {
             if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
             logic.handleTimerTick();
-            if (logic.developerMode) System.out.println(utils.calculateSystemLatency());
+            if (Logic.developerMode) System.out.println(utils.calculateSystemLatency(logic));
         });
 
         // Initialisiere die Steuerung
@@ -163,9 +160,9 @@ public class GameUI extends JFrame {
 
                     // Wenn der Konami-Code eingegeben wurde, den Entwickler-Modus umschalten
                     if (konamiCodeEntered) {
-                        logic.developerMode = !logic.developerMode;
-                        logic.cheatsEnabled = true;
-                        System.out.println("Developer-Modus umgeschaltet: " + logic.developerMode);
+                        Logic.developerMode = !Logic.developerMode;
+                        Logic.cheatsEnabled = true;
+                        System.out.println("Developer-Modus umgeschaltet: " + Logic.developerMode);
                         userInput.clear();
                     }
                 }
@@ -268,13 +265,13 @@ public class GameUI extends JFrame {
 
     // Überprüft Kollisionen mit dem Spieler und anderen Objekten
     public void checkCollision() {
-        if (!logic.developerMode) {
+        if (!Logic.developerMode) {
             if (player.getY() > getWidth()) logic.handleCollision();
 
             for (Rectangle component : rObstacles) {
                 if (component != null) {
                     if (rPlayer.intersects(component) && !logic.rainbowMode) {
-                        utils.audioPlayer(config.getHitSound(), config.isSound(), false);
+                        utils.audioPlayer(config.getHitSound(), config.isSound(), false, logic);
                         logic.handleCollision();
                     }
                 }
@@ -293,12 +290,12 @@ public class GameUI extends JFrame {
 
     // Überprüft, ob der Spieler sich im Regenbogen-Modus befindet
     public void checkRainbowMode() {
-        if (logic.rainbowMode && !logic.rainbowModeActive) {
+        if (logic.rainbowMode && !rainbowModeActive) {
             player.setIcon(utils.createImageIcon((config.getRainbow())));
-            logic.rainbowModeActive = true;
-            } else if (!logic.rainbowMode && logic.rainbowModeActive){
+            rainbowModeActive = true;
+            } else if (!logic.rainbowMode && rainbowModeActive){
                 player.setIcon(utils.createImageIcon((config.getPlayer())));
-                logic.rainbowModeActive = false;
+                rainbowModeActive = false;
         }
     }
 }

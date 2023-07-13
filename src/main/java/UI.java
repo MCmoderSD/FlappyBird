@@ -119,19 +119,17 @@ public class UI extends JFrame {
         newGame = true;
 
         // Überprüfung der Eingabe
-        if (!Logic.instance.developerMode && !Logic.instance.cheatsEnabled && points > 0) {
+        if (!Logic.developerMode && !Logic.cheatsEnabled && points > 0) {
             if (playerName.getText().length() != 0 && !playerName.getText().contains("Username")) {
                 if (playerName.getText().length() <= 32) {
                     if (!utils.checkUserName(playerName.getText()) && !playerName.getText().contains(" ")) {
                         writeLeaderBoard(playerName.getText(), points, tableName); // Hochladen des Scores
                     } else { // Fehlermeldung bei unerlaubtem Username
-                        // JOptionPane.showMessageDialog(null, "Der Username ist nicht erlaubt!", "Fehler", JOptionPane.ERROR_MESSAGE);
                         new UI(config, utils);
                         updateDatabase.stop();
                         dispose();
                     }
                 } else { // Fehlermeldung bei zu langem Username
-                    // JOptionPane.showMessageDialog(null, "Der Username ist zu lang!", "Fehler", JOptionPane.ERROR_MESSAGE);
                     new UI(config, utils);
                     updateDatabase.stop();
                     dispose();

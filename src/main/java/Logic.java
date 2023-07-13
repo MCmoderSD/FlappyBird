@@ -2,26 +2,18 @@ import static java.lang.Thread.sleep;
 
 @SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class Logic {
+    public static boolean developerMode = false, cheatsEnabled = false;
     // Klassenobjekte
-    public static Logic instance;
     private final Config config;
     private final Utils utils;
     private final Movement movement;
     private final GameUI gameUI;
-
     // Klassenvariablen
-    public boolean
-            gamePaused = false,
-            rainbowMode = false,
-            rainbowModeActive = false,
-            developerMode = false,
-            cheatsEnabled = false,
-            gameState = false,
-            gameOver = false;
+    public boolean gamePaused = false, rainbowMode = false, gameOver = false;
+    private boolean gameState = false;
 
     // Konstruktor und Intanz bildung der Klasse
     public Logic(Config config, GameUI gameUI) {
-        instance = this;
         this.config = config;
         this.utils = config.getUtils();
         this.movement = config.getMovement();
@@ -33,7 +25,7 @@ public class Logic {
 
         // Wenn das Spiel nicht läuft und nicht beendet ist
         if (!(gameUI.tickrate.isRunning() || gameState || gameOver)) {
-            utils.audioPlayer(config.getMusic(), config.isSound(), true); // Musik abspielen
+            utils.audioPlayer(config.getMusic(), config.isSound(), true, this); // Musik abspielen
             gameUI.tickrate.start(); // Timer starten
             gameUI.gameOver.setVisible(false);
             gameState = true;
@@ -57,12 +49,12 @@ public class Logic {
         if (!gamePaused) {
 
             if ((gameUI.player.getY() >= gameUI.getHeight() && !gameState && gameOver) || (gameOver && config.getArgs().length > 1)) gameUI.tickrate.stop(); // Stop the timer
-            movement.movePlayer(); // Move the player
+            movement.movePlayer(gameUI); // Move the player
 
 
             if (gameState && !gameOver) {
-                movement.moveObstacles(); // Move the obstacles
-                movement.moveBackground(); // Move the background
+                movement.moveObstacles(gameUI); // Move the obstacles
+                movement.moveBackground(gameUI); // Move the background
 
                 gameUI.removeObstacles(); // Remove non-visible obstacles
                 gameUI.checkCollision(); // Check for collisions
@@ -74,7 +66,7 @@ public class Logic {
     // Handler für die Kollision
     public void handleCollision() {
         utils.stopHeavyAudio();
-        utils.audioPlayer(config.getDieSound(), config.isSound(), false);
+        utils.audioPlayer(config.getDieSound(), config.isSound(), false, this);
 
         gameOver = true;
         gameState = false;
@@ -84,13 +76,13 @@ public class Logic {
 
     // Handler für den Jump
     public void handleBounce() {
-        utils.audioPlayer(config.getFlapSound(), config.isSound(), false);
+        utils.audioPlayer(config.getFlapSound(), config.isSound(), false, this);
         if (gameUI.player.getY() > 32) movement.xPosition = - config.getJumpHeight(); // Spieler nach oben bewegen
     }
 
     // Handler für die Punkte
     public void handlePoint() {
-        utils.audioPlayer(config.getPointSound(), config.isSound(), false);
+        utils.audioPlayer(config.getPointSound(), config.isSound(), false, this);
         gameUI.points++;
         if (gameUI.points > 0 && gameUI.points % 5 == 0 && (int) (Math.random() * 6 + 1) == 3) handleRainbowMode();
         gameUI.score.setText("Score: " + gameUI.points);
@@ -114,7 +106,7 @@ public class Logic {
         Thread rainbow = new Thread(() -> {
             try {
                 rainbowMode = true;
-                utils.audioPlayer(config.getRainbowSound(), config.isSound(), false);
+                utils.audioPlayer(config.getRainbowSound(), config.isSound(), false, this);
                 sleep(7000);
                 rainbowMode = false;
             } catch (InterruptedException e) {

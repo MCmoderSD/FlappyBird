@@ -107,7 +107,7 @@ Special thanks to: <br>
 [Rebix](https://github.com/Reebix) for the database driver and coding help.
 <Br>
 [RedSmileTV](https://github.com/RedSmileTV) for beeing my rubber duck.
-<Br> 
+<Br>
 [Leonard](https://github.com/Leo-160905) for small ideas and code improvements.
 <Br>
 [Redflame125](https://github.com/Redflame125) for being the main tester.
