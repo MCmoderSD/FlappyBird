@@ -31,7 +31,7 @@ public class Utils {
     private final ArrayList<BufferedInputStream> HeavyBufferedInputStreamCache = new ArrayList<>(); // Cache für BufferedInputStreams
     private final ArrayList<AudioInputStream> HeavyAudioInputStreamCache = new ArrayList<>(); // Cache für AudioInputStreams
     private long startTime = System.currentTimeMillis();
-    private boolean audioIsStopped, customConfig = false;
+    private boolean audioIsStopped, customConfig = false, smallScreen = false;
 
     // Konstruktor und Multiplikator für die Tickrate
     public Utils(double osMultiplier) { this.osMultiplier = osMultiplier; }
@@ -236,7 +236,10 @@ public class Utils {
     // Zentriert das Fenster mittig auf dem Bildschirm
     public Point centerFrame(JFrame frame) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Bildschirmgröße
-        return new Point(((screenSize.width - frame.getWidth()) / 2), ((screenSize.height - frame.getHeight()) / 2));
+        int x = ((screenSize.width - frame.getWidth()) / 2);
+        int y = ((screenSize.height - frame.getHeight()) / 2);
+        if (smallScreen) y = 0;
+        return new Point(x, y);
     }
 
     // Berechent die Breite des Fensters
@@ -254,17 +257,17 @@ public class Utils {
     }
 
     // Berechnet die Latenz des Systems
-    public long calculateSystemLatency(Logic logic) {
+    public long calculateSystemLatency() {
         long currentTime = System.currentTimeMillis(); // Aktuelle Zeit
         long latency = currentTime - startTime; // Latenz
         startTime = currentTime;
-        soutLogger("latency-log.txt", String.valueOf(latency), logic);
+        soutLogger("latency-log.txt", String.valueOf(latency));
         return latency;
     }
 
     // Schreibt Strings in eine Log-Datei
-    public void soutLogger(String file, String message, Logic logic) {
-        if (logic.developerMode) {
+    public void soutLogger(String file, String message) {
+        if (Logic.developerMode) {
             CompletableFuture.runAsync(() -> { // Asynchroner Aufruf
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
                     writer.append(message);
@@ -285,7 +288,7 @@ public class Utils {
                 inputStream = Files.newInputStream(Paths.get(json));
                 customConfig = true;
             } else inputStream = getClass().getResourceAsStream("config/" + json + ".json");
-            if (inputStream == null) throw new IllegalArgumentException("Die Config Datei konnte nicht gefunden werden: " + json);
+            if (inputStream == null) return null;
             return mapper.readTree(inputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -299,5 +302,19 @@ public class Utils {
         if (date.getMonthValue() == 9 && date.getDayOfMonth() == 11 ) config = readJson("911");
         else config = readJson(Default);
         return config;
+    }
+
+    public int[] maxDimension(int x, int y) {
+        int width = Toolkit.getDefaultToolkit().getScreenSize().width;
+        long height = Math.round(Toolkit.getDefaultToolkit().getScreenSize().height * 0.95);
+        if (x > width) {
+            x = width;
+            smallScreen = true;
+        }
+        if (y > height) {
+            y = (int) height;
+            smallScreen = true;
+        }
+        return new int[]{x, y};
     }
 }

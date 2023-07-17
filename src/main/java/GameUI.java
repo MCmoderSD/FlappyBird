@@ -128,7 +128,7 @@ public class GameUI extends JFrame {
         tickrate = new Timer((int) Math.round(1000/config.getTPS()), e -> {
             if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
             logic.handleTimerTick();
-            if (Logic.developerMode) System.out.println(utils.calculateSystemLatency(logic));
+            if (Logic.developerMode) System.out.println(utils.calculateSystemLatency());
         });
 
         // Initialisiere die Steuerung

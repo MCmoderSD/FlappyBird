@@ -22,6 +22,8 @@ public class Main {
         else if (args[0].toLowerCase().endsWith(".json") ) config = utils.readJson(args[0].toLowerCase());
         else config = utils.readJson(args[0].toLowerCase());
 
+        int[] dimension = utils.maxDimension(config.get("WindowSizeX").asInt(), config.get("WindowSizeY").asInt());
+
         new Config(
                 utils,
 
@@ -33,8 +35,8 @@ public class Main {
 
                 // Fenster
                 config.get("Title").asText(),
-                config.get("WindowSizeX").asInt(),
-                config.get("WindowSizeY").asInt(),
+                dimension[0],
+                dimension[1],
                 config.get("Resizeable").asBoolean(),
 
                 // Assets

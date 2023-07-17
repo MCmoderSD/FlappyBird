@@ -44,14 +44,25 @@ public class UI extends JFrame {
 
         // Datenbank Konfiguration
         JsonNode json = utils.readJson("Database");
-        host = json.get("host").asText();
-        port = json.get("port").asText();
-        String databaseName = json.get("database").asText();
-        String table = json.get("table").asText();
-        String user = json.get("user").asText();
-        String password = json.get("password").asText();
+        String databaseName, table, user, password;
 
-        if (config.getArgs().length >= 2) table = json.get("reversedTable").asText();
+        if (json != null) {
+            host = json.get("host").asText();
+            port = json.get("port").asText();
+            databaseName = json.get("database").asText();
+            table = json.get("table").asText();
+            user = json.get("user").asText();
+            password = json.get("password").asText();
+
+            if (config.getArgs().length >= 2) table = json.get("reversedTable").asText();
+        } else {
+            host = "error";
+            port = "0";
+            databaseName = "error";
+            table = "error";
+            user = "error";
+            password = "error";
+        }
 
         tableName = table;
 
