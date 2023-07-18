@@ -94,6 +94,7 @@ If you don't want to submit your score, leave the username field empty and click
 - [x] Reverse Mode Leaderboard
 - [x] Mod Support (Custom Assets)
 - [x] Code de-spaghetification
+- [ ] Leonard-test passed
 - [ ] Maxim-test passed 
 - [ ] Timon-test passed 
 

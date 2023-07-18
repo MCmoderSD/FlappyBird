@@ -41,30 +41,36 @@ public class Utils {
 
     // Läd Bilddateien
     public BufferedImage reader(String resource) {
-        if (!bufferedImageCache.containsKey(resource)) { // Überprüft, ob das Bild bereits geladen wurde
+        if (bufferedImageCache.containsKey(resource)) return bufferedImageCache.get(resource); // Überprüft, ob der Pfad bereits geladen wurde
+        BufferedImage image = null;
             try {
                 if (resource.endsWith(".png")) {
-                    if (customConfig & !resource.startsWith("error")) bufferedImageCache.put(resource, ImageIO.read(Files.newInputStream(Paths.get(resource))));
-                         else bufferedImageCache.put(resource, ImageIO.read(Objects.requireNonNull(getClass().getResource(resource))));
-                     } else throw new IllegalArgumentException("Das Bildformat wird nicht unterstützt: " + resource);
+                    if (customConfig & !resource.startsWith("error")) image = ImageIO.read(Files.newInputStream(Paths.get(resource)));
+                    else image = ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)));
+                } else throw new IllegalArgumentException("Das Bildformat wird nicht unterstützt: " + resource);
+
+                bufferedImageCache.put(resource, image); // Fügt das Bild dem Cache hinzu
+
                  } catch (IOException e) {
                      e.printStackTrace();
                  }
-             }
-             return bufferedImageCache.get(resource); // Gibt das Bild zurück
-         }
+            if (image == null) throw new IllegalArgumentException("Das Bild konnte nicht geladen werden: " + resource);
+        return image;
+    }
 
     // Erstellt ein ImageIcon aus Bildern
     public ImageIcon createImageIcon(String resource) {
-        if (!imageIconCache.containsKey(resource)) { // Überprüft, ob der Pfad bereits geladen wurde
+        if (imageIconCache.containsKey(resource)) return imageIconCache.get(resource); // Überprüft, ob der Pfad bereits geladen wurde
+        ImageIcon imageIcon;
             if (resource.endsWith(".png")) {
-                imageIconCache.put(resource, new ImageIcon(reader(resource))); // Erstellt ein ImageIcon
+                imageIcon = new ImageIcon(reader(resource)); // Erstellt ein ImageIcon
             } else if (resource.endsWith(".gif")) {
                 URL imageUrl = getClass().getClassLoader().getResource(resource);
-                imageIconCache.put(resource, new ImageIcon(Objects.requireNonNull(imageUrl)));
+                imageIcon = new ImageIcon(Objects.requireNonNull(imageUrl));
             } else throw new IllegalArgumentException("Das Bildformat wird nicht unterstützt: " + resource);
-        }
-        return imageIconCache.get(resource);
+
+        imageIconCache.put(resource, imageIcon); // Fügt das Bild dem Cache hinzu
+        return imageIcon;
     }
 
     // Zentriert ein Bild mittig
@@ -304,6 +310,7 @@ public class Utils {
         return config;
     }
 
+    // Checkt, ob die Auflösung zu groß ist
     public int[] maxDimension(int x, int y) {
         int width = Toolkit.getDefaultToolkit().getScreenSize().width;
         long height = Math.round(Toolkit.getDefaultToolkit().getScreenSize().height * 0.95);
