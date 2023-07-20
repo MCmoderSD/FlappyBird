@@ -64,7 +64,7 @@ public class Utils {
         ImageIcon imageIcon;
             if (resource.endsWith(".png")) {
                 imageIcon = new ImageIcon(reader(resource)); // Erstellt ein ImageIcon
-            } else if (resource.endsWith(".Animations")) {
+            } else if (resource.endsWith(".gif")) {
                 URL imageUrl = getClass().getClassLoader().getResource(resource);
                 imageIcon = new ImageIcon(Objects.requireNonNull(imageUrl));
             } else throw new IllegalArgumentException("Das Bildformat wird nicht unterstützt: " + resource);
