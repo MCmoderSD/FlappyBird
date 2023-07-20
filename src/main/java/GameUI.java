@@ -8,15 +8,18 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import static java.lang.Thread.sleep;
+
+@SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class GameUI extends JFrame {
 
     // Klassenattribute
     public final ArrayList<JLabel> obstacles = new ArrayList<>();
     public final ArrayList<Rectangle> rObstacles = new ArrayList<>(), greenZones = new ArrayList<>();
-    public final Timer tickrate;
     public final JLabel player, score, gameOver, pauseScreen;
     public final Rectangle rPlayer;
     public final JPanel mainPanel;
+    public final Thread quickTimer;
     private final Config config;
     private final Utils utils;
     private final Movement movement;
@@ -25,7 +28,9 @@ public class GameUI extends JFrame {
     private final int[] KONAMI_CODE = { KeyEvent.VK_UP, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_DOWN,
             KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_B, KeyEvent.VK_A };
     public int points;
+    public boolean TimerIsRunning = false;
     private boolean rainbowModeActive = false;
+    private long startTime;
 
     // Konstruktor
     public GameUI(Config config) {
@@ -125,11 +130,30 @@ public class GameUI extends JFrame {
         mainPanel.add(pauseScreen);
 
         // Initialisiere den Timer
-        tickrate = new Timer((int) Math.round(1000/config.getTPS()), e -> {
-            if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
-            logic.handleTimerTick();
-            if (Logic.developerMode) System.out.println(utils.calculateSystemLatency());
+        quickTimer = new Thread(() -> {
+            long delay = (long) (1000/config.getTPS());
+            while (true) {
+                try {
+                    if (TimerIsRunning) {
+                        if (startTime <= 0) startTime = System.currentTimeMillis();
+
+                        // Timer Body
+                        if (System.getProperty("os.name").equals("linux")) Toolkit.getDefaultToolkit().sync();
+                        logic.handleTimerTick();
+                        if (Logic.developerMode) System.out.println(utils.calculateSystemLatency());
+
+                        // Timer Delay
+                        if ((delay - (System.currentTimeMillis() - startTime)) > 0) sleep(delay - (System.currentTimeMillis() - startTime));
+                        startTime = System.currentTimeMillis();
+                    } else sleep(delay);
+
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         });
+
+        quickTimer.start();
 
         // Initialisiere die Steuerung
         addKeyListener(new KeyAdapter() {

@@ -10,7 +10,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Objects;
 
 public class UI extends JFrame {
     // Objekte
@@ -70,9 +69,6 @@ public class UI extends JFrame {
 
         // UI initialisieren
         score.setText("Global Leaderboard");
-
-        if (Objects.equals(config.getBackground(), "911/Skyline.png")) playerName.setForeground(Color.WHITE);
-        else playerName.setForeground(Color.BLACK);
 
         if (points >= 0) {
             isUploaded = false;
@@ -186,20 +182,18 @@ public class UI extends JFrame {
         soundCheckBox.setToolTipText("Aktiviere oder deaktiviere den Sound");
         soundCheckBox.setBorder(BorderFactory.createEmptyBorder());
         soundCheckBox.setFont(new Font("Roboto", Font.PLAIN, 24));
-        if (Objects.equals(config.getBackground(), "911/Skyline.png")) soundCheckBox.setForeground(Color.WHITE);
-        else soundCheckBox.setForeground(Color.BLACK);
+        soundCheckBox.setForeground(utils.calculateForegroundColor(utils.getAverageColorInRectangle(utils.getBottomMenuBounds(backgroundFrame), backgroundFrame)));
 
         // Initialisierung des Username-Textfeldes
         playerName = new JTextField();
         playerName.setOpaque(false);
         playerName.setEnabled(false);
         playerName.setFont(new Font("Roboto", Font.PLAIN, 22));
-        if (Objects.equals(config.getBackground(), "911/Skyline.png")) playerName.setForeground(Color.WHITE);
-        else playerName.setForeground(Color.BLACK);
+        playerName.setForeground(utils.calculateForegroundColor(utils.getAverageColorInRectangle(utils.getBottomMenuBounds(backgroundFrame), backgroundFrame)));
         playerName.setToolTipText("Gib deinen Username ein");
         playerName.setHorizontalAlignment(JTextField.CENTER);
         playerName.setBorder(BorderFactory.createEmptyBorder());
-        utils.setPlaceholder(playerName, "Username");
+        utils.setPlaceholder(playerName, "Username", backgroundFrame);
 
         // Initialisierung der ScrollPane für die Tabelle
         scrollPane = new JScrollPane();

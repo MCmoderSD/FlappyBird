@@ -1,7 +1,7 @@
 # Flappy Bird
 
 A Flappy Bird game written in Java.
-<Br>
+<br>
 It's for this year's final IT-software school project.
 <br> <br>
 ## How to run
@@ -49,8 +49,8 @@ If you don't want to submit your score, leave the username field empty and click
   "pointSound": "PATH TO YOUR POINT SOUND",
   "rainbowSound": "PATH TO YOUR RAINBOW SOUND",
   "backgroundMusic": "PATH TO YOUR BACKGROUND MUSIC",
-  "WindowSizeX": "YOUR WINDOW WIDTH",
-  "WindowSizeY": "YOUR WINDOW HEIGHT",
+  "WindowSizeX": 800,
+  "WindowSizeY": 800,
   "Resizeable": "true/false"
 }
 ```
@@ -94,6 +94,7 @@ If you don't want to submit your score, leave the username field empty and click
 - [x] Reverse Mode Leaderboard
 - [x] Mod Support (Custom Assets)
 - [x] Code de-spaghetification
+- [ ] Asset compression
 - [ ] Leonard-test passed
 - [ ] Maxim-test passed 
 - [ ] Timon-test passed 

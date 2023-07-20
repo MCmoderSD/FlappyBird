@@ -24,12 +24,14 @@ public class Logic {
     public void handleSpaceKeyPress() {
 
         // Wenn das Spiel nicht läuft und nicht beendet ist
-        if (!(gameUI.tickrate.isRunning() || gameState || gameOver)) {
+        if (!(gameUI.TimerIsRunning || gameState || gameOver)) {
             utils.audioPlayer(config.getMusic(), config.isSound(), true, this); // Musik abspielen
-            gameUI.tickrate.start(); // Timer starten
+            gameUI.TimerIsRunning = true; // Timer starten
             gameUI.gameOver.setVisible(false);
             gameState = true;
             gamePaused = false;
+
+
         }
 
         // Wenn das Spiel nicht läuft und beendet ist
@@ -48,7 +50,7 @@ public class Logic {
 
         if (!gamePaused) {
 
-            if ((gameUI.player.getY() >= gameUI.getHeight() && !gameState && gameOver) || (gameOver && config.getArgs().length > 1)) gameUI.tickrate.stop(); // Stop the timer
+            if ((gameUI.player.getY() >= gameUI.getHeight() && !gameState && gameOver) || (gameOver && config.getArgs().length > 1)) gameUI.TimerIsRunning = false;
             movement.movePlayer(gameUI); // Move the player
 
 

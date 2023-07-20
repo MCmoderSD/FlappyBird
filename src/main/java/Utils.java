@@ -43,18 +43,18 @@ public class Utils {
     public BufferedImage reader(String resource) {
         if (bufferedImageCache.containsKey(resource)) return bufferedImageCache.get(resource); // Überprüft, ob der Pfad bereits geladen wurde
         BufferedImage image = null;
-            try {
-                if (resource.endsWith(".png")) {
-                    if (customConfig & !resource.startsWith("error")) image = ImageIO.read(Files.newInputStream(Paths.get(resource)));
-                    else image = ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)));
-                } else throw new IllegalArgumentException("Das Bildformat wird nicht unterstützt: " + resource);
+        try {
+            if (resource.endsWith(".png")) {
+                if (customConfig & !resource.startsWith("error")) image = ImageIO.read(Files.newInputStream(Paths.get(resource)));
+                else image = ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)));
+            } else throw new IllegalArgumentException("Das Bildformat wird nicht unterstützt: " + resource);
 
-                bufferedImageCache.put(resource, image); // Fügt das Bild dem Cache hinzu
+            bufferedImageCache.put(resource, image); // Fügt das Bild dem Cache hinzu
 
-                 } catch (IOException e) {
-                     e.printStackTrace();
-                 }
-            if (image == null) throw new IllegalArgumentException("Das Bild konnte nicht geladen werden: " + resource);
+             } catch (IOException e) {
+                 e.printStackTrace();
+             }
+        if (image == null) throw new IllegalArgumentException("Das Bild konnte nicht geladen werden: " + resource);
         return image;
     }
 
@@ -64,7 +64,7 @@ public class Utils {
         ImageIcon imageIcon;
             if (resource.endsWith(".png")) {
                 imageIcon = new ImageIcon(reader(resource)); // Erstellt ein ImageIcon
-            } else if (resource.endsWith(".gif")) {
+            } else if (resource.endsWith(".Animations")) {
                 URL imageUrl = getClass().getClassLoader().getResource(resource);
                 imageIcon = new ImageIcon(Objects.requireNonNull(imageUrl));
             } else throw new IllegalArgumentException("Das Bildformat wird nicht unterstützt: " + resource);
@@ -166,9 +166,9 @@ public class Utils {
     }
 
     // Placeholder für Textfelder (den Username)
-    public void setPlaceholder(JTextField textField, String placeholder) {
+    public void setPlaceholder(JTextField textField, String placeholder, JPanel panel) {
 
-        Color foregroundColor = textField.getForeground();
+        Color foregroundColor = calculateForegroundColor(getAverageColorInRectangle(getBottomMenuBounds(panel), panel));
         Font originalFont = textField.getFont();
 
         textField.setForeground(Color.GRAY);
@@ -323,5 +323,59 @@ public class Utils {
             smallScreen = true;
         }
         return new int[]{x, y};
+    }
+
+    // Berechnet die Größe des unteren Menüs
+    public Rectangle getBottomMenuBounds(JPanel panel) {
+        int width = panel.getWidth();
+        int height = panel.getHeight();
+        int part = height / 5;
+        return new Rectangle(0, part * 4, width, height - (part * 4));
+    }
+
+    // Berechnet die durchschnittliche Farbe in einem Rechteck
+    public Color getAverageColorInRectangle(Rectangle rectangle, JPanel panel) {
+        BufferedImage image = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_RGB);
+        panel.paint(image.getGraphics());
+
+        int startX = rectangle.x;
+        int startY = rectangle.y;
+        int endX = rectangle.x + rectangle.width;
+        int endY = rectangle.y + rectangle.height;
+
+        int totalRed = 0;
+        int totalGreen = 0;
+        int totalBlue = 0;
+        int pixelCount = 0;
+
+        for (int x = startX; x < endX; x++) {
+            for (int y = startY; y < endY; y++) {
+                int pixel = image.getRGB(x, y);
+                int red = (pixel >> 16) & 0xFF;
+                int green = (pixel >> 8) & 0xFF;
+                int blue = pixel & 0xFF;
+
+                totalRed += red;
+                totalGreen += green;
+                totalBlue += blue;
+                pixelCount++;
+            }
+        }
+
+        int averageRed = totalRed / pixelCount;
+        int averageGreen = totalGreen / pixelCount;
+        int averageBlue = totalBlue / pixelCount;
+
+        return new Color(averageRed, averageGreen, averageBlue);
+    }
+
+    // Berechnet die Farbe des Textes
+    public Color calculateForegroundColor(Color color) {
+        int r = color.getRed();
+        int g = color.getGreen();
+        int b = color.getBlue();
+
+        if (r + g + b > 382) return Color.BLACK;
+        else return Color.WHITE;
     }
 }
