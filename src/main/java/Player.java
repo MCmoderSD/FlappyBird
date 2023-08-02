@@ -1,12 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
 
-@SuppressWarnings("unused")
 public class Player {
     private final int width, height;
     private final Image image;
     private final ImageIcon rainbow;
-    private Point position;
     private Rectangle hitbox;
     private int x, y;
     public Player(Config config) {
@@ -23,8 +21,6 @@ public class Player {
     public void setLocation(int x, int y) {
         this.x = x;
         this.y = y;
-
-        position = new Point(x, y);
     }
 
     public int getX() {
@@ -33,14 +29,6 @@ public class Player {
 
     public int getY() {
         return y;
-    }
-
-    public Point getLocation() {
-        return position;
-    }
-
-    public void setLocation(Point position) {
-        setLocation(position.x, position.y);
     }
 
     public int getWidth() {

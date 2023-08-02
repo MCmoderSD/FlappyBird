@@ -339,7 +339,10 @@ public class GamePanel extends JPanel implements Runnable {
     private void jump() {
         if (!gameOver) {
             if (!isRunning) {
-                if (!isPaused) isRunning = true;
+                if (!isPaused) {
+                    utils.audioPlayer(this, config.getMusic(), config.isSound(), true);
+                    isRunning = true;
+                }
             } else if (player.getY() >= -player.getHeight()) xPosition = -config.getJumpHeight();
 
             utils.audioPlayer(this, config.getFlapSound(), config.isSound(), false);
@@ -363,24 +366,24 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void gameOver() {
+        utils.stopHeavyAudio();
         gameOver = true;
         isPaused = false;
         pauseLabel.setVisible(false);
         gameOverLabel.setVisible(true);
-        utils.audioPlayer(this, config.getDieSound(), config.isSound(), false);utils.audioPlayer(this, config.getRainbowSound(), config.isSound(), false);
+        utils.audioPlayer(this, config.getDieSound(), config.isSound(), false);
     }
 
     private void initRainbowMode() {
         if (points > 0 && points % 2 == 0) { //if (points > 0 && points % 5 == 0 && (int) (Math.random() * 6 + 1) == 3) {
+            utils.audioPlayer(this, config.getRainbowSound(), config.isSound(), false);
+            rainbowMode = true;
             new Thread(() -> {
-                utils.audioPlayer(this, config.getRainbowSound(), config.isSound(), false);
-                rainbowMode = true;
                 try {
                     Thread.sleep(7000);
                 } catch (InterruptedException e) {
                     logger.error(e.getMessage());
                 }
-
                 rainbowMode = false;
             }).start();
         }

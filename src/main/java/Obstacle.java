@@ -1,11 +1,9 @@
 import java.awt.*;
 
-@SuppressWarnings("unused")
 public class Obstacle {
     private final Image image;
     private final int width, height;
     private int x, y;
-    private Point position;
     private Rectangle hitbox;
 
     public Obstacle(Config config, boolean isTop) {
@@ -36,20 +34,11 @@ public class Obstacle {
         return y;
     }
 
-    public Point getLocation() {
-        return position;
-    }
-
-    public void setLocation(Point position) {
-        setLocation(position.x, position.y);
-    }
-
     public void setLocation(int x, int y) {
         this.x = x;
         this.y = y;
 
         hitbox = new Rectangle(x, y, width, height);
-        position = new Point(x, y);
     }
 
     public Rectangle getHitbox() {

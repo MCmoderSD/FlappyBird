@@ -13,7 +13,7 @@
   "hitSound": "Sounds/mono/allahuAkbar.wav",
   "pointSound": "Sounds/mono/point.wav",
   "rainbowSound": "Sounds/mono/rainbow.wav",
-  "backgroundMusic": "Sounds/stereo/nasheed.ogg",
+  "backgroundMusic": "Sounds/stereo/nasheed.wav",
   "WindowSizeX": 800,
   "WindowSizeY": 800,
   "Resizeable": false
