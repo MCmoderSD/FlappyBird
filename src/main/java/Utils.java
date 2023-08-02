@@ -24,7 +24,6 @@ import java.util.concurrent.ExecutionException;
 
 // Klasse für alle Utensiien
 public class Utils {
-    private final double osMultiplier;
     private final HashMap<String, Clip> HeavyClipCache = new HashMap<>(); // Cache für AudioClips
     private final HashMap<String, BufferedImage> bufferedImageCache = new HashMap<>(); // Cache für BufferedImages
     private final HashMap<String, ImageIcon> imageIconCache = new HashMap<>(); // Cache für ImageIcons
@@ -34,9 +33,6 @@ public class Utils {
     private boolean audioIsStopped, customConfig = false, smallScreen = false;
 
     // Konstruktor und Multiplikator für die Tickrate
-    public Utils(double osMultiplier) {
-        this.osMultiplier = osMultiplier;
-    }
 
     // Berechnet die Flugbahn des Spielers
     public int calculateGravity(int x) {
@@ -261,14 +257,6 @@ public class Utils {
     public int xPlayerPosition(JPanel panel, int width) {
         int x = panel.getWidth() / 4 - width / 2;
         return Math.min(x, 200);
-    }
-
-    // Berechnet die Tickrate je nach Betriebssystem
-    public double calculateOSspecifcTickrate(double Tickrate) {
-        String os = System.getProperty("os.name").toLowerCase();
-        if (os.contains("windows")) return Tickrate;
-        if (os.contains("linux")) return (Tickrate * osMultiplier); // Windows Lag Compensation
-        return Tickrate;
     }
 
     // Berechnet die Latenz des Systems

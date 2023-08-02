@@ -24,10 +24,10 @@ public class GamePanel extends JPanel implements Runnable {
     private final ArrayList<Obstacle> obstacles = new ArrayList<>();
     private final ArrayList<Rectangle> greenZones = new ArrayList<>();
 
-    //
-    public boolean gameOver = false, isPaused = false;
-    private boolean isRunning = false, rainbowMode = false;
-    private int xPosition, movePlayerInt = 0, obstacleMoveInt = 200, backgroundResetX, backgroundMoveInt, points = 0;
+    // Variables
+    public boolean gameOver = false, isPaused = true;
+    private boolean rainbowMode = false, gameStarted = false, backgroundAudioIsPlaying = false;
+    private int xPosition, movePlayerInt = 0, obstacleMoveInt = 200, backgroundResetX, backgroundMoveInt, fpsCount, points = 0;
 
     // Konstruktor
     public GamePanel(JFrame frame, Config config) {
@@ -84,9 +84,16 @@ public class GamePanel extends JPanel implements Runnable {
                 super.keyPressed(e);
 
                 // Steuerung
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) jump();
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                    isPaused = gameStarted && isPaused;
+                    gameStarted = true;
+                    jump();
+                }
 
-                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) pauseGame();
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    if (gameOver && player.getY() > getHeight()) jump();
+                    else pauseGame();
+                }
 
                 // Konami-Code
                 userInput.add(e.getKeyCode());
@@ -121,6 +128,8 @@ public class GamePanel extends JPanel implements Runnable {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
+                isPaused = gameStarted && isPaused;
+                gameStarted = true;
                 jump();
             }
         });
@@ -134,7 +143,7 @@ public class GamePanel extends JPanel implements Runnable {
     public void run() {
         while (Main.isRunning) {
             // Timer
-            double tickrate = 1000000000 / config.getTPS(), delta = 0;
+            double tickrate = 10000000, delta = 0;
             long current, now = System.nanoTime();
 
             // Game Loop
@@ -145,14 +154,13 @@ public class GamePanel extends JPanel implements Runnable {
 
                 if (delta >= 1) {
                     update(); // Update the game
-                    repaint(); // Update the screen
                     delta--;
                 }
             }
 
             // Delay
             try {
-                Thread.sleep((long) config.getTPS());
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -240,6 +248,13 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         removeObstacles();
+
+
+        if (fpsCount == 100 / config.getFPS()) {
+            repaint(); // Update the screen
+            fpsCount = 0;
+        } else fpsCount++;
+
 
         if (developerMode) utils.calculateSystemLatency();
     }
@@ -411,7 +426,7 @@ public class GamePanel extends JPanel implements Runnable {
         pauseLabel.setVisible(isPaused);
     }
 
-    // Handles game overx
+    // Handles game over
     private void gameOver() {
         utils.stopHeavyAudio();
         gameOver = true;

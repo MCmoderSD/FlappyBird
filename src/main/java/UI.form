@@ -78,7 +78,7 @@
           <text value="Start Game"/>
         </properties>
       </component>
-      <component id="9d99e" class="javax.swing.JSpinner" binding="spinnerTPS" custom-create="true">
+      <component id="9d99e" class="javax.swing.JSpinner" binding="spinnerFPS" custom-create="true">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="7" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>

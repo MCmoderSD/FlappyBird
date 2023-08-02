@@ -19,8 +19,8 @@ public class UI extends JFrame {
     private final Timer updateDatabase;
     private final String host, port, tableName;
     private final int points;
+    private final double FPS;
     private Database database;
-    private double TPS;
     private boolean newGame = true, isUploaded = true;
 
     // UI Elemente
@@ -30,15 +30,18 @@ public class UI extends JFrame {
     private JTable leaderBoard;
     private JTextField playerName;
     private JLabel score;
-    private JSpinner spinnerTPS;
+    private JSpinner spinnerFPS;
     private JScrollPane scrollPane;
 
     // Konstruktor und UI initialisieren
     public UI(Config config, Utils utils) {
+
+        Main.isRunning = false;
+
         this.config = config;
         this.utils = utils;
         this.points = config.getPoints();
-        this.TPS = config.getTPS();
+        this.FPS = config.getFPS();
 
         // Datenbank Konfiguration
         JsonNode json = utils.readJson("Database");
@@ -76,9 +79,7 @@ public class UI extends JFrame {
             bStart.setToolTipText("Lade deinen Score hoch");
         }
 
-        TPS = TPS + (1 + TPS - utils.calculateOSspecifcTickrate(TPS));
-        if (TPS > 100) TPS = 100;
-        spinnerTPS.setValue((int) TPS);
+        spinnerFPS.setValue(FPS);
         score.setVisible(true);
         playerName.setVisible(true);
         soundCheckBox.setSelected(config.isSound());
@@ -94,14 +95,11 @@ public class UI extends JFrame {
             updateDatabase.start();
         }
 
+
+        // TODO FIX
         // ActionListener für den Start-Button
         bStart.addActionListener(e -> {
             if (newGame) {
-                int spinnerValue = (int) spinnerTPS.getValue();
-                if (spinnerValue <= 100 && spinnerValue > 0) this.TPS = spinnerValue;
-                config.setTPS(utils.calculateOSspecifcTickrate(this.TPS));
-                config.setSound(soundCheckBox.isSelected());
-                play();
             } else if (this.points >= 0 && !isUploaded) {
                 upload();
             }
@@ -110,6 +108,9 @@ public class UI extends JFrame {
 
     // Methode zum Starten des Spiels
     private void play() {
+
+        Main.isRunning = true;
+
         JFrame frame = new JFrame(config.getTitle());
         GamePanel gamePanel = new GamePanel(frame, config);
         frame.add(gamePanel);
@@ -220,22 +221,20 @@ public class UI extends JFrame {
         scrollPane.add(leaderBoard);
         scrollPane.setOpaque(false);
 
-        // Initialisierung des TPS-Spinners
-        spinnerTPS = new JSpinner();
-        spinnerTPS.setOpaque(false);
-        spinnerTPS.setToolTipText("Ticks pro Sekunde");
+        // Initialisierung des FPS-Spinners
+        spinnerFPS = new JSpinner();
+        spinnerFPS.setOpaque(false);
+        spinnerFPS.setToolTipText("Frames pro Sekunde");
 
-        // Verhindert ungültige Eingaben im TPS-Spinner
-        JFormattedTextField txt = ((JSpinner.DefaultEditor) spinnerTPS.getEditor()).getTextField();
+        // Verhindert ungültige Eingaben im FPS-Spinner
+        JFormattedTextField txt = ((JSpinner.DefaultEditor) spinnerFPS.getEditor()).getTextField();
         ((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
 
-        spinnerTPS.addChangeListener(e -> {
-            if (spinnerTPS.getValue() != null) {
-                if ((int) spinnerTPS.getValue() >= 100)
-                    spinnerTPS.setValue(100);
-                if ((int) spinnerTPS.getValue() <= 1)
-                    spinnerTPS.setValue(1);
-            }
+        spinnerFPS.addChangeListener(e -> {
+            /*if (spinnerFPS.getValue() != null) {
+                if (Math.round((Double) spinnerFPS.getValue()) >= 100) spinnerFPS.setValue(100);
+                if (Math.round((Double) spinnerFPS.getValue()) <= 1) spinnerFPS.setValue(1);
+            }*/
         });
     }
 
@@ -352,8 +351,10 @@ public class UI extends JFrame {
 
     // Methode zum Anzeigen einer Fehlermeldung, wenn keine Verbindung zum SQL Server hergestellt werden konnte
     private void handleNoSQLConnection(Config config) {
-        if (!updateDatabase.isRunning()) JOptionPane.showMessageDialog(null, "Es konnte keine Verbindung zum SQL Server hergestellt werden!", "Fehler", JOptionPane.ERROR_MESSAGE);
-        if (updateDatabase.isRunning()) JOptionPane.showMessageDialog(null, "Verbindung zum SQL Server verloren, überprüfe deine Internetverbindung!", "Fehler", JOptionPane.ERROR_MESSAGE);
+        if (!updateDatabase.isRunning())
+            JOptionPane.showMessageDialog(null, "Es konnte keine Verbindung zum SQL Server hergestellt werden!", "Fehler", JOptionPane.ERROR_MESSAGE);
+        if (updateDatabase.isRunning())
+            JOptionPane.showMessageDialog(null, "Verbindung zum SQL Server verloren, überprüfe deine Internetverbindung!", "Fehler", JOptionPane.ERROR_MESSAGE);
         updateDatabase.stop();
         new UI(config, utils);
         dispose();
@@ -389,20 +390,22 @@ public class UI extends JFrame {
     }
 }
 
-    // Innere Klasse für die Daten der Tabelle
-    class RowData {
-        private final String user;
-        private final int score;
+// Innere Klasse für die Daten der Tabelle
+class RowData {
+    private final String user;
+    private final int score;
 
-        // Konstruktor
-        public RowData(String user, int score) {
-            this.user = user;
-            this.score = score;
-        }
-        public String getUser() {
-            return user;
-        }
-        public int getScore() {
-            return score;
-        }
+    // Konstruktor
+    public RowData(String user, int score) {
+        this.user = user;
+        this.score = score;
     }
+
+    public String getUser() {
+        return user;
+    }
+
+    public int getScore() {
+        return score;
+    }
+}

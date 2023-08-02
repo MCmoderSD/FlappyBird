@@ -32,43 +32,43 @@ public class Config {
     private final Utils utils;
 
     // Alle Variablen für die Spiellogik
-    private double TPS; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde) Maximum: 100
+    private double FPS; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde) Maximum: 100
     private int points = -10; // Punkte
     private boolean sound = true; // Gibt an, ob Sounds abgespielt werden sollen
 
     // Konstruktor zum Initialisieren der Variablen
-    public Config(Utils utils, String defaultConfig, int jumpHeight, int percentage, int gap, int TPS, String[] args) {
+    public Config(Utils utils, String defaultConfig, int jumpHeight, int percentage, int gap, int FPS, String[] args) {
 
         this.utils = utils;
         this.gap = gap;
         this.percentage = percentage;
         this.jumpHeight = jumpHeight;
-        this.TPS = TPS;
+        this.FPS = FPS;
         this.args = args;
 
         JsonNode config;
 
         if (args.length < 1) config = utils.checkDate(defaultConfig);
-        else if (args[0].toLowerCase().endsWith(".json") ) config = utils.readJson(args[0].toLowerCase());
+        else if (args[0].toLowerCase().endsWith(".json")) config = utils.readJson(args[0].toLowerCase());
         else config = utils.readJson(args[0].toLowerCase());
 
         title = config.get("Title").asText();
 
         HashMap<Integer, String> nullCheck = new HashMap<>();
         nullCheck.put(0, config.get("Background").asText());
-        nullCheck.put(nullCheck.size(),config.get("Player").asText());
-        nullCheck.put(nullCheck.size(),config.get("Rainbow").asText());
-        nullCheck.put(nullCheck.size(),config.get("ObstacleTop").asText());
-        nullCheck.put(nullCheck.size(),config.get("ObstacleBottom").asText());
-        nullCheck.put(nullCheck.size(),config.get("Icon").asText());
-        nullCheck.put(nullCheck.size(),config.get("GameOver").asText());
-        nullCheck.put(nullCheck.size(),config.get("Pause").asText());
-        nullCheck.put(nullCheck.size(),config.get("dieSound").asText());
-        nullCheck.put(nullCheck.size(),config.get("flapSound").asText());
-        nullCheck.put(nullCheck.size(),config.get("hitSound").asText());
-        nullCheck.put(nullCheck.size(),config.get("pointSound").asText());
-        nullCheck.put(nullCheck.size(),config.get("rainbowSound").asText());
-        nullCheck.put(nullCheck.size(),config.get("backgroundMusic").asText());
+        nullCheck.put(nullCheck.size(), config.get("Player").asText());
+        nullCheck.put(nullCheck.size(), config.get("Rainbow").asText());
+        nullCheck.put(nullCheck.size(), config.get("ObstacleTop").asText());
+        nullCheck.put(nullCheck.size(), config.get("ObstacleBottom").asText());
+        nullCheck.put(nullCheck.size(), config.get("Icon").asText());
+        nullCheck.put(nullCheck.size(), config.get("GameOver").asText());
+        nullCheck.put(nullCheck.size(), config.get("Pause").asText());
+        nullCheck.put(nullCheck.size(), config.get("dieSound").asText());
+        nullCheck.put(nullCheck.size(), config.get("flapSound").asText());
+        nullCheck.put(nullCheck.size(), config.get("hitSound").asText());
+        nullCheck.put(nullCheck.size(), config.get("pointSound").asText());
+        nullCheck.put(nullCheck.size(), config.get("rainbowSound").asText());
+        nullCheck.put(nullCheck.size(), config.get("backgroundMusic").asText());
 
         for (int i = 0; i < nullCheck.size(); i++) {
             assert nullCheck.get(i) != null;
@@ -104,87 +104,115 @@ public class Config {
     public int getJumpHeight() {
         return jumpHeight;
     }
+
     public int getPercentage() {
         return percentage;
     }
+
     public int getGap() {
         return gap;
     }
-    public double getTPS() {
-        return TPS;
+
+    public double getFPS() {
+        return FPS;
     }
-    public void setTPS(double TPS) {
-        this.TPS = TPS;
+
+    public void setFPS(double FPS) {
+        this.FPS = FPS;
     }
+
     public int getPoints() {
         return points;
     }
+
     public void setPoints(int points) {
         this.points = points;
     }
+
     public String getTitle() {
         return title;
     }
+
     public int getWindowSizeX() {
         return width;
     }
+
     public int getWindowSizeY() {
         return height;
     }
+
     public boolean isResizeable() {
         return resizeable;
     }
+
     public String getBackground() {
         return background;
     }
+
     public String getPlayer() {
         return player;
     }
+
     public String getRainbow() {
         return rainbow;
     }
+
     public String getObstacleTop() {
         return obstacleTop;
     }
+
     public String getObstacleBottom() {
         return obstacleBottom;
     }
+
     public String getIcon() {
         return icon;
     }
+
     public String getGameOver() {
         return gameOver;
     }
+
     public String getPause() {
         return pause;
     }
+
     public String getDieSound() {
         return dieSound;
     }
+
     public String getFlapSound() {
         return flapSound;
     }
+
     public String getHitSound() {
         return hitSound;
     }
+
     public String getPointSound() {
         return pointSound;
     }
+
     public String getRainbowSound() {
         return rainbowSound;
     }
+
     public String getMusic() {
         return music;
     }
+
     public String[] getArgs() {
         return args;
     }
+
     public boolean isSound() {
         return sound;
     }
+
     public void setSound(boolean sound) {
         this.sound = sound;
     }
+
     public Utils getUtils() {
         return utils;
     }
