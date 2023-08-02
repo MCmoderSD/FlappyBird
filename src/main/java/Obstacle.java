@@ -1,15 +1,14 @@
 import java.awt.*;
 
+@SuppressWarnings("unused")
 public class Obstacle {
-    private final Config config;
     private final Image image;
     private final int width, height;
     private int x, y;
     private Point position;
     private Rectangle hitbox;
-    public Obstacle(Config config, boolean isTop) {
-        this.config = config;
 
+    public Obstacle(Config config, boolean isTop) {
         if (isTop) image = config.getUtils().reader(config.getObstacleTop());
         else image = config.getUtils().reader(config.getObstacleBottom());
 

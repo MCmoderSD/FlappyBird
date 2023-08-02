@@ -1,5 +1,6 @@
 import java.awt.*;
 
+@SuppressWarnings("unused")
 public class Player {
     private final int width, height;
     private Image image;

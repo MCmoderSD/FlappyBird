@@ -21,9 +21,8 @@ public class GameUI extends JFrame {
     private final Config config;
     private final Utils utils;
     private final Logic logic;
-    private final ArrayList<Integer> userInput = new ArrayList<>();
-    private final int[] KONAMI_CODE = { KeyEvent.VK_UP, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_DOWN,
-            KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_B, KeyEvent.VK_A };
+
+
     public int points;
     public boolean TimerIsRunning = false;
     private boolean rainbowModeActive = false;
@@ -129,31 +128,6 @@ public class GameUI extends JFrame {
                 if (e.getKeyCode() == KeyEvent.VK_SPACE) logic.handleSpaceKeyPress();
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) logic.handleGamePause();
 
-
-                // Konami-Code
-                userInput.add(e.getKeyCode());
-
-                // Die Eingabe begrenzen, um Speicherplatz zu sparen
-                if (userInput.size() > KONAMI_CODE.length) userInput.remove(0); // Die Eingabe begrenzen, um Speicherplatz zu sparen
-
-                // Prüfen, ob der Konami-Code eingegeben wurde
-                if (userInput.size() == KONAMI_CODE.length) {
-                    boolean konamiCodeEntered = true;
-                    for (int i = 0; i < KONAMI_CODE.length; i++) {
-                        if (userInput.get(i) != KONAMI_CODE[i]) {
-                            konamiCodeEntered = false;
-                            break;
-                        }
-                    }
-
-                    // Wenn der Konami-Code eingegeben wurde, den Entwickler-Modus umschalten
-                    if (konamiCodeEntered) {
-                        Logic.developerMode = !Logic.developerMode;
-                        Logic.cheatsEnabled = true;
-                        System.out.println("Developer-Modus umgeschaltet: " + Logic.developerMode);
-                        userInput.clear();
-                    }
-                }
             }
         });
 

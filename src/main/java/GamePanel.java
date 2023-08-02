@@ -12,11 +12,12 @@ public class GamePanel extends JPanel implements Runnable {
     private final Utils utils;
     private final Player player;
     private final JLabel gameOverLabel, pauseLabel, pointsLabel;
+    private final int[] KONAMI_CODE = { KeyEvent.VK_UP, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_B, KeyEvent.VK_A };
+    private final ArrayList<Integer> userInput = new ArrayList<>();
     public ArrayList<Obstacle> obstacles = new ArrayList<>();
     public ArrayList<Rectangle> greenZones = new ArrayList<>();
     public boolean isRunning = false, gameOver = false, isPaused = false;
     public int points = 0;
-    private Thread thread;
     private int xPosition;
     private int movePlayerInt = 0;
     private int obstacleMoveInt = 200;
@@ -72,7 +73,32 @@ public class GamePanel extends JPanel implements Runnable {
                 // Steuerung
                 if (e.getKeyCode() == KeyEvent.VK_SPACE) jump();
 
-                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) System.out.println("Pause");
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) pauseGame();
+
+                // Konami-Code
+                userInput.add(e.getKeyCode());
+
+                // Die Eingabe begrenzen, um Speicherplatz zu sparen
+                if (userInput.size() > KONAMI_CODE.length) userInput.remove(0); // Die Eingabe begrenzen, um Speicherplatz zu sparen
+
+                // Prüfen, ob der Konami-Code eingegeben wurde
+                if (userInput.size() == KONAMI_CODE.length) {
+                    boolean konamiCodeEntered = true;
+                    for (int i = 0; i < KONAMI_CODE.length; i++) {
+                        if (userInput.get(i) != KONAMI_CODE[i]) {
+                            konamiCodeEntered = false;
+                            break;
+                        }
+                    }
+
+                    // Wenn der Konami-Code eingegeben wurde, den Entwickler-Modus umschalten
+                    if (konamiCodeEntered) {
+                        Logic.developerMode = !Logic.developerMode;
+                        Logic.cheatsEnabled = true;
+                        System.out.println("Developer-Modus umgeschaltet: " + Logic.developerMode);
+                        userInput.clear();
+                    }
+                }
 
             }
         });
@@ -94,6 +120,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
+        // ToDo Fix this
         do {
             double tickrate = 1000000000 / config.getTPS();
             double delta = 0;
@@ -199,16 +226,11 @@ public class GamePanel extends JPanel implements Runnable {
         obstacleTop.setLocation(getWidth(), yTop);
         obstacleBottom.setLocation(getWidth(), yBottom);
 
-
-
-        int greenZoneWidth = Math.max(obstacleTop.getWidth(), obstacleBottom.getWidth());
-        int greenZoneHeight = Math.max(obstacleTop.getHeight(), obstacleBottom.getHeight());
-
         Rectangle greenZone = new Rectangle(
-                obstacleTop.getX() + greenZoneWidth,
-                obstacleTop.getY() + greenZoneHeight,
-                greenZoneWidth,
-                yBottom - (yTop + greenZoneHeight)
+                obstacleTop.getX(),
+                obstacleTop.getY() + obstacleTop.getHeight(),
+                Math.max(obstacleTop.getWidth(), obstacleBottom.getWidth()),
+                config.getGap()
         );
 
         greenZones.add(greenZone);
@@ -238,8 +260,12 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void checkCollision() {
 
-        if (player.getY() > getHeight()) System.out.println("Game Over");
+        if (player.getY() > getHeight()) {
+            System.out.println("Fall out of the world");
+            utils.audioPlayer(this, config.getDieSound(), config.isSound(), false);
+        }
 
+        // ToDo Fix
         for (Obstacle component : obstacles) {
             if (player.getHitbox().intersects(component.getHitbox())) {
                 utils.audioPlayer(this, config.getHitSound(), config.isSound(), false);
@@ -247,9 +273,11 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
 
+        // ToDo Fix
         for (Rectangle component : greenZones) {
             if (player.getHitbox().intersects(component)) {
                 points++;
+                utils.audioPlayer(this, config.getPointSound(), config.isSound(), false);
                 System.out.println("Point");
                 greenZones.remove(component);
             }
@@ -283,14 +311,33 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void moveObstacles() {
         for (Obstacle component : obstacles) {
-            if (component != null) component.setLocation(component.getX() - 1, component.getY());
+            component.setLocation(component.getX() - 1, component.getY());
+        }
+
+        for (Rectangle rectangle : greenZones) {
+            rectangle.setLocation(rectangle.x - 1, rectangle.y);
         }
     }
     private void jump() {
-        if (player.getY() >= - player.getHeight()) {
-            xPosition = - config.getJumpHeight();
-            utils.audioPlayer(this, config.getFlapSound(), config.isSound(), false);
+        if (!gameOver) {
+            if (!isRunning) {
+                if (!isPaused) isRunning = true;
+            } else if (player.getY() >= -player.getHeight()) {
+                xPosition = -config.getJumpHeight();
+                utils.audioPlayer(this, config.getFlapSound(), config.isSound(), false);
+            }
         }
-        if (!isRunning && !gameOver) isRunning = true;
+    }
+
+    private void pauseGame() {
+        if (isRunning && !isPaused) {
+            isRunning = false;
+            isPaused = true;
+            pauseLabel.setVisible(true);
+        } else if (!isRunning && isPaused) {
+            isRunning = true;
+            isPaused = false;
+            pauseLabel.setVisible(false);
+        }
     }
 }
