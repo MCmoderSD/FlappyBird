@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class GamePanel extends JPanel implements Runnable {
+    private final JFrame frame;
     private final Config config;
     private final Utils utils;
     private final Player player;
@@ -24,7 +25,8 @@ public class GamePanel extends JPanel implements Runnable {
     private int backgroundResetX;
     private int backgroundMoveInt;
 
-    public GamePanel (Config config) {
+    public GamePanel (JFrame frame, Config config) {
+        this.frame = frame;
         this.config = config;
         this.utils = config.getUtils();
 
@@ -263,6 +265,7 @@ public class GamePanel extends JPanel implements Runnable {
         if (player.getY() > getHeight()) {
             System.out.println("Fall out of the world");
             utils.audioPlayer(this, config.getDieSound(), config.isSound(), false);
+            gameOver();
         }
 
         // ToDo Fix
@@ -270,6 +273,7 @@ public class GamePanel extends JPanel implements Runnable {
             if (player.getHitbox().intersects(component.getHitbox())) {
                 utils.audioPlayer(this, config.getHitSound(), config.isSound(), false);
                 System.out.println("Game Over");
+                gameOver();
             }
         }
 
@@ -326,6 +330,10 @@ public class GamePanel extends JPanel implements Runnable {
                 xPosition = -config.getJumpHeight();
                 utils.audioPlayer(this, config.getFlapSound(), config.isSound(), false);
             }
+        } else if (gameOver) {
+            config.setPoints(points);
+            new UI(config, utils);
+            frame.dispose();
         }
     }
 
@@ -339,5 +347,13 @@ public class GamePanel extends JPanel implements Runnable {
             isPaused = false;
             pauseLabel.setVisible(false);
         }
+    }
+
+    private void gameOver() {
+        gameOver = true;
+        isRunning = false;
+        isPaused = false;
+        pauseLabel.setVisible(false);
+        gameOverLabel.setVisible(true);
     }
 }

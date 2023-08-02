@@ -112,7 +112,7 @@ public class UI extends JFrame {
     // Methode zum Starten des Spiels
     private void play() {
         JFrame frame = new JFrame(config.getTitle());
-        GamePanel gamePanel = new GamePanel(config);
+        GamePanel gamePanel = new GamePanel(frame, config);
         frame.add(gamePanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(config.getWindowSizeX(), config.getWindowSizeY());
