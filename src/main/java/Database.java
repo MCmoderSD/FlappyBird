@@ -1,22 +1,17 @@
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
-
- Version: 0.1.7 (Beta)
-
- Author: Rebix
-
- This is a simple MySQL Database API for Java.
-
- This API is not finished yet, so it is not recommended to use it in production.
+ * Version: 0.1.7 (Beta)
+ * <p>
+ * Author: Rebix
+ * <p>
+ * This is a simple MySQL Database API for Java.
+ * <p>
+ * This API is not finished yet, so it is not recommended to use it in production.
  */
 public class Database {
-    private static final Logger logger = LoggerFactory.getLogger(Main.class);
     public static String NOTING_FOUND = "N/A";
     public static String ERROR = "ERROR";
     private String host = "localhost";
@@ -46,7 +41,7 @@ public class Database {
             connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database + "?autoReconnect=true", username, password);
             connection.setAutoCommit(true);
         } catch (SQLException | ClassNotFoundException e) {
-            logger.error(e.getMessage());
+            System.err.println(e.getMessage());
             System.out.println("MySQL disconnected!");
         }
     }
@@ -87,6 +82,7 @@ public class Database {
         public String getName() {
             return name;
         }
+
         @Override
         public String toString() {
             return getName();
@@ -136,7 +132,7 @@ public class Database {
                     stmt.close();
                     return Database.NOTING_FOUND;
                 } catch (SQLException e) {
-                    logger.error(e.getMessage());
+                    System.err.println(e.getMessage());
                     return Database.ERROR;
                 }
             }
@@ -154,7 +150,7 @@ public class Database {
                     }
                     return result.toArray(new String[i]);
                 } catch (SQLException e) {
-                    logger.error(e.getMessage());
+                    System.err.println(e.getMessage());
                 }
                 return null;
             }
@@ -168,7 +164,7 @@ public class Database {
 
                     return stmt.executeUpdate() > 0;
                 } catch (SQLException e) {
-                    logger.error(e.getMessage());
+                    System.err.println(e.getMessage());
                 }
                 return false;
             }
@@ -179,7 +175,7 @@ public class Database {
                 )) {
                     return stmt.executeUpdate() > 0;
                 } catch (SQLException e) {
-                    logger.error(e.getMessage());
+                    System.err.println(e.getMessage());
                 }
                 return false;
             }

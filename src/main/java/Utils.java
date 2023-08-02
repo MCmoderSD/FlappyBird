@@ -1,7 +1,5 @@
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
@@ -32,45 +30,50 @@ public class Utils {
     private final HashMap<String, ImageIcon> imageIconCache = new HashMap<>(); // Cache für ImageIcons
     private final ArrayList<BufferedInputStream> HeavyBufferedInputStreamCache = new ArrayList<>(); // Cache für BufferedInputStreams
     private final ArrayList<AudioInputStream> HeavyAudioInputStreamCache = new ArrayList<>(); // Cache für AudioInputStreams
-    private final Logger logger = LoggerFactory.getLogger(Main.class);
     private long startTime = System.currentTimeMillis();
     private boolean audioIsStopped, customConfig = false, smallScreen = false;
 
     // Konstruktor und Multiplikator für die Tickrate
-    public Utils(double osMultiplier) { this.osMultiplier = osMultiplier; }
+    public Utils(double osMultiplier) {
+        this.osMultiplier = osMultiplier;
+    }
 
     // Berechnet die Flugbahn des Spielers
-    public int calculateGravity(int x) { return -1 * x + 4; }
+    public int calculateGravity(int x) {
+        return -1 * x + 4;
+    }
 
     // Läd Bilddateien
     public BufferedImage reader(String resource) {
-        if (bufferedImageCache.containsKey(resource)) return bufferedImageCache.get(resource); // Überprüft, ob der Pfad bereits geladen wurde
+        if (bufferedImageCache.containsKey(resource))
+            return bufferedImageCache.get(resource); // Überprüft, ob der Pfad bereits geladen wurde
         BufferedImage image = null;
         try {
             if (resource.endsWith(".png")) {
-                if (customConfig & !resource.startsWith("error")) image = ImageIO.read(Files.newInputStream(Paths.get(resource)));
+                if (customConfig & !resource.startsWith("error"))
+                    image = ImageIO.read(Files.newInputStream(Paths.get(resource)));
                 else image = ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)));
             } else throw new IllegalArgumentException("Das Bildformat wird nicht unterstützt: " + resource);
-
             bufferedImageCache.put(resource, image); // Fügt das Bild dem Cache hinzu
 
-             } catch (IOException e) {
-                 logger.error(e.getMessage());
-             }
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
         if (image == null) throw new IllegalArgumentException("Das Bild konnte nicht geladen werden: " + resource);
         return image;
     }
 
     // Erstellt ein ImageIcon aus Bildern
     public ImageIcon createImageIcon(String resource) {
-        if (imageIconCache.containsKey(resource)) return imageIconCache.get(resource); // Überprüft, ob der Pfad bereits geladen wurde
+        if (imageIconCache.containsKey(resource))
+            return imageIconCache.get(resource); // Überprüft, ob der Pfad bereits geladen wurde
         ImageIcon imageIcon;
-            if (resource.endsWith(".png")) {
-                imageIcon = new ImageIcon(reader(resource)); // Erstellt ein ImageIcon
-            } else if (resource.endsWith(".gif")) {
-                URL imageUrl = getClass().getClassLoader().getResource(resource);
-                imageIcon = new ImageIcon(Objects.requireNonNull(imageUrl));
-            } else throw new IllegalArgumentException("Das Bildformat wird nicht unterstützt: " + resource);
+        if (resource.endsWith(".png")) {
+            imageIcon = new ImageIcon(reader(resource)); // Erstellt ein ImageIcon
+        } else if (resource.endsWith(".gif")) {
+            URL imageUrl = getClass().getClassLoader().getResource(resource);
+            imageIcon = new ImageIcon(Objects.requireNonNull(imageUrl));
+        } else throw new IllegalArgumentException("Das Bildformat wird nicht unterstützt: " + resource);
 
         imageIconCache.put(resource, imageIcon); // Fügt das Bild dem Cache hinzu
         return imageIcon;
@@ -79,7 +82,7 @@ public class Utils {
     // Zentriert ein Bild mittig
     public Point locatePoint(String image, int width, int height) {
         BufferedImage img = reader(image);
-        return new Point((width -  img.getWidth()) / 2, (height - img.getHeight()) / 2);
+        return new Point((width - img.getWidth()) / 2, (height - img.getHeight()) / 2);
     }
 
     // Läd Musikdateien und spielt sie ab
@@ -102,7 +105,8 @@ public class Utils {
                     else audioFileInputStream = classLoader.getResourceAsStream(audioFilePath);
 
                     // Überprüfen, ob die Audiodatei gefunden wurde
-                    if (audioFileInputStream == null) throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
+                    if (audioFileInputStream == null)
+                        throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
 
                     BufferedInputStream bufferedInputStream = new BufferedInputStream(audioFileInputStream);
                     AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(bufferedInputStream);
@@ -121,9 +125,9 @@ public class Utils {
                     clip.addLineListener(event -> {
                         if (event.getType() == LineEvent.Type.STOP) {
                             try {
-                                if (loop && gamePanel.gameOver && !audioIsStopped) audioPlayer(gamePanel, audioFilePath, true, true);
-                                else
-                                if (!HeavyClipCache.containsKey(audioFilePath)) {
+                                if (loop && gamePanel.gameOver && !audioIsStopped)
+                                    audioPlayer(gamePanel, audioFilePath, true, true);
+                                else if (!HeavyClipCache.containsKey(audioFilePath)) {
                                     clip.close();
                                     audioInputStream.close();
                                     bufferedInputStream.close();
@@ -139,7 +143,7 @@ public class Utils {
                     clip.start();
 
                 } catch (Exception e) {
-                    logger.error(e.getMessage());
+                    System.err.println(e.getMessage());
                 }
             });
         }
@@ -152,14 +156,15 @@ public class Utils {
                 audioIsStopped = true;
                 for (Clip clip : HeavyClipCache.values()) clip.stop();
                 for (AudioInputStream audioInputStream : HeavyAudioInputStreamCache) audioInputStream.close();
-                for (BufferedInputStream bufferedInputStream : HeavyBufferedInputStreamCache) bufferedInputStream.close();
+                for (BufferedInputStream bufferedInputStream : HeavyBufferedInputStreamCache)
+                    bufferedInputStream.close();
 
                 HeavyBufferedInputStreamCache.clear();
                 HeavyAudioInputStreamCache.clear();
                 HeavyClipCache.clear();
 
             } catch (IOException e) {
-                logger.error(e.getMessage());
+                System.err.println(e.getMessage());
             }
         });
     }
@@ -231,7 +236,7 @@ public class Utils {
                     }
                 }
             } catch (IOException e) {
-                logger.error(e.getMessage());
+                System.err.println(e.getMessage());
             }
             return false;
         });
@@ -267,6 +272,7 @@ public class Utils {
     }
 
     // Berechnet die Latenz des Systems
+    @SuppressWarnings("UnusedReturnValue")
     public long calculateSystemLatency() {
         long currentTime = System.currentTimeMillis(); // Aktuelle Zeit
         long latency = currentTime - startTime; // Latenz
@@ -309,7 +315,7 @@ public class Utils {
     public JsonNode checkDate(String Default) {
         JsonNode config;
         LocalDate date = LocalDate.now();
-        if (date.getMonthValue() == 9 && date.getDayOfMonth() == 11 ) config = readJson("911");
+        if (date.getMonthValue() == 9 && date.getDayOfMonth() == 11) config = readJson("911");
         else config = readJson(Default);
         return config;
     }

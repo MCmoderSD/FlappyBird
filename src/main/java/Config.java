@@ -5,28 +5,28 @@ import java.util.Objects;
 
 public class Config {
     // Alle Variablen und Assets für die Spielkonfiguration
-    private final String Title; // Titel des Spiels
-    private final String Background; // Dateipfad für den Hintergrund
-    private final String Player ; // Dateipfad für das Spielerbild
-    private final String Rainbow; // Dateipfad für das Regenbogenbild
-    private final String ObstacleTop; // Dateipfad für das Hindernis von oben
-    private final String ObstacleBottom; // Dateipfad für das Hindernis von unten
-    private final String Icon; // Dateipfad für das Spielsymbol
-    private final String GameOver; // Dateipfad für das Game Over-Bild
-    private final String Pause; // Dateipfad für das Pause-Bild
+    private final String title; // Titel des Spiels
+    private final String background; // Dateipfad für den Hintergrund
+    private final String player; // Dateipfad für das Spielerbild
+    private final String rainbow; // Dateipfad für das Regenbogenbild
+    private final String obstacleTop; // Dateipfad für das Hindernis von oben
+    private final String obstacleBottom; // Dateipfad für das Hindernis von unten
+    private final String icon; // Dateipfad für das Spielsymbol
+    private final String gameOver; // Dateipfad für das Game Over-Bild
+    private final String pause; // Dateipfad für das Pause-Bild
     private final String dieSound; // Dateipfad für den Sterbesound
     private final String flapSound; // Dateipfad für den Flügelschlag-Sound
     private final String hitSound; // Dateipfad für den Aufprall-Sound
     private final String pointSound; // Dateipfad für den Punkte-Sound
-    private final String RainbowSound; // Dateipfad für den Regenbogen-Sound
-    private final String Music; // Dateipfad für die Hintergrundmusik
+    private final String rainbowSound; // Dateipfad für den Regenbogen-Sound
+    private final String music; // Dateipfad für die Hintergrundmusik
     private final String[] args; // Argumente, die beim Starten des Spiels übergeben wurden
     private final int width; // Fensterbreite
     private final int height; // Fensterhöhe
-    private final boolean Resizeable; // Gibt an, ob das Fenster in der Größe verändert werden kann
-    private final int Percentage; // Prozentzahl, die die Größe des Hindernisses von der Fensterhöhe ausmacht
-    private final int Gap; // Vertikaler Abstand zwischen den Hindernissen
-    private final int JumpHeight; // Die Sprunghöhe des Spielers
+    private final boolean resizeable; // Gibt an, ob das Fenster in der Größe verändert werden kann
+    private final int percentage; // Prozentzahl, die die Größe des Hindernisses von der Fensterhöhe ausmacht
+    private final int gap; // Vertikaler Abstand zwischen den Hindernissen
+    private final int jumpHeight; // Die Sprunghöhe des Spielers
 
     // Klassenobjekte
     private final Utils utils;
@@ -37,12 +37,12 @@ public class Config {
     private boolean sound = true; // Gibt an, ob Sounds abgespielt werden sollen
 
     // Konstruktor zum Initialisieren der Variablen
-    public Config(Utils utils, String defaultConfig, int JumpHeight, int Percentage, int Gap, int TPS, String[] args) {
+    public Config(Utils utils, String defaultConfig, int jumpHeight, int percentage, int gap, int TPS, String[] args) {
 
         this.utils = utils;
-        this.Gap = Gap;
-        this.Percentage = Percentage;
-        this.JumpHeight = JumpHeight;
+        this.gap = gap;
+        this.percentage = percentage;
+        this.jumpHeight = jumpHeight;
         this.TPS = TPS;
         this.args = args;
 
@@ -52,7 +52,7 @@ public class Config {
         else if (args[0].toLowerCase().endsWith(".json") ) config = utils.readJson(args[0].toLowerCase());
         else config = utils.readJson(args[0].toLowerCase());
 
-        Title = config.get("Title").asText();
+        title = config.get("Title").asText();
 
         HashMap<Integer, String> nullCheck = new HashMap<>();
         nullCheck.put(0, config.get("Background").asText());
@@ -76,39 +76,39 @@ public class Config {
             else if (Objects.equals(nullCheck.get(i), "") && i > 7) nullCheck.put(i, "error/empty.wav");
         }
 
-        Background = nullCheck.get(0);
-        Player = nullCheck.get(1);
-        Rainbow = nullCheck.get(2);
-        ObstacleTop = nullCheck.get(3);
-        ObstacleBottom = nullCheck.get(4);
-        Icon = nullCheck.get(5);
-        GameOver = nullCheck.get(6);
-        Pause = nullCheck.get(7);
+        background = nullCheck.get(0);
+        player = nullCheck.get(1);
+        rainbow = nullCheck.get(2);
+        obstacleTop = nullCheck.get(3);
+        obstacleBottom = nullCheck.get(4);
+        icon = nullCheck.get(5);
+        gameOver = nullCheck.get(6);
+        pause = nullCheck.get(7);
         dieSound = nullCheck.get(8);
         flapSound = nullCheck.get(9);
         hitSound = nullCheck.get(10);
         pointSound = nullCheck.get(11);
-        RainbowSound = nullCheck.get(12);
-        Music = nullCheck.get(13);
+        rainbowSound = nullCheck.get(12);
+        music = nullCheck.get(13);
 
         int[] dimension = utils.maxDimension(config.get("WindowSizeX").asInt(), config.get("WindowSizeY").asInt());
         width = dimension[0];
         height = dimension[1];
 
-        Resizeable = config.get("Resizeable").asBoolean();
+        resizeable = config.get("Resizeable").asBoolean();
 
         // Starte die Bewegungslogik mit den angegebenen Parametern
         new UI(this, utils);
     }
 
     public int getJumpHeight() {
-        return JumpHeight;
+        return jumpHeight;
     }
     public int getPercentage() {
-        return Percentage;
+        return percentage;
     }
     public int getGap() {
-        return Gap;
+        return gap;
     }
     public double getTPS() {
         return TPS;
@@ -123,7 +123,7 @@ public class Config {
         this.points = points;
     }
     public String getTitle() {
-        return Title;
+        return title;
     }
     public int getWindowSizeX() {
         return width;
@@ -132,31 +132,31 @@ public class Config {
         return height;
     }
     public boolean isResizeable() {
-        return Resizeable;
+        return resizeable;
     }
     public String getBackground() {
-        return Background;
+        return background;
     }
     public String getPlayer() {
-        return Player;
+        return player;
     }
     public String getRainbow() {
-        return Rainbow;
+        return rainbow;
     }
     public String getObstacleTop() {
-        return ObstacleTop;
+        return obstacleTop;
     }
     public String getObstacleBottom() {
-        return ObstacleBottom;
+        return obstacleBottom;
     }
     public String getIcon() {
-        return Icon;
+        return icon;
     }
     public String getGameOver() {
-        return GameOver;
+        return gameOver;
     }
     public String getPause() {
-        return Pause;
+        return pause;
     }
     public String getDieSound() {
         return dieSound;
@@ -171,10 +171,10 @@ public class Config {
         return pointSound;
     }
     public String getRainbowSound() {
-        return RainbowSound;
+        return rainbowSound;
     }
     public String getMusic() {
-        return Music;
+        return music;
     }
     public String[] getArgs() {
         return args;

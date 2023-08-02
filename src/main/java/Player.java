@@ -2,11 +2,17 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Player {
+
+    // Attributes
     private final int width, height;
     private final Image image;
     private final ImageIcon rainbow;
+
+    // Variables
     private Rectangle hitbox;
     private int x, y;
+
+    // Constructor
     public Player(Config config) {
 
         image = config.getUtils().reader(config.getPlayer());
@@ -18,11 +24,7 @@ public class Player {
         updateLocation();
     }
 
-    public void setLocation(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
+    // Getters and Setters
     public int getX() {
         return x;
     }
@@ -51,7 +53,12 @@ public class Player {
         return hitbox;
     }
 
-    public void updateLocation () {
+    public void setLocation(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void updateLocation() {
         hitbox = new Rectangle(x, y, width, height);
     }
 }
