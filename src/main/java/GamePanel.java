@@ -76,6 +76,7 @@ public class GamePanel extends JPanel implements Runnable {
         pauseLabel.setVisible(false);
         add(pauseLabel);
 
+
         // Init KeyListener
         addKeyListener(new KeyAdapter() {
             @Override
@@ -137,7 +138,7 @@ public class GamePanel extends JPanel implements Runnable {
             long current, now = System.nanoTime();
 
             // Game Loop
-            while (isRunning) {
+            while (!isPaused) {
                 current = System.nanoTime();
                 delta += (current - now) / tickrate;
                 now = current;
@@ -381,33 +382,33 @@ public class GamePanel extends JPanel implements Runnable {
 
     // Handles Jump
     private void jump() {
-        if (!gameOver) {
-            if (!isRunning) {
-                if (!isPaused) {
-                    utils.audioPlayer(this, config.getMusic(), config.isSound(), true);
-                    isRunning = true;
-                }
-            } else if (player.getY() >= -player.getHeight()) xPosition = -config.getJumpHeight();
 
-            utils.audioPlayer(this, config.getFlapSound(), config.isSound(), false);
-        } else {
+        // Press to restart
+        if (gameOver && player.getY() > getHeight()) {
             config.setPoints(points);
             new UI(config, utils);
             frame.dispose();
+            return;
+        }
+
+        if (!gameOver && !isPaused && player.getY() >= -player.getHeight()) {
+
+            // Play background audio
+            if (!backgroundAudioIsPlaying) {
+                utils.audioPlayer(this, config.getMusic(), config.isSound(), true);
+                backgroundAudioIsPlaying = true;
+            }
+
+            // Jump
+            utils.audioPlayer(this, config.getFlapSound(), config.isSound(), false);
+            xPosition = -config.getJumpHeight();
         }
     }
 
     // Handles game pause
     private void pauseGame() {
-        if (isRunning && !isPaused) {
-            isRunning = false;
-            isPaused = true;
-            pauseLabel.setVisible(true);
-        } else if (!isRunning && isPaused) {
-            isRunning = true;
-            isPaused = false;
-            pauseLabel.setVisible(false);
-        }
+        isPaused = !gameOver && !isPaused;
+        pauseLabel.setVisible(isPaused);
     }
 
     // Handles game overx
