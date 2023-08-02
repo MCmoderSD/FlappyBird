@@ -55,4 +55,8 @@ public class Obstacle {
     public Rectangle getHitbox() {
         return hitbox;
     }
+
+    public void updateLocation() {
+        hitbox = new Rectangle(x, y, width, height);
+    }
 }

@@ -1,3 +1,6 @@
+import com.sun.org.slf4j.internal.Logger;
+import com.sun.org.slf4j.internal.LoggerFactory;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -8,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class GamePanel extends JPanel implements Runnable {
+    public static boolean developerMode = false, cheatsEnabled = false;
     private final JFrame frame;
     private final Config config;
     private final Utils utils;
@@ -15,15 +19,13 @@ public class GamePanel extends JPanel implements Runnable {
     private final JLabel gameOverLabel, pauseLabel, pointsLabel;
     private final int[] KONAMI_CODE = { KeyEvent.VK_UP, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_B, KeyEvent.VK_A };
     private final ArrayList<Integer> userInput = new ArrayList<>();
+    private final Logger logger = LoggerFactory.getLogger(Main.class);
     public ArrayList<Obstacle> obstacles = new ArrayList<>();
     public ArrayList<Rectangle> greenZones = new ArrayList<>();
-    public boolean isRunning = false, gameOver = false, isPaused = false;
     public int points = 0;
-    private int xPosition;
-    private int movePlayerInt = 0;
-    private int obstacleMoveInt = 200;
-    private int backgroundResetX;
-    private int backgroundMoveInt;
+    public boolean gameOver = false, isPaused = false;
+    private boolean isRunning = false, rainbowMode = false;
+    private int xPosition, movePlayerInt = 0, obstacleMoveInt = 200, backgroundResetX, backgroundMoveInt;
 
     public GamePanel (JFrame frame, Config config) {
         this.frame = frame;
@@ -95,9 +97,9 @@ public class GamePanel extends JPanel implements Runnable {
 
                     // Wenn der Konami-Code eingegeben wurde, den Entwickler-Modus umschalten
                     if (konamiCodeEntered) {
-                        Logic.developerMode = !Logic.developerMode;
-                        Logic.cheatsEnabled = true;
-                        System.out.println("Developer-Modus umgeschaltet: " + Logic.developerMode);
+                        developerMode = !developerMode;
+                        cheatsEnabled = true;
+                        System.out.println("Developer-Modus umgeschaltet: " + developerMode);
                         userInput.clear();
                     }
                 }
@@ -157,24 +159,28 @@ public class GamePanel extends JPanel implements Runnable {
             movePlayerInt = 0;
         } else movePlayerInt++;
 
-        moveObstacles();
+        if (!gameOver) {
+            moveObstacles();
 
-        if (obstacleMoveInt == 200) {
-            generateObstacles();
-            obstacleMoveInt = 0;
-        } else obstacleMoveInt++;
+            if (obstacleMoveInt == 200) {
+                generateObstacles();
+                obstacleMoveInt = 0;
+            } else obstacleMoveInt++;
 
-        if (backgroundMoveInt >= 2) {
-            backgroundResetX--;
-            if (backgroundResetX <= - utils.getBackgroundWidth(config.getBackground())) backgroundResetX = 0;
-            backgroundMoveInt = 0;
+            if (backgroundMoveInt >= 2) {
+                backgroundResetX--;
+                if (backgroundResetX <= -utils.getBackgroundWidth(config.getBackground())) backgroundResetX = 0;
+                backgroundMoveInt = 0;
+            }
+            backgroundMoveInt++;
+
+            initRainbowMode();
+            checkCollision();
         }
-        backgroundMoveInt++;
 
-        checkCollision();
         removeObstacles();
 
-        //System.out.println(utils.calculateSystemLatency());
+        if (developerMode) System.out.println(utils.calculateSystemLatency());
     }
 
     public void paintComponent(Graphics graphics) {
@@ -195,21 +201,26 @@ public class GamePanel extends JPanel implements Runnable {
             g.drawImage(component.getImage(), component.getX(), component.getY(), this);
         }
 
-        for (Rectangle component : greenZones) {
-            g.setColor(Color.GREEN);
-            g.fillRect(component.x, component.y, component.width, component.height);
+        if (!rainbowMode) g.drawImage(player.getImage(), player.getX(), player.getY(), this);
+        else g.drawImage(player.getRainbow().getImage(), player.getX(), player.getY(), this);
+
+
+
+        // Debug Hitbox
+        if (developerMode) {
+            for (Rectangle component : greenZones) {
+                g.setColor(Color.GREEN);
+                g.fillRect(component.x, component.y, component.width, component.height);
+            }
+
+            for (Obstacle component : obstacles) {
+                g.setColor(Color.RED);
+                g.drawRect(component.getX(), component.getY(), component.getWidth(), component.getHeight());
+            }
+
+            g.setColor(Color.YELLOW);
+            g.drawRect(player.getX(), player.getY(), player.getWidth(), player.getHeight());
         }
-
-        for (Obstacle component : obstacles) {
-            g.setColor(Color.RED);
-            g.drawRect(component.getX(), component.getY(), component.getWidth(), component.getHeight());
-        }
-
-        g.drawImage(player.getImage(), player.getX(), player.getY(), this);
-
-        g.setColor(Color.YELLOW);
-        g.drawRect(player.getX(), player.getY(), player.getWidth(), player.getHeight());
-
     }
 
     private void generateObstacles() {
@@ -262,28 +273,31 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void checkCollision() {
 
+        player.updateLocation();
+
+        Iterator<Rectangle> iterator = greenZones.iterator();
+        while (iterator.hasNext()) {
+            Rectangle component = iterator.next();
+            if (player.getHitbox().intersects(component)) {
+                points++;
+                pointsLabel.setText("Score: " + points);
+                utils.audioPlayer(this, config.getPointSound(), config.isSound(), false);
+                iterator.remove();
+            }
+        }
+
+        if (developerMode) return;
+
         if (player.getY() > getHeight()) {
-            System.out.println("Fall out of the world");
             utils.audioPlayer(this, config.getDieSound(), config.isSound(), false);
             gameOver();
         }
 
-        // ToDo Fix
         for (Obstacle component : obstacles) {
-            if (player.getHitbox().intersects(component.getHitbox())) {
+            component.updateLocation();
+            if (!rainbowMode && player.getHitbox().intersects(component.getHitbox())) {
                 utils.audioPlayer(this, config.getHitSound(), config.isSound(), false);
-                System.out.println("Game Over");
                 gameOver();
-            }
-        }
-
-        // ToDo Fix
-        for (Rectangle component : greenZones) {
-            if (player.getHitbox().intersects(component)) {
-                points++;
-                utils.audioPlayer(this, config.getPointSound(), config.isSound(), false);
-                System.out.println("Point");
-                greenZones.remove(component);
             }
         }
     }
@@ -326,10 +340,9 @@ public class GamePanel extends JPanel implements Runnable {
         if (!gameOver) {
             if (!isRunning) {
                 if (!isPaused) isRunning = true;
-            } else if (player.getY() >= -player.getHeight()) {
-                xPosition = -config.getJumpHeight();
-                utils.audioPlayer(this, config.getFlapSound(), config.isSound(), false);
-            }
+            } else if (player.getY() >= -player.getHeight()) xPosition = -config.getJumpHeight();
+
+            utils.audioPlayer(this, config.getFlapSound(), config.isSound(), false);
         } else if (gameOver) {
             config.setPoints(points);
             new UI(config, utils);
@@ -351,9 +364,25 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void gameOver() {
         gameOver = true;
-        isRunning = false;
         isPaused = false;
         pauseLabel.setVisible(false);
         gameOverLabel.setVisible(true);
+        utils.audioPlayer(this, config.getDieSound(), config.isSound(), false);utils.audioPlayer(this, config.getRainbowSound(), config.isSound(), false);
+    }
+
+    private void initRainbowMode() {
+        if (points > 0 && points % 2 == 0) { //if (points > 0 && points % 5 == 0 && (int) (Math.random() * 6 + 1) == 3) {
+            new Thread(() -> {
+                utils.audioPlayer(this, config.getRainbowSound(), config.isSound(), false);
+                rainbowMode = true;
+                try {
+                    Thread.sleep(7000);
+                } catch (InterruptedException e) {
+                    logger.error(e.getMessage());
+                }
+
+                rainbowMode = false;
+            }).start();
+        }
     }
 }

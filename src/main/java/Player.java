@@ -1,15 +1,18 @@
+import javax.swing.*;
 import java.awt.*;
 
 @SuppressWarnings("unused")
 public class Player {
     private final int width, height;
-    private Image image;
+    private final Image image;
+    private final ImageIcon rainbow;
     private Point position;
     private Rectangle hitbox;
     private int x, y;
     public Player(Config config) {
 
         image = config.getUtils().reader(config.getPlayer());
+        rainbow = config.getUtils().createImageIcon(config.getRainbow());
 
         width = image.getWidth(null);
         height = image.getHeight(null);
@@ -52,8 +55,8 @@ public class Player {
         return image;
     }
 
-    public void setImage(Image image) {
-        this.image = image;
+    public ImageIcon getRainbow() {
+        return rainbow;
     }
 
     public Rectangle getHitbox() {

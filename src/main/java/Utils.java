@@ -40,7 +40,7 @@ public class Utils {
     public Utils(double osMultiplier) { this.osMultiplier = osMultiplier; }
 
     // Berechnet die Flugbahn des Spielers
-    public int calculateGravity(int x) { return -2 * x + 4; }
+    public int calculateGravity(int x) { return -1 * x + 4; }
 
     // Läd Bilddateien
     public BufferedImage reader(String resource) {
@@ -277,7 +277,7 @@ public class Utils {
 
     // Schreibt Strings in eine Log-Datei
     public void soutLogger(String file, String message) {
-        if (Logic.developerMode) {
+        if (GamePanel.developerMode) {
             CompletableFuture.runAsync(() -> { // Asynchroner Aufruf
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
                     writer.append(message);

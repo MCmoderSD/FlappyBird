@@ -15,7 +15,6 @@ public class UI extends JFrame {
     // Objekte
     private final Config config;
     private final Utils utils;
-
     // Klassen Attribute
     private final Timer updateDatabase;
     private final String host, port, tableName;
@@ -133,7 +132,7 @@ public class UI extends JFrame {
         newGame = true;
 
         // Überprüfung der Eingabe
-        if (!Logic.developerMode && !Logic.cheatsEnabled && points > 0) {
+        if (!GamePanel.developerMode && !GamePanel.cheatsEnabled && points > 0) {
             if (playerName.getText().length() != 0 && !playerName.getText().contains("Username")) {
                 if (playerName.getText().length() <= 32) {
                     if (!utils.checkUserName(playerName.getText()) && !playerName.getText().contains(" ")) {
