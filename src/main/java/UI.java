@@ -65,8 +65,6 @@ public class UI extends JFrame {
 
         tableName = table;
 
-        config.getMovement().backgroundResetX = 0;
-
         // UI initialisieren
         score.setText("Global Leaderboard");
 
@@ -113,7 +111,16 @@ public class UI extends JFrame {
 
     // Methode zum Starten des Spiels
     private void play() {
-        new GameUI(config);
+        JFrame frame = new JFrame(config.getTitle());
+        GamePanel gamePanel = new GamePanel(config);
+        frame.add(gamePanel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(config.getWindowSizeX(), config.getWindowSizeY());
+        frame.setResizable(config.isResizeable());
+        frame.setLocationRelativeTo(null);
+        frame.setLocation(utils.centerFrame(frame));
+        frame.setIconImage(utils.reader(config.getIcon()));
+        frame.setVisible(true);
         updateDatabase.stop();
         dispose();
     }
@@ -159,7 +166,7 @@ public class UI extends JFrame {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(utils.reader(config.getBackground()), config.getMovement().backgroundResetX, 0,
+                g.drawImage(utils.reader(config.getBackground()), 0, 0,
                         utils.getBackgroundWidth(config.getBackground()), getHeight(), this);
                 repaint();
             }

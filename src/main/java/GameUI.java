@@ -4,13 +4,11 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import static java.lang.Thread.sleep;
 
-@SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class GameUI extends JFrame {
 
     // Klassenattribute
@@ -22,7 +20,6 @@ public class GameUI extends JFrame {
     public final Thread quickTimer;
     private final Config config;
     private final Utils utils;
-    private final Movement movement;
     private final Logic logic;
     private final ArrayList<Integer> userInput = new ArrayList<>();
     private final int[] KONAMI_CODE = { KeyEvent.VK_UP, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_DOWN,
@@ -37,14 +34,11 @@ public class GameUI extends JFrame {
 
         this.config = config;
         this.utils = config.getUtils();
-        this.movement = config.getMovement();
 
         logic = new Logic(config, this);
 
 
         if (config.getArgs().length > 0) if (config.getArgs()[0].toLowerCase().endsWith(".json")) Logic.cheatsEnabled = true;
-
-        movement.init();
 
         // Initialisiere das Fenster
         setTitle(config.getTitle());
@@ -56,37 +50,7 @@ public class GameUI extends JFrame {
         setIconImage((utils.reader(config.getIcon())));
         setVisible(true);
 
-        // Initialisiere das Config-Panel mit Hintergrund
-        final BufferedImage background = utils.reader(config.getBackground());
-        final BufferedImage buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-        int imageWidth = background.getWidth();
-        mainPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-
-                Graphics2D g2d = (Graphics2D) g;
-
-                // Hintergründe zeichnen auf den Buffer
-                Graphics2D bufferGraphics = buffer.createGraphics();
-                bufferGraphics.setBackground(new Color(0, 0, 0, 0)); // Transparenter Hintergrund
-                bufferGraphics.clearRect(0, 0, getWidth(), getHeight());
-
-                int firstX = movement.backgroundResetX % imageWidth;
-
-                if (firstX > 0) {
-                    bufferGraphics.drawImage(background, firstX - imageWidth, 0, this);
-                }
-
-                for (int x = firstX; x < getWidth() + imageWidth; x += imageWidth) {
-                    bufferGraphics.drawImage(background, x, 0, this);
-                }
-
-                // Buffer auf das Panel zeichnen
-                g2d.drawImage(buffer, 0, 0, this);
-            }
-        };
-
+        mainPanel = new JPanel();
         mainPanel.setSize(getWidth(), getHeight());
         mainPanel.setLayout(null);
         mainPanel.setOpaque(false);
@@ -96,7 +60,7 @@ public class GameUI extends JFrame {
         player = new JLabel();
         final ImageIcon playerIcon = utils.createImageIcon(config.getPlayer());
         player.setSize(playerIcon.getIconWidth(), playerIcon.getIconHeight());
-        player.setLocation(utils.xPlayerPosition(mainPanel), getHeight() / 2);
+        //player.setLocation(utils.xPlayerPosition(mainPanel), getHeight() / 2);
         player.setIcon(playerIcon);
         player.setBounds(player.getX(), player.getY(), playerIcon.getIconWidth(), playerIcon.getIconHeight());
         rPlayer = new Rectangle(player.getBounds());
@@ -122,11 +86,11 @@ public class GameUI extends JFrame {
 
         // Initialisiere das Pause-Bild
         pauseScreen = new JLabel();
-        pauseScreen.setVisible(false);
         ImageIcon pauseScreenIcon = utils.createImageIcon(config.getPause());
         pauseScreen.setSize(pauseScreenIcon.getIconWidth(), pauseScreenIcon.getIconHeight());
         pauseScreen.setLocation(utils.locatePoint(config.getPause(), getWidth(), getHeight()));
         pauseScreen.setIcon(pauseScreenIcon);
+        pauseScreen.setVisible(false);
         mainPanel.add(pauseScreen);
 
         // Initialisiere den Timer
@@ -295,7 +259,7 @@ public class GameUI extends JFrame {
             for (Rectangle component : rObstacles) {
                 if (component != null) {
                     if (rPlayer.intersects(component) && !logic.rainbowMode) {
-                        utils.audioPlayer(config.getHitSound(), config.isSound(), false, logic);
+                        //utils.audioPlayer(config.getHitSound(), config.isSound(), false, logic);
                         logic.handleCollision();
                     }
                 }

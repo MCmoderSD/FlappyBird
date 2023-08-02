@@ -1,5 +1,8 @@
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.org.slf4j.internal.Logger;
+import com.sun.org.slf4j.internal.LoggerFactory;
+
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -22,7 +25,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 // Klasse für alle Utensiien
-@SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class Utils {
     private final double osMultiplier;
     private final HashMap<String, Clip> HeavyClipCache = new HashMap<>(); // Cache für AudioClips
@@ -30,6 +32,7 @@ public class Utils {
     private final HashMap<String, ImageIcon> imageIconCache = new HashMap<>(); // Cache für ImageIcons
     private final ArrayList<BufferedInputStream> HeavyBufferedInputStreamCache = new ArrayList<>(); // Cache für BufferedInputStreams
     private final ArrayList<AudioInputStream> HeavyAudioInputStreamCache = new ArrayList<>(); // Cache für AudioInputStreams
+    private final Logger logger = LoggerFactory.getLogger(Main.class);
     private long startTime = System.currentTimeMillis();
     private boolean audioIsStopped, customConfig = false, smallScreen = false;
 
@@ -52,7 +55,7 @@ public class Utils {
             bufferedImageCache.put(resource, image); // Fügt das Bild dem Cache hinzu
 
              } catch (IOException e) {
-                 e.printStackTrace();
+                 logger.error(e.getMessage());
              }
         if (image == null) throw new IllegalArgumentException("Das Bild konnte nicht geladen werden: " + resource);
         return image;
@@ -80,8 +83,8 @@ public class Utils {
     }
 
     // Läd Musikdateien und spielt sie ab
-    public void audioPlayer(String audioFilePath, boolean sound, boolean loop, Logic logic) {
-        if (sound && !logic.gamePaused && !Objects.equals(audioFilePath, "error/empty.wav")) {
+    public void audioPlayer(GamePanel gamePanel, String audioFilePath, boolean sound, boolean loop) {
+        if (sound && !gamePanel.isPaused && !Objects.equals(audioFilePath, "error/empty.wav")) {
             if (!loop) audioIsStopped = false;
             CompletableFuture.runAsync(() -> {
                 try {
@@ -118,7 +121,8 @@ public class Utils {
                     clip.addLineListener(event -> {
                         if (event.getType() == LineEvent.Type.STOP) {
                             try {
-                                if (loop && logic.gameOver && !audioIsStopped) audioPlayer(audioFilePath, true, true ,logic);
+                                if (loop && gamePanel.gameOver && !audioIsStopped) audioPlayer(gamePanel, audioFilePath, true, true);
+                                else
                                 if (!HeavyClipCache.containsKey(audioFilePath)) {
                                     clip.close();
                                     audioInputStream.close();
@@ -135,7 +139,7 @@ public class Utils {
                     clip.start();
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
             });
         }
@@ -155,7 +159,7 @@ public class Utils {
                 HeavyClipCache.clear();
 
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         });
     }
@@ -216,7 +220,7 @@ public class Utils {
     // Überprüft, ob der Username blockierte Begriffe enthält
     public boolean checkUserName(String userName) {
         CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> { // Asynchroner Aufruf
-            try (InputStream inputStream = getClass().getResourceAsStream("data/blockedTerms.txt")) { // Läd die blockierten Begriffe
+            try (InputStream inputStream = getClass().getResourceAsStream("data/blockedTerms")) { // Läd die blockierten Begriffe
                 assert inputStream != null;
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
                     String line;
@@ -227,7 +231,7 @@ public class Utils {
                     }
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
             return false;
         });
@@ -249,8 +253,8 @@ public class Utils {
     }
 
     // Berechent die Breite des Fensters
-    public int xPlayerPosition(JPanel frame) {
-        int x = frame.getWidth() / 4;
+    public int xPlayerPosition(JPanel panel, int width) {
+        int x = panel.getWidth() / 4 - width / 2;
         return Math.min(x, 200);
     }
 

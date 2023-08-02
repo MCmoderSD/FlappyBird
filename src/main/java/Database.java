@@ -1,3 +1,6 @@
+import com.sun.org.slf4j.internal.Logger;
+import com.sun.org.slf4j.internal.LoggerFactory;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +16,7 @@ import java.util.List;
  This API is not finished yet, so it is not recommended to use it in production.
  */
 public class Database {
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
     public static String NOTING_FOUND = "N/A";
     public static String ERROR = "ERROR";
     private String host = "localhost";
@@ -42,7 +46,7 @@ public class Database {
             connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database + "?autoReconnect=true", username, password);
             connection.setAutoCommit(true);
         } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             System.out.println("MySQL disconnected!");
         }
     }
@@ -62,6 +66,7 @@ public class Database {
         return connection;
     }
 
+    @SuppressWarnings("ClassEscapesDefinedScope")
     public Table getTable(String name) {
         return new Table(name, this);
     }
@@ -91,6 +96,7 @@ public class Database {
             return new Column(name, this);
         }
 
+        @SuppressWarnings("SqlSourceToSinkFlow")
         static class Column {
             private final String name;
             private final Table table;
@@ -130,7 +136,7 @@ public class Database {
                     stmt.close();
                     return Database.NOTING_FOUND;
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                     return Database.ERROR;
                 }
             }
@@ -148,7 +154,7 @@ public class Database {
                     }
                     return result.toArray(new String[i]);
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
                 return null;
             }
@@ -162,7 +168,7 @@ public class Database {
 
                     return stmt.executeUpdate() > 0;
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
                 return false;
             }
@@ -173,7 +179,7 @@ public class Database {
                 )) {
                     return stmt.executeUpdate() > 0;
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
                 return false;
             }

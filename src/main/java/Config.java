@@ -1,3 +1,6 @@
+import com.fasterxml.jackson.databind.JsonNode;
+
+import java.util.HashMap;
 import java.util.Objects;
 
 public class Config {
@@ -27,7 +30,6 @@ public class Config {
 
     // Klassenobjekte
     private final Utils utils;
-    private final Movement movement;
 
     // Alle Variablen für die Spiellogik
     private double TPS; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde) Maximum: 100
@@ -35,51 +37,67 @@ public class Config {
     private boolean sound = true; // Gibt an, ob Sounds abgespielt werden sollen
 
     // Konstruktor zum Initialisieren der Variablen
-    public Config(Utils utils, int JumpHeight, int Percentage, int Gap, int TPS, String title, int width, int height, boolean resizeable, String background, String player, String rainbow, String obstacleTop, String obstacleBottom, String icon, String gameOver, String pause, String dieSound, String flapSound, String hitSound, String pointSound, String rainbowSound, String music, String[] args) {
+    public Config(Utils utils, String defaultConfig, int JumpHeight, int Percentage, int Gap, int TPS, String[] args) {
 
         this.utils = utils;
         this.Gap = Gap;
         this.Percentage = Percentage;
-        Title = title;
-        this.width = width;
-        this.height = height;
         this.JumpHeight = JumpHeight;
         this.TPS = TPS;
-        Resizeable = resizeable;
         this.args = args;
 
-        if (Objects.equals(background, "")) background = "error/empty.png";
-        if (Objects.equals(player, "")) player = "error/empty.png";
-        if (Objects.equals(rainbow, "")) rainbow = player;
-        if (Objects.equals(obstacleTop, "")) obstacleTop = "error/empty.png";
-        if (Objects.equals(obstacleBottom, "")) obstacleBottom = "error/empty.png";
-        if (Objects.equals(icon, "")) icon = "error/empty.png";
-        if (Objects.equals(gameOver, "")) gameOver = "error/empty.png";
-        if (Objects.equals(pause, "")) pause = "error/empty.png";
-        if (Objects.equals(dieSound, "")) dieSound = "error/empty.wav";
-        if (Objects.equals(flapSound, "")) flapSound = "error/empty.wav";
-        if (Objects.equals(hitSound, "")) hitSound = "error/empty.wav";
-        if (Objects.equals(pointSound, "")) pointSound = "error/empty.wav";
-        if (Objects.equals(rainbowSound, "")) rainbowSound = "error/empty.wav";
-        if (Objects.equals(music, "")) music = "error/empty.wav";
+        JsonNode config;
 
-        Background = background;
-        Player = player;
-        Rainbow = rainbow;
-        ObstacleTop = obstacleTop;
-        ObstacleBottom = obstacleBottom;
-        Icon = icon;
-        GameOver = gameOver;
-        Pause = pause;
-        this.dieSound = dieSound;
-        this.flapSound = flapSound;
-        this.hitSound = hitSound;
-        this.pointSound = pointSound;
-        RainbowSound = rainbowSound;
-        Music = music;
+        if (args.length < 1) config = utils.checkDate(defaultConfig);
+        else if (args[0].toLowerCase().endsWith(".json") ) config = utils.readJson(args[0].toLowerCase());
+        else config = utils.readJson(args[0].toLowerCase());
+
+        Title = config.get("Title").asText();
+
+        HashMap<Integer, String> nullCheck = new HashMap<>();
+        nullCheck.put(0, config.get("Background").asText());
+        nullCheck.put(nullCheck.size(),config.get("Player").asText());
+        nullCheck.put(nullCheck.size(),config.get("Rainbow").asText());
+        nullCheck.put(nullCheck.size(),config.get("ObstacleTop").asText());
+        nullCheck.put(nullCheck.size(),config.get("ObstacleBottom").asText());
+        nullCheck.put(nullCheck.size(),config.get("Icon").asText());
+        nullCheck.put(nullCheck.size(),config.get("GameOver").asText());
+        nullCheck.put(nullCheck.size(),config.get("Pause").asText());
+        nullCheck.put(nullCheck.size(),config.get("dieSound").asText());
+        nullCheck.put(nullCheck.size(),config.get("flapSound").asText());
+        nullCheck.put(nullCheck.size(),config.get("hitSound").asText());
+        nullCheck.put(nullCheck.size(),config.get("pointSound").asText());
+        nullCheck.put(nullCheck.size(),config.get("rainbowSound").asText());
+        nullCheck.put(nullCheck.size(),config.get("backgroundMusic").asText());
+
+        for (int i = 0; i < nullCheck.size(); i++) {
+            assert nullCheck.get(i) != null;
+            if (Objects.equals(nullCheck.get(i), "") && i < 8) nullCheck.put(i, "error/empty.png");
+            else if (Objects.equals(nullCheck.get(i), "") && i > 7) nullCheck.put(i, "error/empty.wav");
+        }
+
+        Background = nullCheck.get(0);
+        Player = nullCheck.get(1);
+        Rainbow = nullCheck.get(2);
+        ObstacleTop = nullCheck.get(3);
+        ObstacleBottom = nullCheck.get(4);
+        Icon = nullCheck.get(5);
+        GameOver = nullCheck.get(6);
+        Pause = nullCheck.get(7);
+        dieSound = nullCheck.get(8);
+        flapSound = nullCheck.get(9);
+        hitSound = nullCheck.get(10);
+        pointSound = nullCheck.get(11);
+        RainbowSound = nullCheck.get(12);
+        Music = nullCheck.get(13);
+
+        int[] dimension = utils.maxDimension(config.get("WindowSizeX").asInt(), config.get("WindowSizeY").asInt());
+        width = dimension[0];
+        height = dimension[1];
+
+        Resizeable = config.get("Resizeable").asBoolean();
 
         // Starte die Bewegungslogik mit den angegebenen Parametern
-        movement = new  Movement(this);
         new UI(this, utils);
     }
 
@@ -169,8 +187,5 @@ public class Config {
     }
     public Utils getUtils() {
         return utils;
-    }
-    public Movement getMovement() {
-        return movement;
     }
 }

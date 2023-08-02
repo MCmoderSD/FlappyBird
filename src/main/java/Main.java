@@ -1,5 +1,3 @@
-import com.fasterxml.jackson.databind.JsonNode;
-
 public class Main {
     public static void main(String[] args) {
         new Main().run(args);
@@ -16,45 +14,6 @@ public class Main {
 
         Utils utils = new Utils(osMultiplier);
 
-        JsonNode config;
-
-        if (args.length < 1) config = utils.checkDate(defaultConfig);
-        else if (args[0].toLowerCase().endsWith(".json") ) config = utils.readJson(args[0].toLowerCase());
-        else config = utils.readJson(args[0].toLowerCase());
-
-        int[] dimension = utils.maxDimension(config.get("WindowSizeX").asInt(), config.get("WindowSizeY").asInt());
-
-        new Config(
-                utils,
-
-                // Spiellogik
-                JumpHeight,
-                Percentage,
-                Gap,
-                TPS,
-
-                // Fenster
-                config.get("Title").asText(),
-                dimension[0],
-                dimension[1],
-                config.get("Resizeable").asBoolean(),
-
-                // Assets
-                config.get("Background").asText(),
-                config.get("Player").asText(),
-                config.get("Rainbow").asText(),
-                config.get("ObstacleTop").asText(),
-                config.get("ObstacleBottom").asText(),
-                config.get("Icon").asText(),
-                config.get("GameOver").asText(),
-                config.get("Pause").asText(),
-                config.get("dieSound").asText(),
-                config.get("flapSound").asText(),
-                config.get("hitSound").asText(),
-                config.get("pointSound").asText(),
-                config.get("rainbowSound").asText(),
-                config.get("backgroundMusic").asText(),
-                args
-        );
+        new Config(utils, defaultConfig, JumpHeight, Percentage, Gap, TPS, args);
     }
 }
