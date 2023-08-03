@@ -231,6 +231,7 @@ public class UI extends JFrame {
         JFormattedTextField txt = ((JSpinner.DefaultEditor) spinnerFPS.getEditor()).getTextField();
         ((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
 
+        // TODO Attention Trigger Warning!!!
         spinnerFPS.addChangeListener(e -> {
             if (spinnerFPS.getValue() != null) {
                 if ((int) Double.parseDouble(spinnerFPS.getValue().toString()) >= 360) spinnerFPS.setValue(360);
