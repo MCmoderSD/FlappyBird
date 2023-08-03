@@ -261,17 +261,17 @@ public class Utils {
 
     // Berechnet die Latenz des Systems
     @SuppressWarnings("UnusedReturnValue")
-    public long calculateSystemLatency() {
+    public long calculateSystemLatency(GamePanel gamePanel) {
         long currentTime = System.currentTimeMillis(); // Aktuelle Zeit
         long latency = currentTime - startTime; // Latenz
         startTime = currentTime;
-        soutLogger("latency-log.txt", String.valueOf(latency));
+        soutLogger("latency-log.txt", String.valueOf(latency), gamePanel);
         return latency;
     }
 
     // Schreibt Strings in eine Log-Datei
-    public void soutLogger(String file, String message) {
-        if (GamePanel.developerMode) {
+    public void soutLogger(String file, String message, GamePanel gamePanel) {
+        if (gamePanel.developerMode) {
             CompletableFuture.runAsync(() -> { // Asynchroner Aufruf
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
                     writer.append(message);

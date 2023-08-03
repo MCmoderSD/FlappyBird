@@ -4,7 +4,9 @@ A Flappy Bird game written in Java.
 <br>
 It's for this year's final IT-software school project.
 <br> <br>
+
 ## How to run
+
 You need Java 8 installed on your computer to run this game.
 You can download it [here](https://www.java.com/de/download/manual.jsp).
 <br> <br>
@@ -12,14 +14,18 @@ You can download the latest game release [here](https://github.com/MCmoderSD/Fla
 <br> <br> <br>
 To run with alternative assets, you need to run the game via command line.
 <br>
+
 1. Open the command line
 2. Navigate to the folder where the game is located
 3. Run the following command: `java -jar FlappyBird.jar <firstArgument> <secondArgument>`
-4. Replace `<firstArgument>` with the path to the asset config file you want to run. `911`, `911beta`, `alpha`, `lenabeta`. <br> The Default-Config is: `lena`
+4. Replace `<firstArgument>` with the path to the asset config file you want to
+   run. `911`, `911beta`, `alpha`, `lenabeta`. <br> The Default-Config is: `lena`
 5. Put as second argument whatever you want, to run in reverse mode.
    As example put `reverse`
    <br> <br>
+
 ## How to play
+
 Press `Space` or any mouse button to jump.
 <br>
 Press `Escape` to pause the game.
@@ -30,8 +36,11 @@ Enter your username and click `Submit` to submit your score to the leaderboard.
 <br>
 If you don't want to submit your score, leave the username field empty and click `Submit`.
 <br> <br>
+
 ## How to use custom assets
+
 1. Create a `.json` file with the following structure: <br> For example name it `MyCustomConfig.json`.
+
 ```json
 {
   "Title": "YOUR TITLE",
@@ -54,6 +63,7 @@ If you don't want to submit your score, leave the username field empty and click
   "Resizeable": "true/false"
 }
 ```
+
 2. Replace the values with the absolute path to your assets.
    <br> <br> For example: `"Background": "C:\\Users\\User\\Desktop\\MyBackground.png"`
    <br> You can only use `.png` files and for audio only `.wav` files encoded with 16 bit.
@@ -64,6 +74,7 @@ If you don't want to submit your score, leave the username field empty and click
    <br> <br>
 3. Run the game with the custom config file.
    <br> For example: `java -jar FlappyBird.jar <PathToTheConfigFile>` <br> <br>
+
 ## Features
 
 - [x] Assets
@@ -86,18 +97,21 @@ If you don't want to submit your score, leave the username field empty and click
 - [x] Username Checker
 - [x] Highscore
 - [x] Leaderboard
-- [x] MySQL Database 
+- [x] MySQL Database
 - [x] Offline Mode
 - [x] Game Optimization
 - [x] Further Optimization
-- [x] Reverse Mode 
+- [x] Reverse Mode
 - [x] Reverse Mode Leaderboard
 - [x] Mod Support (Custom Assets)
 - [x] Code de-spaghetification
+- [x] Code optimization
+- [x] Code cleanup
+- [x] Improved render engine
 - [ ] Asset compression
 - [ ] Leonard-test passed
-- [ ] Maxim-test passed 
-- [ ] Timon-test passed 
+- [ ] Maxim-test passed
+- [ ] Timon-test passed
 
 ## Credits
 

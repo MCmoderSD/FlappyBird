@@ -11,7 +11,7 @@ public class Main {
         int jumpHeight = 10; // Die Sprunghöhe des Spielers
         int percentange = 25; // Prozentzahl, die die Größe des Hindernisses von der Fensterhöhe ausmacht
         int gap = 200; // Vertikaler Abstand zwischen den Hindernissen
-        int FPS = 100; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde) Maximum: 100
+        int FPS = 360; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde) Maximum: 100
 
         Utils utils = new Utils();
 

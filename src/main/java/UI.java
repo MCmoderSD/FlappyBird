@@ -19,7 +19,6 @@ public class UI extends JFrame {
     private final Timer updateDatabase;
     private final String host, port, tableName;
     private final int points;
-    private final double FPS;
     private Database database;
     private boolean newGame = true, isUploaded = true;
 
@@ -35,13 +34,11 @@ public class UI extends JFrame {
 
     // Konstruktor und UI initialisieren
     public UI(Config config, Utils utils) {
-
         Main.isRunning = false;
 
         this.config = config;
         this.utils = utils;
         this.points = config.getPoints();
-        this.FPS = config.getFPS();
 
         // Datenbank Konfiguration
         JsonNode json = utils.readJson("Database");
@@ -67,6 +64,7 @@ public class UI extends JFrame {
 
         tableName = table;
 
+
         // UI initialisieren
         score.setText("Global Leaderboard");
 
@@ -79,13 +77,13 @@ public class UI extends JFrame {
             bStart.setToolTipText("Lade deinen Score hoch");
         }
 
-        spinnerFPS.setValue(FPS);
+        spinnerFPS.setValue(config.getFPS());
         score.setVisible(true);
         playerName.setVisible(true);
         soundCheckBox.setSelected(config.isSound());
 
-        // Timer für die Aktualisierung der Bestenliste
 
+        // Timer für die Aktualisierung der Bestenliste
         updateDatabase = new Timer(5000, e -> initLeaderBoard());
 
         // Initialisierung der Datenbankverbindung und der Bestenliste
@@ -96,18 +94,23 @@ public class UI extends JFrame {
         }
 
 
-        // TODO FIX
         // ActionListener für den Start-Button
         bStart.addActionListener(e -> {
-            if (newGame) {
-            } else if (this.points >= 0 && !isUploaded) {
-                upload();
-            }
+            if (newGame) play();
+            else if (this.points >= 0 && !isUploaded) upload();
         });
     }
 
     // Methode zum Starten des Spiels
     private void play() {
+
+        int fps = (int) Double.parseDouble(spinnerFPS.getValue().toString());
+        if (fps < 1) fps = 1;
+        if (fps > 360) fps = 360;
+
+        config.setFPS(fps);
+        config.setPoints(0);
+        config.setSound(soundCheckBox.isSelected());
 
         Main.isRunning = true;
 
@@ -133,22 +136,20 @@ public class UI extends JFrame {
         newGame = true;
 
         // Überprüfung der Eingabe
-        if (!GamePanel.developerMode && !GamePanel.cheatsEnabled && points > 0) {
-            if (playerName.getText().length() != 0 && !playerName.getText().contains("Username")) {
-                if (playerName.getText().length() <= 32) {
-                    if (!utils.checkUserName(playerName.getText()) && !playerName.getText().contains(" ")) {
-                        writeLeaderBoard(playerName.getText(), points, tableName); // Hochladen des Scores
-                    } else { // Fehlermeldung bei unerlaubtem Username
-                        new UI(config, utils);
-                        updateDatabase.stop();
-                        dispose();
-                    }
-                } else { // Fehlermeldung bei zu langem Username
-                    new UI(config, utils);
-                    updateDatabase.stop();
-                    dispose();
-                }
+        if (points <= 0) return;
+        if (!(playerName.getText().length() != 0 && !playerName.getText().contains("Username"))) return;
+        if (playerName.getText().length() <= 32) {
+            if (!utils.checkUserName(playerName.getText()) && !playerName.getText().contains(" "))
+                writeLeaderBoard(playerName.getText(), points, tableName); // Hochladen des Scores
+            else { // Fehlermeldung bei unerlaubtem Username
+                new UI(config, utils);
+                updateDatabase.stop();
+                dispose();
             }
+        } else { // Fehlermeldung bei zu langem Username
+            new UI(config, utils);
+            updateDatabase.stop();
+            dispose();
         }
     }
 
@@ -231,10 +232,10 @@ public class UI extends JFrame {
         ((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
 
         spinnerFPS.addChangeListener(e -> {
-            /*if (spinnerFPS.getValue() != null) {
-                if (Math.round((Double) spinnerFPS.getValue()) >= 100) spinnerFPS.setValue(100);
-                if (Math.round((Double) spinnerFPS.getValue()) <= 1) spinnerFPS.setValue(1);
-            }*/
+            if (spinnerFPS.getValue() != null) {
+                if ((int) Double.parseDouble(spinnerFPS.getValue().toString()) >= 360) spinnerFPS.setValue(360);
+                if ((int) Double.parseDouble(spinnerFPS.getValue().toString()) <= 1) spinnerFPS.setValue(1);
+            }
         });
     }
 

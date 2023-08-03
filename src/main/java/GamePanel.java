@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class GamePanel extends JPanel implements Runnable {
-    // Cheat Control
-    public static boolean developerMode = false, cheatsEnabled = false;
 
     // Attributes
     private final JFrame frame;
@@ -18,6 +16,7 @@ public class GamePanel extends JPanel implements Runnable {
     private final Player player;
     private final JLabel gameOverLabel, pauseLabel, pointsLabel;
     private final int[] KONAMI_CODE = {KeyEvent.VK_UP, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_B, KeyEvent.VK_A};
+    private final int FPS;
 
     // Lists
     private final ArrayList<Integer> userInput = new ArrayList<>();
@@ -25,9 +24,9 @@ public class GamePanel extends JPanel implements Runnable {
     private final ArrayList<Rectangle> greenZones = new ArrayList<>();
 
     // Variables
-    public boolean gameOver = false, isPaused = true;
-    private boolean rainbowMode = false, gameStarted = false, backgroundAudioIsPlaying = false;
-    private int xPosition, movePlayerInt = 0, obstacleMoveInt = 200, backgroundResetX, backgroundMoveInt, fpsCount, points = 0;
+    public boolean gameOver = false, isPaused = true, developerMode = false;
+    private boolean rainbowMode = false, gameStarted = false, backgroundAudioIsPlaying = false, cheatsEnabled = false;
+    private int xPosition, movePlayerInt = 0, obstacleMoveInt = 0, obstacleGerateInt = 200, backgroundResetX, backgroundMoveInt, fpsCount, points = 0;
 
     // Konstruktor
     public GamePanel(JFrame frame, Config config) {
@@ -37,6 +36,8 @@ public class GamePanel extends JPanel implements Runnable {
         this.utils = config.getUtils();
 
         xPosition = -config.getJumpHeight();
+
+        FPS = Math.toIntExact(Math.round(360 / config.getFPS()));
 
         // Init Panel
         setLayout(null);
@@ -143,18 +144,27 @@ public class GamePanel extends JPanel implements Runnable {
     public void run() {
         while (Main.isRunning) {
             // Timer
-            double tickrate = 10000000, delta = 0;
-            long current, now = System.nanoTime();
+            double tickrate = 2777778, delta = 0;
+            long current, now = System.nanoTime(), timer = 0;
+            int frames = 0;
 
             // Game Loop
             while (!isPaused) {
                 current = System.nanoTime();
                 delta += (current - now) / tickrate;
+                timer += current - now;
                 now = current;
 
                 if (delta >= 1) {
                     update(); // Update the game
                     delta--;
+                    frames++;
+                }
+
+                if (timer >= 1000000000) {
+                    if (developerMode) System.out.println("FPS: " + (frames / FPS));
+                    frames = 0;
+                    timer = 0;
                 }
             }
 
@@ -217,7 +227,7 @@ public class GamePanel extends JPanel implements Runnable {
     private void update() {
 
         // Move Player
-        if (movePlayerInt == 3) {
+        if (movePlayerInt == 12) {
             xPosition++;
             movePlayer();
             movePlayerInt = 0;
@@ -226,18 +236,20 @@ public class GamePanel extends JPanel implements Runnable {
 
         if (!gameOver) {
 
-
-            moveObstacles();
-
-            // Generate Obstacles
-            if (obstacleMoveInt == 200) {
-                generateObstacles();
+            if (obstacleMoveInt == 2) {
+                moveObstacles();
                 obstacleMoveInt = 0;
             } else obstacleMoveInt++;
 
+            // Generate Obstacles
+            if (obstacleGerateInt == 540) {
+                generateObstacles();
+                obstacleGerateInt = 0;
+            } else obstacleGerateInt++;
+
 
             // Move Background
-            if (backgroundMoveInt >= 2) {
+            if (backgroundMoveInt >= 6) {
                 backgroundResetX--;
                 if (backgroundResetX <= -utils.getBackgroundWidth(config.getBackground())) backgroundResetX = 0;
                 backgroundMoveInt = 0;
@@ -250,13 +262,13 @@ public class GamePanel extends JPanel implements Runnable {
         removeObstacles();
 
 
-        if (fpsCount == 100 / config.getFPS()) {
+        if (fpsCount == FPS) {
             repaint(); // Update the screen
             fpsCount = 0;
         } else fpsCount++;
 
 
-        if (developerMode) utils.calculateSystemLatency();
+        if (developerMode) utils.calculateSystemLatency(this);
     }
 
     // Generates new obstacles
@@ -400,7 +412,8 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Press to restart
         if (gameOver && player.getY() > getHeight()) {
-            config.setPoints(points);
+            if (!cheatsEnabled) config.setPoints(points);
+            else config.setPoints(-10);
             new UI(config, utils);
             frame.dispose();
             return;
