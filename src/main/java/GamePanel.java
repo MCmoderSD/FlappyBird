@@ -431,13 +431,6 @@ public class GamePanel extends JPanel implements Runnable {
             g.drawImage(component.getImage(), component.getX(), component.getY(), this);
         }
 
-        // Copy the green zones list
-        ArrayList<Rectangle> greenZonesCopy = new ArrayList<>(greenZones);
-        for (Rectangle component : greenZonesCopy) {
-            g.setColor(Color.GREEN);
-            g.fillRect(component.x, component.y, component.width, component.height);
-        }
-
         // Draw the player
         if (!rainbowMode) {
             g.drawImage(player.getImage(), player.getX(), player.getY(), this);
@@ -447,18 +440,22 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Debug Hitbox
         if (developerMode || hitbox) {
+            ArrayList<Rectangle> greenZonesCopy = new ArrayList<>(greenZones);
             for (Rectangle component : greenZonesCopy) {
                 g.setColor(Color.GREEN);
                 g.fillRect(component.x, component.y, component.width, component.height);
             }
+
             for (Obstacle component : obstaclesCopy) {
                 g.setColor(Color.RED);
                 g.drawRect(component.getX(), component.getY(), component.getWidth(), component.getHeight());
             }
+
             g.setColor(Color.YELLOW);
             g.drawRect(player.getX(), player.getY(), player.getWidth(), player.getHeight());
         }
     }
+
 
     // Handles Jump
     private void jump() {
