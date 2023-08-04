@@ -22,73 +22,71 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-// Klasse für alle Utensiien
+// Class for all utilities
 public class Utils {
-    private final HashMap<String, Clip> HeavyClipCache = new HashMap<>(); // Cache für AudioClips
-    private final HashMap<String, BufferedImage> bufferedImageCache = new HashMap<>(); // Cache für BufferedImages
-    private final HashMap<String, ImageIcon> imageIconCache = new HashMap<>(); // Cache für ImageIcons
-    private final ArrayList<BufferedInputStream> HeavyBufferedInputStreamCache = new ArrayList<>(); // Cache für BufferedInputStreams
-    private final ArrayList<AudioInputStream> HeavyAudioInputStreamCache = new ArrayList<>(); // Cache für AudioInputStreams
+    private final HashMap<String, Clip> heavyClipCache = new HashMap<>(); // Cache for AudioClips
+    private final HashMap<String, BufferedImage> bufferedImageCache = new HashMap<>(); // Cache for BufferedImages
+    private final HashMap<String, ImageIcon> imageIconCache = new HashMap<>(); // Cache for ImageIcons
+    private final ArrayList<BufferedInputStream> heavyBufferedInputStreamCache = new ArrayList<>(); // Cache for BufferedInputStreams
+    private final ArrayList<AudioInputStream> heavyAudioInputStreamCache = new ArrayList<>(); // Cache for AudioInputStreams
     private long startTime = System.currentTimeMillis();
     private boolean audioIsStopped, customConfig = false, smallScreen = false;
 
-    // Konstruktor und Multiplikator für die Tickrate
-
-    // Berechnet die Flugbahn des Spielers
+    // Calculate the player's trajectory
     public int calculateGravity(int x) {
         return -1 * x + 4;
     }
 
-    // Läd Bilddateien
-    public BufferedImage reader(String resource) {
+    // Load image files
+    public BufferedImage readImage(String resource) {
         if (bufferedImageCache.containsKey(resource))
-            return bufferedImageCache.get(resource); // Überprüft, ob der Pfad bereits geladen wurde
+            return bufferedImageCache.get(resource); // Check if the path has already been loaded
         BufferedImage image = null;
         try {
             if (resource.endsWith(".png")) {
-                if (customConfig & !resource.startsWith("error"))
+                if (customConfig && !resource.startsWith("error"))
                     image = ImageIO.read(Files.newInputStream(Paths.get(resource)));
                 else image = ImageIO.read(Objects.requireNonNull(getClass().getResource(resource)));
-            } else throw new IllegalArgumentException("Das Bildformat wird nicht unterstützt: " + resource);
-            bufferedImageCache.put(resource, image); // Fügt das Bild dem Cache hinzu
+            } else throw new IllegalArgumentException("Unsupported image format: " + resource);
+            bufferedImageCache.put(resource, image); // Add the image to the cache
 
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
-        if (image == null) throw new IllegalArgumentException("Das Bild konnte nicht geladen werden: " + resource);
+        if (image == null) throw new IllegalArgumentException("Could not load the image: " + resource);
         return image;
     }
 
-    // Erstellt ein ImageIcon aus Bildern
+    // Create an ImageIcon from images
     public ImageIcon createImageIcon(String resource) {
         if (imageIconCache.containsKey(resource))
-            return imageIconCache.get(resource); // Überprüft, ob der Pfad bereits geladen wurde
+            return imageIconCache.get(resource); // Check if the path has already been loaded
         ImageIcon imageIcon;
         if (resource.endsWith(".png")) {
-            imageIcon = new ImageIcon(reader(resource)); // Erstellt ein ImageIcon
+            imageIcon = new ImageIcon(readImage(resource)); // Create an ImageIcon
         } else if (resource.endsWith(".gif")) {
             URL imageUrl = getClass().getClassLoader().getResource(resource);
             imageIcon = new ImageIcon(Objects.requireNonNull(imageUrl));
-        } else throw new IllegalArgumentException("Das Bildformat wird nicht unterstützt: " + resource);
+        } else throw new IllegalArgumentException("Unsupported image format: " + resource);
 
-        imageIconCache.put(resource, imageIcon); // Fügt das Bild dem Cache hinzu
+        imageIconCache.put(resource, imageIcon); // Add the image to the cache
         return imageIcon;
     }
 
-    // Zentriert ein Bild mittig
+    // Center an image in the middle
     public Point locatePoint(String image, int width, int height) {
-        BufferedImage img = reader(image);
+        BufferedImage img = readImage(image);
         return new Point((width - img.getWidth()) / 2, (height - img.getHeight()) / 2);
     }
 
-    // Läd Musikdateien und spielt sie ab
+    // Load music files and play them
     public void audioPlayer(GamePanel gamePanel, String audioFilePath, boolean sound, boolean loop) {
         if (sound && !gamePanel.isPaused && !Objects.equals(audioFilePath, "error/empty.wav")) {
             if (!loop) audioIsStopped = false;
             CompletableFuture.runAsync(() -> {
                 try {
-                    if (HeavyClipCache.get(audioFilePath) != null) {
-                        Clip clip = HeavyClipCache.get(audioFilePath);
+                    if (heavyClipCache.get(audioFilePath) != null) {
+                        Clip clip = heavyClipCache.get(audioFilePath);
                         clip.setFramePosition(0);
                         clip.start();
                         return;
@@ -100,9 +98,9 @@ public class Utils {
                     if (customConfig) audioFileInputStream = Files.newInputStream(Paths.get(audioFilePath));
                     else audioFileInputStream = classLoader.getResourceAsStream(audioFilePath);
 
-                    // Überprüfen, ob die Audiodatei gefunden wurde
+                    // Check if the audio file is found
                     if (audioFileInputStream == null)
-                        throw new IllegalArgumentException("Die Audiodatei wurde nicht gefunden: " + audioFilePath);
+                        throw new IllegalArgumentException("The audio file was not found: " + audioFilePath);
 
                     BufferedInputStream bufferedInputStream = new BufferedInputStream(audioFileInputStream);
                     AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(bufferedInputStream);
@@ -110,25 +108,24 @@ public class Utils {
                     Clip clip = AudioSystem.getClip();
                     clip.open(audioInputStream);
 
-                    // Lange Audiodateien werden in den Cache geladen, um die Ressourcen freizugeben
+                    // Load long audio files into the cache to free up resources
                     if (clip.getMicrosecondLength() > 1000000 || loop) {
-                        HeavyBufferedInputStreamCache.add(bufferedInputStream);
-                        HeavyAudioInputStreamCache.add(audioInputStream);
-                        HeavyClipCache.put(audioFilePath, clip);
+                        heavyBufferedInputStreamCache.add(bufferedInputStream);
+                        heavyAudioInputStreamCache.add(audioInputStream);
+                        heavyClipCache.put(audioFilePath, clip);
                     }
 
-                    // Hinzufügen eines LineListeners, um die Ressourcen freizugeben, wenn die Wiedergabe beendet ist
+                    // Add a LineListener to release resources when playback is finished
                     clip.addLineListener(event -> {
                         if (event.getType() == LineEvent.Type.STOP) {
                             try {
                                 if (loop && gamePanel.gameOver && !audioIsStopped)
                                     audioPlayer(gamePanel, audioFilePath, true, true);
-                                else if (!HeavyClipCache.containsKey(audioFilePath)) {
+                                else if (!heavyClipCache.containsKey(audioFilePath)) {
                                     clip.close();
                                     audioInputStream.close();
                                     bufferedInputStream.close();
                                 }
-
 
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
@@ -145,19 +142,19 @@ public class Utils {
         }
     }
 
-    // Stoppt die Musik
+    // Stop the music
     public void stopHeavyAudio() {
         CompletableFuture.runAsync(() -> {
             try {
                 audioIsStopped = true;
-                for (Clip clip : HeavyClipCache.values()) clip.stop();
-                for (AudioInputStream audioInputStream : HeavyAudioInputStreamCache) audioInputStream.close();
-                for (BufferedInputStream bufferedInputStream : HeavyBufferedInputStreamCache)
+                for (Clip clip : heavyClipCache.values()) clip.stop();
+                for (AudioInputStream audioInputStream : heavyAudioInputStreamCache) audioInputStream.close();
+                for (BufferedInputStream bufferedInputStream : heavyBufferedInputStreamCache)
                     bufferedInputStream.close();
 
-                HeavyBufferedInputStreamCache.clear();
-                HeavyAudioInputStreamCache.clear();
-                HeavyClipCache.clear();
+                heavyBufferedInputStreamCache.clear();
+                heavyAudioInputStreamCache.clear();
+                heavyClipCache.clear();
 
             } catch (IOException e) {
                 System.err.println(e.getMessage());
@@ -165,12 +162,12 @@ public class Utils {
         });
     }
 
-    // Berechnet die Breite des Hintergrunds
+    // Calculate the width of the background
     public int getBackgroundWidth(String path) {
         return bufferedImageCache.get(path).getWidth();
     }
 
-    // Placeholder für Textfelder (den Username)
+    // Placeholder for text fields (the username)
     public void setPlaceholder(JTextField textField, String placeholder, JPanel panel) {
 
         Color foregroundColor = calculateForegroundColor(getAverageColorInRectangle(getBottomMenuBounds(panel), panel));
@@ -199,12 +196,12 @@ public class Utils {
         });
     }
 
-    // Überprüft die Internetverbindung zum SQL Server
+    // Checks the internet connection to the SQL Server
     public boolean checkSQLConnection(String ip, String port) {
         CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> {
             try (Socket socket = new Socket()) {
-                // Verbindungsversuch zum Server
-                socket.connect(new InetSocketAddress(ip, Integer.parseInt(port)), 1000); // Timeout von 1 Sekunde
+                // Attempt to connect to the server
+                socket.connect(new InetSocketAddress(ip, Integer.parseInt(port)), 1000); // Timeout of 1 second
                 return true;
             } catch (IOException e) {
                 return false;
@@ -212,16 +209,16 @@ public class Utils {
         });
 
         try {
-            return future.get(); // Warten auf das Ergebnis des asynchronen Aufrufs
+            return future.get(); // Wait for the result of the asynchronous call
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
-    // Überprüft, ob der Username blockierte Begriffe enthält
+    // Checks if the username contains blocked terms
     public boolean checkUserName(String userName) {
-        CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> { // Asynchroner Aufruf
-            try (InputStream inputStream = getClass().getResourceAsStream("data/blockedTerms")) { // Läd die blockierten Begriffe
+        CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> { // Asynchronous call
+            try (InputStream inputStream = getClass().getResourceAsStream("data/blockedTerms")) { // Load the blocked terms
                 assert inputStream != null;
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
                     String line;
@@ -238,41 +235,41 @@ public class Utils {
         });
 
         try {
-            return future.get(); // Warten auf das Ergebnis des asynchronen Aufrufs
+            return future.get(); // Wait for the result of the asynchronous call
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
-    // Zentriert das Fenster mittig auf dem Bildschirm
+    // Centers the frame in the middle of the screen
     public Point centerFrame(JFrame frame) {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Bildschirmgröße
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Screen size
         int x = ((screenSize.width - frame.getWidth()) / 2);
         int y = ((screenSize.height - frame.getHeight()) / 2);
         if (smallScreen) y = 0;
         return new Point(x, y);
     }
 
-    // Berechent die Breite des Fensters
+    // Calculates the window width
     public int xPlayerPosition(JPanel panel, int width) {
         int x = panel.getWidth() / 4 - width / 2;
         return Math.min(x, 200);
     }
 
-    // Berechnet die Latenz des Systems
+    // Calculates the system latency
     @SuppressWarnings("UnusedReturnValue")
     public long calculateSystemLatency(GamePanel gamePanel) {
-        long currentTime = System.currentTimeMillis(); // Aktuelle Zeit
-        long latency = currentTime - startTime; // Latenz
+        long currentTime = System.currentTimeMillis(); // Current time
+        long latency = currentTime - startTime; // Latency
         startTime = currentTime;
         soutLogger("latency-log.txt", String.valueOf(latency), gamePanel);
         return latency;
     }
 
-    // Schreibt Strings in eine Log-Datei
+    // Writes strings to a log file
     public void soutLogger(String file, String message, GamePanel gamePanel) {
         if (gamePanel.developerMode) {
-            CompletableFuture.runAsync(() -> { // Asynchroner Aufruf
+            CompletableFuture.runAsync(() -> { // Asynchronous call
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
                     writer.append(message);
                     writer.newLine();
@@ -283,7 +280,7 @@ public class Utils {
         }
     }
 
-    // Liest eine JSON-Datei aus
+    // Reads a JSON file
     public JsonNode readJson(String json) {
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -299,7 +296,7 @@ public class Utils {
         }
     }
 
-    // Überprüft ob der 11. September ist
+    // Checks if it's September 11th
     public JsonNode checkDate(String Default) {
         JsonNode config;
         LocalDate date = LocalDate.now();
@@ -308,7 +305,7 @@ public class Utils {
         return config;
     }
 
-    // Checkt, ob die Auflösung zu groß ist
+    // Checks if the resolution is too large
     public int[] maxDimension(int x, int y) {
         int width = Toolkit.getDefaultToolkit().getScreenSize().width;
         long height = Math.round(Toolkit.getDefaultToolkit().getScreenSize().height * 0.95);
@@ -323,7 +320,7 @@ public class Utils {
         return new int[]{x, y};
     }
 
-    // Berechnet die Größe des unteren Menüs
+    // Calculates the size of the bottom menu
     public Rectangle getBottomMenuBounds(JPanel panel) {
         int width = panel.getWidth();
         int height = panel.getHeight();
@@ -331,7 +328,7 @@ public class Utils {
         return new Rectangle(0, part * 4, width, height - (part * 4));
     }
 
-    // Berechnet die durchschnittliche Farbe in einem Rechteck
+    // Calculates the average color in a rectangle
     public Color getAverageColorInRectangle(Rectangle rectangle, JPanel panel) {
         BufferedImage image = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_RGB);
         panel.paint(image.getGraphics());
@@ -367,7 +364,7 @@ public class Utils {
         return new Color(averageRed, averageGreen, averageBlue);
     }
 
-    // Berechnet die Farbe des Textes
+    // Calculates the color of the text
     public Color calculateForegroundColor(Color color) {
         int r = color.getRed();
         int g = color.getGreen();
@@ -375,5 +372,31 @@ public class Utils {
 
         if (r + g + b > 382) return Color.BLACK;
         else return Color.WHITE;
+    }
+
+    public boolean containsKey(ArrayList<Double> keyList, ArrayList<Double> eventList) {
+        for (Double key : keyList) {
+            if (!eventList.contains(key)) {
+                return false; // If a key is not found in the eventList, return false
+            }
+        }
+        return true; // If all keys are present in the eventList, return true
+    }
+
+    public void shutdown() {
+        try {
+            String operatingSystem = System.getProperty("os.name");
+            String shutdownCommand;
+
+            if ("Linux".equals(operatingSystem) || "Mac OS X".equals(operatingSystem))
+                shutdownCommand = "shutdown -h now";
+            else if (operatingSystem.contains("Windows")) shutdownCommand = "shutdown.exe -s -t 0";
+            else throw new RuntimeException("Unsupported operating system.");
+
+            Runtime.getRuntime().exec(shutdownCommand);
+            System.exit(0);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

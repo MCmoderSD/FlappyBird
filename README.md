@@ -35,6 +35,8 @@ After you died, press `Space` or any mouse button to restart.
 Enter your username and click `Submit` to submit your score to the leaderboard.
 <br>
 If you don't want to submit your score, leave the username field empty and click `Submit`.
+<br>
+Press `F3` + `B` to toggle the hitbox visualization or `F3` + `F` to toggle the FPS counter.
 <br> <br>
 
 ## How to use custom assets
@@ -60,7 +62,7 @@ If you don't want to submit your score, leave the username field empty and click
   "backgroundMusic": "PATH TO YOUR BACKGROUND MUSIC",
   "WindowSizeX": 800,
   "WindowSizeY": 800,
-  "Resizeable": "true/false"
+  "Resizable": "true/false"
 }
 ```
 
@@ -108,6 +110,10 @@ If you don't want to submit your score, leave the username field empty and click
 - [x] Code optimization
 - [x] Code cleanup
 - [x] Improved render engine
+- [x] FPS counter
+- [x] FPS limiter
+- [x] Hitbox visualization
+- [x] Anti-Cheat
 - [ ] Asset compression
 - [ ] Leonard-test passed
 - [ ] Maxim-test passed
@@ -122,7 +128,7 @@ Special thanks to: <br>
 <Br>
 [Rebix](https://github.com/Reebix) for the database driver and coding help.
 <Br>
-[RedSmileTV](https://github.com/RedSmileTV) for beeing my rubber duck.
+[RedSmileTV](https://github.com/RedSmileTV) for being my rubber duck.
 <Br>
 [Leonard](https://github.com/Leo-160905) for small ideas and code improvements.
 <Br>

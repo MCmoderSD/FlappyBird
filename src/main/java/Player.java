@@ -15,7 +15,7 @@ public class Player {
     // Constructor
     public Player(Config config) {
 
-        image = config.getUtils().reader(config.getPlayer());
+        image = config.getUtils().readImage(config.getPlayer());
         rainbow = config.getUtils().createImageIcon(config.getRainbow());
 
         width = image.getWidth(null);

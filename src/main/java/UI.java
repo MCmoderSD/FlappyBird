@@ -12,17 +12,17 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 public class UI extends JFrame {
-    // Objekte
+    // Objects
     private final Config config;
     private final Utils utils;
-    // Klassen Attribute
+    // Attributes
     private final Timer updateDatabase;
     private final String host, port, tableName;
     private final int points;
     private Database database;
     private boolean newGame = true, isUploaded = true;
 
-    // UI Elemente
+    // UI Elements
     private JButton bStart;
     private JPanel backgroundFrame, tablePanel;
     private JCheckBox soundCheckBox;
@@ -32,7 +32,7 @@ public class UI extends JFrame {
     private JSpinner spinnerFPS;
     private JScrollPane scrollPane;
 
-    // Konstruktor und UI initialisieren
+    // Constructor
     public UI(Config config, Utils utils) {
         Main.isRunning = false;
 
@@ -40,7 +40,7 @@ public class UI extends JFrame {
         this.utils = utils;
         this.points = config.getPoints();
 
-        // Datenbank Konfiguration
+        // Database Configuration
         JsonNode json = utils.readJson("Database");
         String databaseName, table, user, password;
 
@@ -64,17 +64,16 @@ public class UI extends JFrame {
 
         tableName = table;
 
-
-        // UI initialisieren
+        // Initialize UI
         score.setText("Global Leaderboard");
 
         if (points >= 0) {
             isUploaded = false;
             newGame = false;
             playerName.setEnabled(true);
-            score.setText("Dein Score: " + points);
-            bStart.setText("Score Bestätigen");
-            bStart.setToolTipText("Lade deinen Score hoch");
+            score.setText("Your Score: " + points);
+            bStart.setText("Confirm Score");
+            bStart.setToolTipText("Upload your score");
         }
 
         spinnerFPS.setValue(config.getFPS());
@@ -82,92 +81,84 @@ public class UI extends JFrame {
         playerName.setVisible(true);
         soundCheckBox.setSelected(config.isSound());
 
-
-        // Timer für die Aktualisierung der Bestenliste
+        // Timer for updating the leaderboard
         updateDatabase = new Timer(5000, e -> initLeaderBoard());
 
-        // Initialisierung der Datenbankverbindung und der Bestenliste
+        // Initialize database connection and leaderboard
         if (utils.checkSQLConnection(host, port)) {
             database = new Database(host, port, databaseName, user, password);
             initLeaderBoard();
             updateDatabase.start();
         }
 
-
-        // ActionListener für den Start-Button
+        // ActionListener for the Start button
         bStart.addActionListener(e -> {
-            if (newGame) play();
-            else if (this.points >= 0 && !isUploaded) upload();
-        });
-    }
+            if (newGame) {
 
-    // Methode zum Starten des Spiels
-    private void play() {
+                // Start the game
+                int fps = (int) Double.parseDouble(spinnerFPS.getValue().toString());
+                if (fps < 1) fps = 1;
+                if (fps > 360) fps = 360;
 
-        int fps = (int) Double.parseDouble(spinnerFPS.getValue().toString());
-        if (fps < 1) fps = 1;
-        if (fps > 360) fps = 360;
+                config.setFPS(fps);
+                config.setPoints(0);
+                config.setSound(soundCheckBox.isSelected());
 
-        config.setFPS(fps);
-        config.setPoints(0);
-        config.setSound(soundCheckBox.isSelected());
+                Main.isRunning = true;
 
-        Main.isRunning = true;
+                JFrame frame = new JFrame(config.getTitle());
+                GamePanel gamePanel = new GamePanel(frame, config);
+                frame.add(gamePanel);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setSize(config.getWindowSizeX(), config.getWindowSizeY());
+                frame.setResizable(config.isResizable());
+                frame.setLocationRelativeTo(null);
+                frame.setLocation(utils.centerFrame(frame));
+                frame.setIconImage(utils.readImage(config.getIcon()));
+                frame.setVisible(true);
+                updateDatabase.stop();
+                dispose();
 
-        JFrame frame = new JFrame(config.getTitle());
-        GamePanel gamePanel = new GamePanel(frame, config);
-        frame.add(gamePanel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(config.getWindowSizeX(), config.getWindowSizeY());
-        frame.setResizable(config.isResizeable());
-        frame.setLocationRelativeTo(null);
-        frame.setLocation(utils.centerFrame(frame));
-        frame.setIconImage(utils.reader(config.getIcon()));
-        frame.setVisible(true);
-        updateDatabase.stop();
-        dispose();
-    }
+            } else if (this.points >= 0 && !isUploaded)
+                bStart.setText("Play Again");
+            bStart.setToolTipText("Play Again");
+            isUploaded = true;
+            newGame = true;
 
-    // Methode zum Hochladen des Scores
-    private void upload() {
-        bStart.setText("Nochmal Spielen");
-        bStart.setToolTipText("Nochmal Spielen");
-        isUploaded = true;
-        newGame = true;
-
-        // Überprüfung der Eingabe
-        if (points <= 0) return;
-        if (!(playerName.getText().length() != 0 && !playerName.getText().contains("Username"))) return;
-        if (playerName.getText().length() <= 32) {
-            if (!utils.checkUserName(playerName.getText()) && !playerName.getText().contains(" "))
-                writeLeaderBoard(playerName.getText(), points, tableName); // Hochladen des Scores
-            else { // Fehlermeldung bei unerlaubtem Username
+            // Check input
+            if (points <= 0) return;
+            if (!(!playerName.getText().isEmpty() && !playerName.getText().contains("Username"))) return;
+            if (playerName.getText().length() <= 32) {
+                if (!utils.checkUserName(playerName.getText()) && !playerName.getText().contains(" "))
+                    writeLeaderBoard(playerName.getText(), points, tableName); // Upload the score
+                else { // Error message for invalid username
+                    new UI(config, utils);
+                    updateDatabase.stop();
+                    dispose();
+                }
+            } else { // Error message for too long username
                 new UI(config, utils);
                 updateDatabase.stop();
                 dispose();
             }
-        } else { // Fehlermeldung bei zu langem Username
-            new UI(config, utils);
-            updateDatabase.stop();
-            dispose();
-        }
+        });
     }
 
-    // Methode zum Initialisieren der Fensterelemente
+    // Method to initialize UI components
     private void createUIComponents() {
-        // Initialisierung des JFrames
+        // Initialize JFrame
         setTitle(config.getTitle());
         setSize(config.getWindowSizeX(), config.getWindowSizeY());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(config.isResizeable());
-        setIconImage(utils.reader(config.getIcon()));
+        setResizable(config.isResizable());
+        setIconImage(utils.readImage(config.getIcon()));
 
-        // Initialisierung JPanels mit Hintergrundbild
+        // Initialize JPanels with background image
         backgroundFrame = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(utils.reader(config.getBackground()), 0, 0,
+                g.drawImage(utils.readImage(config.getBackground()), 0, 0,
                         utils.getBackgroundWidth(config.getBackground()), getHeight(), this);
                 repaint();
             }
@@ -175,35 +166,35 @@ public class UI extends JFrame {
         // Add panel to Frame
         add(backgroundFrame);
 
-        // Initialisierung der Fensterposition
+        // Initialize window position
         setLocation(utils.centerFrame(this));
         setVisible(true);
 
-        // Initialisierung des Start-Buttons
+        // Initialize Start button
         bStart = new JButton();
         bStart.setOpaque(false);
-        bStart.setToolTipText("Starte das Spiel");
+        bStart.setToolTipText("Start the game");
 
-        // Initialisierung des Sound-Checkbox
+        // Initialize Sound Checkbox
         soundCheckBox = new JCheckBox();
         soundCheckBox.setOpaque(false);
-        soundCheckBox.setToolTipText("Aktiviere oder deaktiviere den Sound");
+        soundCheckBox.setToolTipText("Enable or disable sound");
         soundCheckBox.setBorder(BorderFactory.createEmptyBorder());
         soundCheckBox.setFont(new Font("Roboto", Font.PLAIN, 24));
         soundCheckBox.setForeground(utils.calculateForegroundColor(utils.getAverageColorInRectangle(utils.getBottomMenuBounds(backgroundFrame), backgroundFrame)));
 
-        // Initialisierung des Username-Textfeldes
+        // Initialize Username Textfield
         playerName = new JTextField();
         playerName.setOpaque(false);
         playerName.setEnabled(false);
         playerName.setFont(new Font("Roboto", Font.PLAIN, 22));
         playerName.setForeground(utils.calculateForegroundColor(utils.getAverageColorInRectangle(utils.getBottomMenuBounds(backgroundFrame), backgroundFrame)));
-        playerName.setToolTipText("Gib deinen Username ein");
+        playerName.setToolTipText("Enter your username");
         playerName.setHorizontalAlignment(JTextField.CENTER);
         playerName.setBorder(BorderFactory.createEmptyBorder());
         utils.setPlaceholder(playerName, "Username", backgroundFrame);
 
-        // Initialisierung der ScrollPane für die Tabelle
+        // Initialize ScrollPane for the table
         scrollPane = new JScrollPane();
         scrollPane.setOpaque(false);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -211,23 +202,23 @@ public class UI extends JFrame {
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-        // Initialisierung der Tabelle
+        // Initialize the table
         leaderBoard = new JTable();
         leaderBoard.setFont(new Font("Roboto", Font.PLAIN, 22));
         leaderBoard.setOpaque(false);
 
-        // Hinzufügen der Tabelle zur ScrollPane
+        // Add the table to the ScrollPane
         scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
         scrollPane.setAlignmentY(Component.CENTER_ALIGNMENT);
         scrollPane.add(leaderBoard);
         scrollPane.setOpaque(false);
 
-        // Initialisierung des FPS-Spinners
+        // Initialize the FPS Spinner
         spinnerFPS = new JSpinner();
         spinnerFPS.setOpaque(false);
-        spinnerFPS.setToolTipText("Frames pro Sekunde");
+        spinnerFPS.setToolTipText("Frames per second");
 
-        // Verhindert ungültige Eingaben im FPS-Spinner
+        // Prevent invalid input in the FPS Spinner
         JFormattedTextField txt = ((JSpinner.DefaultEditor) spinnerFPS.getEditor()).getTextField();
         ((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
 
@@ -240,144 +231,131 @@ public class UI extends JFrame {
         });
     }
 
-    // Methode zum Aktualisieren des Leaderboards
+    // Method to update the leaderboard
     private void initLeaderBoard() {
         if (utils.checkSQLConnection(host, port)) {
             leaderBoard.setVisible(true);
             scrollPane.setVisible(true);
             tablePanel.setVisible(true);
 
-            // Initialisierung der Datenbank
+            // Initialize the database
             Database.Table table = database.getTable(tableName);
             Database.Table.Column users = table.getColumn("users");
             Database.Table.Column highscores = table.getColumn("scores");
-            leaderBoard.getTableHeader().setReorderingAllowed(false); // Spaltenverschiebung deaktivieren
+            leaderBoard.getTableHeader().setReorderingAllowed(false); // Disable column reordering
 
-            // Daten vom SQL Server holen und in die Tabelle einfügen
+            // Fetch data from the SQL Server and populate the table
             String[] userValues = users.getValues();
             String[] scoreValues = highscores.getValues();
 
-            // Tabelle erstellen
+            // Create the table
             DefaultTableModel model = new DefaultTableModel() {
                 @Override
                 public boolean isCellEditable(int row, int column) {
-                    return false; // Die Zellen sind nicht editierbar
+                    return false; // Cells are not editable
                 }
             };
 
-            // Spalten hinzufügen
+            // Add columns
             model.addColumn("Rank");
             model.addColumn("Username");
             model.addColumn("Highscore");
 
-            // Daten in die Tabelle einfügen
+            // Insert data into the table
             if (userValues != null && scoreValues != null && userValues.length == scoreValues.length) {
                 for (int i = 0; i < userValues.length; i++) {
                     model.addRow(new Object[]{(i + 1) + ".", userValues[i], scoreValues[i]});
                 }
             }
 
-            sortTableByScore(model);
 
-            // Tabelle configuieren
+            // Sort the table by score
+            ArrayList<RowData> rowDataList = new ArrayList<>();
+
+            // Copy data from the table to the ArrayList
+            for (int i = 0; i < model.getRowCount(); i++) {
+                String user = model.getValueAt(i, 1).toString();
+                int score = Integer.parseInt(model.getValueAt(i, 2).toString());
+                RowData rowData = new RowData(user, score);
+                rowDataList.add(rowData);
+            }
+
+            // Sort the ArrayList by score
+            rowDataList.sort(Comparator.comparingInt(RowData::getScore).reversed());
+
+            // Insert updated data back into the table
+            model.setRowCount(0);
+            for (int i = 0; i < rowDataList.size(); i++) {
+                RowData rowData = rowDataList.get(i);
+                model.addRow(new Object[]{(i + 1) + ".", rowData.getUser(), rowData.getScore()});
+            }
+
+
+            // Configure the table
             leaderBoard.setModel(model);
-            adjustRowHeight(leaderBoard);
-            adjustColumnWidths(leaderBoard);
-        } else { // Wenn keine Verbindung zur Datenbank besteht
-            handleNoSQLConnection(config);
+
+
+            // Adjust row height
+            int rowHeight = leaderBoard.getRowHeight();
+            FontMetrics fontMetrics = leaderBoard.getFontMetrics(leaderBoard.getFont());
+            Font boldFont = new Font("Roboto", Font.BOLD, 24);
+
+            // Center align columns
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+            leaderBoard.getColumnModel().getColumn(0).setCellRenderer(centerRenderer); // Center align "User" column
+
+            // Adjust row height
+            for (int row = 0; row < leaderBoard.getRowCount(); row++) {
+                int fontHeight = fontMetrics.getHeight() + 10;
+                leaderBoard.setRowHeight(row, Math.max(rowHeight, fontHeight));
+            }
+
+            // Set font of column headers to bold
+            leaderBoard.getTableHeader().setFont(boldFont);
+
+
+            // Adjust width of the Rank column
+            TableColumnModel columnModel = leaderBoard.getColumnModel();
+            TableColumn rankColumn = columnModel.getColumn(0);
+            rankColumn.setMaxWidth(800); // Set max width of the Rank column to 50
+            rankColumn.setMinWidth(100); // Set min width of the Rank column to 50
+            rankColumn.setPreferredWidth(50); // Set preferred width of the Rank column to 50
+
+            // Adjust widths of remaining columns to make space for the Rank column
+            for (int col = 1; col < columnModel.getColumnCount(); col++) {
+                TableColumn column = columnModel.getColumn(col);
+                column.setMinWidth(0);
+                column.setMaxWidth(Integer.MAX_VALUE);
+                column.setPreferredWidth(0);
+            }
+
+        } else { // If there is no connection to the database
+            if (!updateDatabase.isRunning())
+                JOptionPane.showMessageDialog(null, "Could not establish a connection to the SQL Server!", "Error", JOptionPane.ERROR_MESSAGE);
+            if (updateDatabase.isRunning())
+                JOptionPane.showMessageDialog(null, "Connection to the SQL Server lost, check your internet connection!", "Error", JOptionPane.ERROR_MESSAGE);
+            updateDatabase.stop();
+            new UI(config, utils);
+            dispose();
         }
     }
 
-    // Methode zum Sortieren der Tabelle nach der Punktzahl
-    private void sortTableByScore(DefaultTableModel model) {
-        ArrayList<RowData> rowDataList = new ArrayList<>();
-
-        // Daten aus der Tabelle in die ArrayList kopieren
-        for (int i = 0; i < model.getRowCount(); i++) {
-            String user = model.getValueAt(i, 1).toString();
-            int score = Integer.parseInt(model.getValueAt(i, 2).toString());
-            RowData rowData = new RowData(user, score);
-            rowDataList.add(rowData);
-        }
-
-        // ArrayList nach der Punktzahl sortieren
-        rowDataList.sort(Comparator.comparingInt(RowData::getScore).reversed());
-
-        // Aktualisierte Daten in die Tabelle einfügen
-        model.setRowCount(0);
-        for (int i = 0; i < rowDataList.size(); i++) {
-            RowData rowData = rowDataList.get(i);
-            model.addRow(new Object[]{(i + 1) + ".", rowData.getUser(), rowData.getScore()});
-        }
-    }
-
-    // Methode zum Anpassen der Zeilenhöhe
-    private void adjustRowHeight(JTable table) {
-        int rowHeight = table.getRowHeight();
-        FontMetrics fontMetrics = table.getFontMetrics(table.getFont());
-        Font boldFont = new Font("Roboto", Font.BOLD, 24);
-
-        // Spalten zentriert ausrichten
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer); // Spalte "User" zentriert ausrichten
-
-        // Zeilenhöhe anpassen
-        for (int row = 0; row < table.getRowCount(); row++) {
-            int fontHeight = fontMetrics.getHeight() + 10;
-            table.setRowHeight(row, Math.max(rowHeight, fontHeight));
-        }
-
-        // Schriftart der Spaltenüberschriften Fett setzen
-        table.getTableHeader().setFont(boldFont);
-    }
-
-    // Methode zum Anpassen der Spaltenbreiten
-    private void adjustColumnWidths(JTable table) {
-
-        // Breite der Rang-Zeile anpassen
-        TableColumnModel columnModel = table.getColumnModel();
-        TableColumn rankColumn = columnModel.getColumn(0);
-        rankColumn.setMaxWidth(800); // Maximale Breite der Rang-Zeile auf 50 setzen
-        rankColumn.setMinWidth(100); // Mindestbreite der Rang-Zeile auf 50 setzen
-        rankColumn.setPreferredWidth(50); // Bevorzugte Breite der Rang-Zeile auf 50 setzen
-
-        // Die restlichen Spaltenbreiten anpassen, um Platz für die Rang-Zeile zu schaffen
-        for (int col = 1; col < columnModel.getColumnCount(); col++) {
-            TableColumn column = columnModel.getColumn(col);
-            column.setMinWidth(0);
-            column.setMaxWidth(Integer.MAX_VALUE);
-            column.setPreferredWidth(0);
-        }
-    }
-
-    // Methode zum Anzeigen einer Fehlermeldung, wenn keine Verbindung zum SQL Server hergestellt werden konnte
-    private void handleNoSQLConnection(Config config) {
-        if (!updateDatabase.isRunning())
-            JOptionPane.showMessageDialog(null, "Es konnte keine Verbindung zum SQL Server hergestellt werden!", "Fehler", JOptionPane.ERROR_MESSAGE);
-        if (updateDatabase.isRunning())
-            JOptionPane.showMessageDialog(null, "Verbindung zum SQL Server verloren, überprüfe deine Internetverbindung!", "Fehler", JOptionPane.ERROR_MESSAGE);
-        updateDatabase.stop();
-        new UI(config, utils);
-        dispose();
-    }
-
-    // Methode zum Schreiben der Daten in die Tabelle
+    // Method to write data into the table
     private void writeLeaderBoard(String username, int score, String tableName) {
-
-        // Daten aus der Tabelle auslesen
+        // Read data from the table
         Database.Table table = database.getTable(tableName);
         Database.Table.Column users = table.getColumn("users");
         Database.Table.Column highscores = table.getColumn("scores");
 
-        // Daten in ArrayLists speichern
+        // Store data in ArrayLists
         ArrayList<String> usernames = new ArrayList<>(Arrays.asList(users.getValues()));
         ArrayList<String> scores = new ArrayList<>(Arrays.asList(highscores.getValues()));
 
-        // Wenn der Benutzername noch nicht in der Tabelle vorhanden ist, wird er hinzugefügt
+        // If the username is not already present in the table, add it
         if (!users.containsLC(username)) users.addLine(username);
 
-        // Wenn der Benutzername bereits in der Tabelle vorhanden ist, wird die Punktzahl aktualisiert
+        // If the username is already present in the table, update the score
         if (usernames.contains(username)) {
             int index = usernames.indexOf(username);
             int oldScore = Integer.parseInt(scores.get(index));
@@ -392,12 +370,12 @@ public class UI extends JFrame {
     }
 }
 
-// Innere Klasse für die Daten der Tabelle
+// Inner class for table data
 class RowData {
     private final String user;
     private final int score;
 
-    // Konstruktor
+    // Constructor
     public RowData(String user, int score) {
         this.user = user;
         this.score = score;

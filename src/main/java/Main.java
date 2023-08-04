@@ -7,14 +7,14 @@ public class Main {
 
     private void run(String[] args) {
 
-        String defaultConfig = "lena"; // Standardkonfiguration
-        int jumpHeight = 10; // Die Sprunghöhe des Spielers
-        int percentange = 25; // Prozentzahl, die die Größe des Hindernisses von der Fensterhöhe ausmacht
-        int gap = 200; // Vertikaler Abstand zwischen den Hindernissen
-        int FPS = 360; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde) Maximum: 100
+        String defaultConfig = "lena"; // Default Config
+        int jumpHeight = 10; // Jump Height
+        int percentage = 25; // Percentage representing the obstacle size relative to the window height
+        int gap = 200; // Vertical gap between the obstacles
+        int FPS = 360; // Frames per second (updated frames per second) Maximum: 100
 
         Utils utils = new Utils();
 
-        new Config(utils, defaultConfig, jumpHeight, percentange, gap, FPS, args);
+        new Config(utils, defaultConfig, jumpHeight, percentage, gap, FPS, args);
     }
 }

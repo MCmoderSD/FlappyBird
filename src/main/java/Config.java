@@ -4,39 +4,39 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class Config {
-    // Alle Variablen und Assets für die Spielkonfiguration
-    private final String title; // Titel des Spiels
-    private final String background; // Dateipfad für den Hintergrund
-    private final String player; // Dateipfad für das Spielerbild
-    private final String rainbow; // Dateipfad für das Regenbogenbild
-    private final String obstacleTop; // Dateipfad für das Hindernis von oben
-    private final String obstacleBottom; // Dateipfad für das Hindernis von unten
-    private final String icon; // Dateipfad für das Spielsymbol
-    private final String gameOver; // Dateipfad für das Game Over-Bild
-    private final String pause; // Dateipfad für das Pause-Bild
-    private final String dieSound; // Dateipfad für den Sterbesound
-    private final String flapSound; // Dateipfad für den Flügelschlag-Sound
-    private final String hitSound; // Dateipfad für den Aufprall-Sound
-    private final String pointSound; // Dateipfad für den Punkte-Sound
-    private final String rainbowSound; // Dateipfad für den Regenbogen-Sound
-    private final String music; // Dateipfad für die Hintergrundmusik
-    private final String[] args; // Argumente, die beim Starten des Spiels übergeben wurden
-    private final int width; // Fensterbreite
-    private final int height; // Fensterhöhe
-    private final boolean resizeable; // Gibt an, ob das Fenster in der Größe verändert werden kann
-    private final int percentage; // Prozentzahl, die die Größe des Hindernisses von der Fensterhöhe ausmacht
-    private final int gap; // Vertikaler Abstand zwischen den Hindernissen
-    private final int jumpHeight; // Die Sprunghöhe des Spielers
+    // All variables and assets for the game configuration
+    private final String title; // Game title
+    private final String background; // File path for the background
+    private final String player; // File path for the player image
+    private final String rainbow; // File path for the rainbow image
+    private final String obstacleTop; // File path for the top obstacle
+    private final String obstacleBottom; // File path for the bottom obstacle
+    private final String icon; // File path for the game icon
+    private final String gameOver; // File path for the Game Over image
+    private final String pause; // File path for the pause image
+    private final String dieSound; // File path for the death sound
+    private final String flapSound; // File path for the flap sound
+    private final String hitSound; // File path for the hit sound
+    private final String pointSound; // File path for the points sound
+    private final String rainbowSound; // File path for the rainbow sound
+    private final String music; // File path for the background music
+    private final String[] args; // Arguments passed when starting the game
+    private final int width; // Window width
+    private final int height; // Window height
+    private final boolean resizable; // Indicates if the window can be resized
+    private final int percentage; // Percentage representing the obstacle size relative to the window height
+    private final int gap; // Vertical gap between the obstacles
+    private final int jumpHeight; // The player's jump height
 
-    // Klassenobjekte
+    // Utility class object
     private final Utils utils;
 
-    // Alle Variablen für die Spiellogik
-    private double FPS; // Ticks pro Sekunde (aktualisierte Frames pro Sekunde) Maximum: 100
-    private int points = -10; // Punkte
-    private boolean sound = true; // Gibt an, ob Sounds abgespielt werden sollen
+    // All variables for the game logic
+    private double FPS; // Frames per second (updated frames per second) Maximum: 100
+    private int points = -10; // Points
+    private boolean sound = true; // Indicates whether sounds should be played
 
-    // Konstruktor zum Initialisieren der Variablen
+    // Constructor to initialize the variables
     public Config(Utils utils, String defaultConfig, int jumpHeight, int percentage, int gap, int FPS, String[] args) {
 
         this.utils = utils;
@@ -95,12 +95,13 @@ public class Config {
         width = dimension[0];
         height = dimension[1];
 
-        resizeable = config.get("Resizeable").asBoolean();
+        resizable = config.get("Resizable").asBoolean();
 
-        // Starte die Bewegungslogik mit den angegebenen Parametern
+        // Start the game logic with the specified parameters
         new UI(this, utils);
     }
 
+    // Getters and setters
     public int getJumpHeight() {
         return jumpHeight;
     }
@@ -141,8 +142,8 @@ public class Config {
         return height;
     }
 
-    public boolean isResizeable() {
-        return resizeable;
+    public boolean isResizable() {
+        return resizable;
     }
 
     public String getBackground() {

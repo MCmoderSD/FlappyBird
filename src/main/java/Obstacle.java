@@ -12,8 +12,8 @@ public class Obstacle {
 
     // Constructor
     public Obstacle(Config config, boolean isTop) {
-        if (isTop) image = config.getUtils().reader(config.getObstacleTop());
-        else image = config.getUtils().reader(config.getObstacleBottom());
+        if (isTop) image = config.getUtils().readImage(config.getObstacleTop());
+        else image = config.getUtils().readImage(config.getObstacleBottom());
 
         width = image.getWidth(null);
         height = image.getHeight(null);

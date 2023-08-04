@@ -16,5 +16,5 @@
   "backgroundMusic": "Sounds/stereo/nasheed.wav",
   "WindowSizeX": 800,
   "WindowSizeY": 800,
-  "Resizeable": false
+  "Resizable": false
 }
