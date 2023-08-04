@@ -413,45 +413,48 @@ public class GamePanel extends JPanel implements Runnable {
 
     // Graphics Engine
     public void paintComponent(Graphics graphics) {
-        // Migrate to Graphics2D
         super.paintComponent(graphics);
         Graphics2D g = (Graphics2D) graphics;
 
-        // Draw Background
+        // Draw the background
         int firstX = backgroundResetX % utils.readImage(config.getBackground()).getWidth();
-
         if (firstX > 0) {
             g.drawImage(utils.readImage(config.getBackground()), firstX - utils.readImage(config.getBackground()).getWidth(), 0, this);
         }
-
         for (int x = firstX; x < getWidth() + utils.readImage(config.getBackground()).getWidth(); x += utils.readImage(config.getBackground()).getWidth()) {
             g.drawImage(utils.readImage(config.getBackground()), x, 0, this);
         }
 
-
-        // Draw Obstacles
-        for (Obstacle component : obstacles) {
+        // Copy the obstacles list to avoid ConcurrentModificationException
+        ArrayList<Obstacle> obstaclesCopy = new ArrayList<>(obstacles);
+        for (Obstacle component : obstaclesCopy) {
             g.drawImage(component.getImage(), component.getX(), component.getY(), this);
         }
 
+        // Copy the green zones list
+        ArrayList<Rectangle> greenZonesCopy = new ArrayList<>(greenZones);
+        for (Rectangle component : greenZonesCopy) {
+            g.setColor(Color.GREEN);
+            g.fillRect(component.x, component.y, component.width, component.height);
+        }
 
-        // Draw Player
-        if (!rainbowMode) g.drawImage(player.getImage(), player.getX(), player.getY(), this);
-        else g.drawImage(player.getRainbow().getImage(), player.getX(), player.getY(), this);
-
+        // Draw the player
+        if (!rainbowMode) {
+            g.drawImage(player.getImage(), player.getX(), player.getY(), this);
+        } else {
+            g.drawImage(player.getRainbow().getImage(), player.getX(), player.getY(), this);
+        }
 
         // Debug Hitbox
         if (developerMode || hitbox) {
-            for (Rectangle component : greenZones) {
+            for (Rectangle component : greenZonesCopy) {
                 g.setColor(Color.GREEN);
                 g.fillRect(component.x, component.y, component.width, component.height);
             }
-
-            for (Obstacle component : obstacles) {
+            for (Obstacle component : obstaclesCopy) {
                 g.setColor(Color.RED);
                 g.drawRect(component.getX(), component.getY(), component.getWidth(), component.getHeight());
             }
-
             g.setColor(Color.YELLOW);
             g.drawRect(player.getX(), player.getY(), player.getWidth(), player.getHeight());
         }
