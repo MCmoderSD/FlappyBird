@@ -5,7 +5,7 @@ public class Main {
         new Main().run(args);
     }
 
-    private void run(String[] args) {
+    public void run(String[] args) {
 
         String defaultConfig = "lena"; // Default Config
         int jumpHeight = 10; // Jump Height

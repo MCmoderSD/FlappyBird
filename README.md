@@ -20,7 +20,7 @@ To run with alternative assets, you need to run the game via command line.
 3. Run the following command: `java -jar FlappyBird.jar <firstArgument> <secondArgument>`
 4. Replace `<firstArgument>` with the path to the asset config file you want to
    run. `911`, `911beta`, `alpha`, `lenabeta`. <br> The Default-Config is: `lena`
-5. Put as second argument whatever you want, to run in reverse mode.
+5. Put as second an argument whatever you want, to run in reverse mode.
    As example put `reverse`
    <br> <br>
 
@@ -30,13 +30,15 @@ Press `Space` or any mouse button to jump.
 <br>
 Press `Escape` to pause the game.
 <br>
-After you died, press `Space` or any mouse button to restart.
+After you die, press `Space` or any mouse button to restart.
 <br>
 Enter your username and click `Submit` to submit your score to the leaderboard.
 <br>
-If you don't want to submit your score, leave the username field empty and click `Submit`.
+If you don't want to submit your score, leave the username blank and click `Submit`.
 <br>
 Press `F3` + `B` to toggle the hitbox visualization or `F3` + `F` to toggle the FPS counter.
+<br>
+Press `F3` + `R` to toggle the reverse mode or `F3` + `C` to change through the assets.
 <br> <br>
 
 ## How to use custom assets
@@ -114,6 +116,8 @@ Press `F3` + `B` to toggle the hitbox visualization or `F3` + `F` to toggle the 
 - [x] FPS limiter
 - [x] Hitbox visualization
 - [x] Anti-Cheat
+- [x] Asset Changer
+- [x] Reverse Mode Asset Changer
 - [ ] Asset compression
 - [ ] Leonard-test passed
 - [ ] Maxim-test passed

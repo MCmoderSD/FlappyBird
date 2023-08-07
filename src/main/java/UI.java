@@ -7,6 +7,9 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -31,6 +34,7 @@ public class UI extends JFrame {
     private JLabel score;
     private JSpinner spinnerFPS;
     private JScrollPane scrollPane;
+    private boolean f3Pressed = false;
 
     // Constructor
     public UI(Config config, Utils utils) {
@@ -142,6 +146,59 @@ public class UI extends JFrame {
                 dispose();
             }
         });
+
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                super.keyPressed(e);
+
+                // F3 + R key combination : Reverse Toggle
+                if (e.getKeyCode() == KeyEvent.VK_F3) f3Pressed = true;
+                else if (f3Pressed && e.getKeyCode() == KeyEvent.VK_R) {
+
+                    if (config.getArgs().length == 1) changeArgs(config.getArgs()[0], false);
+                    else if (config.getArgs().length == 2) changeArgs(config.getArgs()[0], false);
+                    else changeArgs("lena", true);
+
+                    f3Pressed = false; // reset F3 status
+                }
+
+                // F3 + C key combination : Swap Assets Toggle
+                if (e.getKeyCode() == KeyEvent.VK_F3) f3Pressed = true;
+                else if (f3Pressed && e.getKeyCode() == KeyEvent.VK_C) {
+
+
+                    if (config.getArgs().length == 0) changeArgs("911", false);
+
+                    else if (config.getArgs().length == 1) {
+
+                        if (config.getArgs()[0].equals("lena")) changeArgs("911", false);
+                        else if (config.getArgs()[0].equals("911")) changeArgs("lenabeta", false);
+                        else if (config.getArgs()[0].equals("lenabeta")) changeArgs("911beta", false);
+                        else if (config.getArgs()[0].equals("911beta")) changeArgs("alpha", false);
+                        else if (config.getArgs()[0].equals("alpha")) changeArgs("lena", false);
+
+                    } else if (config.getArgs().length > 1) {
+
+                        if (config.getArgs()[0].equals("lena")) changeArgs("911", true);
+                        else if (config.getArgs()[0].equals("911")) changeArgs("lenabeta", true);
+                        else if (config.getArgs()[0].equals("lenabeta")) changeArgs("911beta", true);
+                        else if (config.getArgs()[0].equals("911beta")) changeArgs("alpha", true);
+                        else if (config.getArgs()[0].equals("alpha")) changeArgs("lena", true);
+
+                    }
+
+                    f3Pressed = false; // reset F3 status
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                super.keyReleased(e);
+                // Reset the F3 status when the key is released
+                if (e.getKeyCode() == KeyEvent.VK_F3) f3Pressed = false;
+            }
+        });
     }
 
     // Method to initialize UI components
@@ -229,6 +286,26 @@ public class UI extends JFrame {
                 if ((int) Double.parseDouble(spinnerFPS.getValue().toString()) <= 1) spinnerFPS.setValue(1);
             }
         });
+    }
+
+    private void changeArgs(String profile, boolean reversed) {
+        String javaCommand = System.getProperty("java.home") + "/bin/java";
+        String classpath = System.getProperty("java.class.path");
+        String mainClass = Main.class.getName();
+
+
+        ProcessBuilder processBuilder = new ProcessBuilder(javaCommand, "-cp", classpath, mainClass);
+
+        processBuilder.command().add(profile);
+        if (reversed) processBuilder.command().add("reversed");
+
+
+        try {
+            processBuilder.start();
+            System.exit(0);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // Method to update the leaderboard

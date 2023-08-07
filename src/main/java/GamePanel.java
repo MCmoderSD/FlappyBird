@@ -137,19 +137,17 @@ public class GamePanel extends JPanel implements Runnable {
                     }
                 }
 
-                // F3 + B key combination
-                if (e.getKeyCode() == KeyEvent.VK_F3) {
-                    f3Pressed = true;
-                } else if (f3Pressed && e.getKeyCode() == KeyEvent.VK_B) {
+                // F3 + ? key combination
+                if (e.getKeyCode() == KeyEvent.VK_F3) f3Pressed = true;
+                else if (f3Pressed && e.getKeyCode() == KeyEvent.VK_B) {
+
+                    // F3 + B key combination
                     hitbox = !hitbox; // toggle hitbox
                     System.out.println("Hitbox: " + hitbox);
                     f3Pressed = false; // reset F3 status
                     repaint();
-                }
 
-                // F3 + F key combination
-                if (e.getKeyCode() == KeyEvent.VK_F3) {
-                    f3Pressed = true;
+                    // F3 + F key combination
                 } else if (f3Pressed && e.getKeyCode() == KeyEvent.VK_F) {
                     showFPS = !showFPS; // toggle FPS
                     fpsLabel.setVisible(showFPS);
@@ -162,9 +160,7 @@ public class GamePanel extends JPanel implements Runnable {
             public void keyReleased(KeyEvent e) {
                 super.keyReleased(e);
                 // Reset the F3 status when the key is released
-                if (e.getKeyCode() == KeyEvent.VK_F3) {
-                    f3Pressed = false;
-                }
+                if (e.getKeyCode() == KeyEvent.VK_F3) f3Pressed = false;
             }
         });
 
