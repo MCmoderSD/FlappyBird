@@ -205,18 +205,22 @@ public class GamePanel extends JPanel implements Runnable {
                         if (config.getArgs().length < 2)
                             player.setLocation(player.getX(), player.getY() - utils.calculateGravity(xPosition));
                         else if (config.getArgs().length > 1) { // Reverse mode
-                            int lastY = 0;
-
+                            int minY = 0, maxY = 0;
+                            Obstacle obstacle = new Obstacle(config, true);
                             // Calculate the lowest Y value
                             for (Obstacle component : obstacles) {
-                                if (lastY <= component.getY()) lastY = component.getY();
+                                if (minY >= component.getY()) minY = component.getY();
+                                if (maxY <= component.getY()) maxY = component.getY();
                             }
 
                             int vertical = utils.calculateGravity(xPosition);
 
-                            if (lastY > 1000 && vertical <= 0) vertical = 0;
+                            boolean minReached = vertical >= 0 && minY < -obstacle.getHeight() - config.getGap();
+                            boolean maxReached = vertical <= 0 && maxY > obstacle.getHeight();
+                            if (minReached || maxReached) vertical = 0;
 
-                            // Move Obstacles
+
+                            // Move obstacles
                             for (Obstacle component : obstacles) {
                                 component.setLocation(component.getX(), component.getY() - vertical);
                             }
@@ -306,8 +310,6 @@ public class GamePanel extends JPanel implements Runnable {
 
 
                         // Check Collision
-                        player.updateLocation();
-
                         Iterator<Rectangle> iterator = greenZones.iterator();
                         while (iterator.hasNext()) {
                             Rectangle component = iterator.next();
@@ -456,7 +458,7 @@ public class GamePanel extends JPanel implements Runnable {
     // Handles Jump
     private void jump() {
         // Press to restart
-        if (gameOver && player.getY() > getHeight()) {
+        if ((gameOver && player.getY() > getHeight()) || (gameOver && config.getArgs().length >= 2)) {
 
             if (keys.size() != points || keys.size() >= events.size() || !utils.containsKey(keys, events)) {
                 cheatsEnabled = true;
@@ -468,7 +470,7 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (!cheatsEnabled) config.setPoints(points);
             else config.setPoints(-10);
-            new UI(config, utils);
+            config.getUi().initUI();
             frame.dispose();
             return;
         }

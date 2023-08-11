@@ -28,8 +28,9 @@ public class Config {
     private final int gap; // Vertical gap between the obstacles
     private final int jumpHeight; // The player's jump height
 
-    // Utility class object
+    // Class Objects
     private final Utils utils;
+    private final UI ui;
 
     // All variables for the game logic
     private double FPS; // Frames per second (updated frames per second) Maximum: 100
@@ -98,7 +99,7 @@ public class Config {
         resizable = config.get("Resizable").asBoolean();
 
         // Start the game logic with the specified parameters
-        new UI(this, utils);
+        ui = new UI(this, utils);
     }
 
     // Getters and setters
@@ -216,5 +217,9 @@ public class Config {
 
     public Utils getUtils() {
         return utils;
+    }
+
+    public UI getUi() {
+        return ui;
     }
 }

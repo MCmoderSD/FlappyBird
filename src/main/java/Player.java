@@ -56,6 +56,7 @@ public class Player {
     public void setLocation(int x, int y) {
         this.x = x;
         this.y = y;
+        updateLocation();
     }
 
     public void updateLocation() {

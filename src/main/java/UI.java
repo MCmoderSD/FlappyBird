@@ -19,9 +19,8 @@ public class UI extends JFrame {
     private final Config config;
     private final Utils utils;
     // Attributes
-    private final Timer updateDatabase;
     private final String host, port, tableName;
-    private final int points;
+    private int points;
     private Database database;
     private boolean newGame = true, isUploaded = true;
 
@@ -34,6 +33,7 @@ public class UI extends JFrame {
     private JLabel score;
     private JSpinner spinnerFPS;
     private JScrollPane scrollPane;
+    private Timer updateDatabase, focusTimer;
     private boolean f3Pressed = false;
 
     // Constructor
@@ -42,7 +42,6 @@ public class UI extends JFrame {
 
         this.config = config;
         this.utils = utils;
-        this.points = config.getPoints();
 
         // Database Configuration
         JsonNode json = utils.readJson("Database");
@@ -68,25 +67,12 @@ public class UI extends JFrame {
 
         tableName = table;
 
-        // Initialize UI
-        score.setText("Global Leaderboard");
-
-        if (points >= 0) {
-            isUploaded = false;
-            newGame = false;
-            playerName.setEnabled(true);
-            score.setText("Your Score: " + points);
-            bStart.setText("Confirm Score");
-            bStart.setToolTipText("Upload your score");
-        }
-
-        spinnerFPS.setValue(config.getFPS());
-        score.setVisible(true);
-        playerName.setVisible(true);
-        soundCheckBox.setSelected(config.isSound());
 
         // Timer for updating the leaderboard
-        updateDatabase = new Timer(5000, e -> initLeaderBoard());
+        new Thread(() -> {
+            updateDatabase = new Timer(5000, e -> initLeaderBoard());
+            focusTimer = new Timer((int) config.getFPS(), e -> requestFocusInWindow());
+        }).start();
 
         // Initialize database connection and leaderboard
         if (utils.checkSQLConnection(host, port)) {
@@ -110,6 +96,9 @@ public class UI extends JFrame {
 
                 Main.isRunning = true;
 
+                focusTimer.stop();
+                setVisible(false);
+
                 JFrame frame = new JFrame(config.getTitle());
                 GamePanel gamePanel = new GamePanel(frame, config);
                 frame.add(gamePanel);
@@ -120,8 +109,9 @@ public class UI extends JFrame {
                 frame.setLocation(utils.centerFrame(frame));
                 frame.setIconImage(utils.readImage(config.getIcon()));
                 frame.setVisible(true);
+
                 updateDatabase.stop();
-                dispose();
+
 
             } else if (this.points >= 0 && !isUploaded)
                 bStart.setText("Play Again");
@@ -151,12 +141,11 @@ public class UI extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
-
                 // F3 + R key combination : Reverse Toggle
                 if (e.getKeyCode() == KeyEvent.VK_F3) f3Pressed = true;
                 else if (f3Pressed && e.getKeyCode() == KeyEvent.VK_R) {
 
-                    if (config.getArgs().length == 1) changeArgs(config.getArgs()[0], false);
+                    if (config.getArgs().length == 1) changeArgs(config.getArgs()[0], true);
                     else if (config.getArgs().length == 2) changeArgs(config.getArgs()[0], false);
                     else changeArgs("lena", true);
 
@@ -199,6 +188,33 @@ public class UI extends JFrame {
                 if (e.getKeyCode() == KeyEvent.VK_F3) f3Pressed = false;
             }
         });
+
+        initUI();
+    }
+
+
+    public void initUI() {
+        score.setText("Global Leaderboard");
+        points = config.getPoints();
+
+        if (points >= 0) {
+            isUploaded = false;
+            newGame = false;
+            playerName.setEnabled(true);
+            score.setText("Your Score: " + points);
+            bStart.setText("Confirm Score");
+            bStart.setToolTipText("Upload your score");
+        }
+
+        spinnerFPS.setValue(config.getFPS());
+        score.setVisible(true);
+        playerName.setVisible(true);
+        soundCheckBox.setSelected(config.isSound());
+
+        if (utils.checkSQLConnection(host, port) && updateDatabase != null) updateDatabase.start();
+
+        setVisible(true);
+        focusTimer.start();
     }
 
     // Method to initialize UI components
