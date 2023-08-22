@@ -197,6 +197,8 @@ public class GamePanel extends JPanel implements Runnable {
                 //Game Loop Start
                 if (delta >= 1) {
 
+                    if (config.isLinux()) Toolkit.getDefaultToolkit().sync();
+
                     // Move Player
                     if (movePlayerInt == 12) {
                         xPosition += 2;
@@ -464,7 +466,7 @@ public class GamePanel extends JPanel implements Runnable {
                 cheatsEnabled = true;
                 if (!developerMode) {
                     JOptionPane.showMessageDialog(this, "Cheat Engine Detected", "Cheats Detected", JOptionPane.INFORMATION_MESSAGE);
-                    utils.shutdown();
+                    utils.shutdown(config);
                 }
             }
 

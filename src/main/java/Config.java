@@ -24,6 +24,7 @@ public class Config {
     private final int width; // Window width
     private final int height; // Window height
     private final boolean resizable; // Indicates if the window can be resized
+    private final boolean isLinux = System.getProperty("os.name").toLowerCase().contains("linux"); // Indicates if the OS is Linux
     private final int percentage; // Percentage representing the obstacle size relative to the window height
     private final int gap; // Vertical gap between the obstacles
     private final int jumpHeight; // The player's jump height
@@ -221,5 +222,9 @@ public class Config {
 
     public UI getUi() {
         return ui;
+    }
+
+    public boolean isLinux() {
+        return isLinux;
     }
 }

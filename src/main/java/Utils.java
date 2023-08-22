@@ -383,15 +383,12 @@ public class Utils {
         return true; // If all keys are present in the eventList, return true
     }
 
-    public void shutdown() {
+    public void shutdown(Config config) {
         try {
-            String operatingSystem = System.getProperty("os.name");
             String shutdownCommand;
 
-            if ("Linux".equals(operatingSystem) || "Mac OS X".equals(operatingSystem))
-                shutdownCommand = "shutdown -h now";
-            else if (operatingSystem.contains("Windows")) shutdownCommand = "shutdown.exe -s -t 0";
-            else throw new RuntimeException("Unsupported operating system.");
+            if (!config.isLinux()) shutdownCommand = "shutdown.exe -s -t 0";
+            else shutdownCommand = "shutdown -h now";
 
             Runtime.getRuntime().exec(shutdownCommand);
             System.exit(0);
