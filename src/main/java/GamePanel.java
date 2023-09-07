@@ -6,6 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 import static java.lang.Thread.sleep;
 
@@ -25,11 +26,12 @@ public class GamePanel extends JPanel implements Runnable {
     private final ArrayList<Double> keys = new ArrayList<>(), events = new ArrayList<>();
     private final ArrayList<Obstacle> obstacles = new ArrayList<>();
     private final ArrayList<Rectangle> greenZones = new ArrayList<>();
+    private final ArrayList<Cloud> clouds = new ArrayList<>();
     // Variables
     public boolean gameOver = false, isPaused = true, developerMode = false;
     private double obstacleMoveSpeed = 1.01, obstacleGenerateSpeed = 1.01, backgroundMoveInt = 0, obstacleMoveInt = 0, obstacleGerateInt = 200;
     private boolean rainbowMode = false, gameStarted = false, backgroundAudioIsPlaying = false, hitbox = false, showFPS = false, cheatsEnabled = false, f3Pressed = false;
-    private int xPosition, backgroundResetX, movePlayerInt = 0, fpsCount, points = 0, currentFPS;
+    private int xPosition, backgroundResetX, moveCloudInt, movePlayerInt = 0, fpsCount, points = 0, currentFPS;
 
     // Constructor
     public GamePanel(JFrame frame, Config config) {
@@ -131,6 +133,7 @@ public class GamePanel extends JPanel implements Runnable {
                     // If the Konami Code has been entered, toggle the developer mode
                     if (konamiCodeEntered) {
                         developerMode = !developerMode;
+                        hitbox = developerMode;
                         cheatsEnabled = true;
                         System.out.println("Developer Mode toggled: " + developerMode);
                         userInput.clear();
@@ -378,6 +381,29 @@ public class GamePanel extends JPanel implements Runnable {
                         }
                     }
 
+                    // Init Clouds
+                    if (config.getCloud().endsWith(".json")) {
+                        Random random = new Random();
+
+                        // Generate clouds
+                        if (random.nextInt(5000) == 0) {
+                            Cloud cloud = new Cloud(config);
+                            cloud.setLocation(getWidth(), random.nextInt(Math.toIntExact(Math.round((getHeight() * 0.3)) - cloud.getHeight())));
+                            clouds.add(cloud);
+                        }
+
+                        // Move clouds
+                        if (moveCloudInt >= 8 * obstacleGenerateSpeed) {
+                            Iterator<Cloud> cloudIterator = clouds.iterator();
+                            while (cloudIterator.hasNext()) {
+                                Cloud component = cloudIterator.next();
+                                int x = component.getX();
+                                if (x < -64 - component.getWidth()) cloudIterator.remove();
+                                else component.setX(x - 1);
+                            }
+                            moveCloudInt = 0;
+                        } else moveCloudInt++;
+                    }
 
                     // Frame rate
                     if (fpsCount == FPS) {
@@ -425,6 +451,14 @@ public class GamePanel extends JPanel implements Runnable {
             g.drawImage(utils.readImage(config.getBackground()), x, 0, this);
         }
 
+        // Draw the clouds
+        if (!clouds.isEmpty()) {
+            ArrayList<Cloud> cloudsCopy = new ArrayList<>(clouds);
+            for (Cloud component : cloudsCopy) {
+                g.drawImage(component.getImage(), component.getX(), component.getY(), this);
+            }
+        }
+
         // Copy the obstacles list to avoid ConcurrentModificationException
         ArrayList<Obstacle> obstaclesCopy = new ArrayList<>(obstacles);
         for (Obstacle component : obstaclesCopy) {
@@ -439,7 +473,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         // Debug Hitbox
-        if (developerMode || hitbox) {
+        if (hitbox) {
             ArrayList<Rectangle> greenZonesCopy = new ArrayList<>(greenZones);
             for (Rectangle component : greenZonesCopy) {
                 g.setColor(Color.GREEN);

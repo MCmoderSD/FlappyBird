@@ -285,10 +285,12 @@ public class Utils {
         ObjectMapper mapper = new ObjectMapper();
         try {
             InputStream inputStream;
-            if (json.endsWith(".json")) {
+            if (json.endsWith("variantList.json")) inputStream = getClass().getResourceAsStream(json);
+            else if (json.endsWith(".json")) {
                 inputStream = Files.newInputStream(Paths.get(json));
                 customConfig = true;
             } else inputStream = getClass().getResourceAsStream("config/" + json + ".json");
+
             if (inputStream == null) return null;
             return mapper.readTree(inputStream);
         } catch (IOException e) {
@@ -374,6 +376,7 @@ public class Utils {
         else return Color.WHITE;
     }
 
+    // Checks if a key is contained in ArrayList
     public boolean containsKey(ArrayList<Double> keyList, ArrayList<Double> eventList) {
         for (Double key : keyList) {
             if (!eventList.contains(key)) {
@@ -383,6 +386,7 @@ public class Utils {
         return true; // If all keys are present in the eventList, return true
     }
 
+    // Shutdown the computer
     public void shutdown(Config config) {
         try {
             String shutdownCommand;

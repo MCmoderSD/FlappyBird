@@ -8,6 +8,7 @@
   "Icon": "Images/Tests/Icon.png",
   "GameOver": "error/empty.png",
   "Pause": "error/empty.png",
+  "Cloud": "",
   "dieSound": "",
   "flapSound": "",
   "hitSound": "",

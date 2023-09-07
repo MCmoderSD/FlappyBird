@@ -14,6 +14,7 @@ public class Config {
     private final String icon; // File path for the game icon
     private final String gameOver; // File path for the Game Over image
     private final String pause; // File path for the pause image
+    private final String cloud; // File path for the cloud image
     private final String dieSound; // File path for the death sound
     private final String flapSound; // File path for the flap sound
     private final String hitSound; // File path for the hit sound
@@ -65,6 +66,7 @@ public class Config {
         nullCheck.put(nullCheck.size(), config.get("Icon").asText());
         nullCheck.put(nullCheck.size(), config.get("GameOver").asText());
         nullCheck.put(nullCheck.size(), config.get("Pause").asText());
+        nullCheck.put(nullCheck.size(), config.get("Cloud").asText());
         nullCheck.put(nullCheck.size(), config.get("dieSound").asText());
         nullCheck.put(nullCheck.size(), config.get("flapSound").asText());
         nullCheck.put(nullCheck.size(), config.get("hitSound").asText());
@@ -86,12 +88,13 @@ public class Config {
         icon = nullCheck.get(5);
         gameOver = nullCheck.get(6);
         pause = nullCheck.get(7);
-        dieSound = nullCheck.get(8);
-        flapSound = nullCheck.get(9);
-        hitSound = nullCheck.get(10);
-        pointSound = nullCheck.get(11);
-        rainbowSound = nullCheck.get(12);
-        music = nullCheck.get(13);
+        cloud = nullCheck.get(8);
+        dieSound = nullCheck.get(9);
+        flapSound = nullCheck.get(10);
+        hitSound = nullCheck.get(11);
+        pointSound = nullCheck.get(12);
+        rainbowSound = nullCheck.get(13);
+        music = nullCheck.get(14);
 
         int[] dimension = utils.maxDimension(config.get("WindowSizeX").asInt(), config.get("WindowSizeY").asInt());
         width = dimension[0];
@@ -178,6 +181,10 @@ public class Config {
 
     public String getPause() {
         return pause;
+    }
+
+    public String getCloud() {
+        return cloud;
     }
 
     public String getDieSound() {

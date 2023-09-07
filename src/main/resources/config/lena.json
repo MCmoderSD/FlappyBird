@@ -8,6 +8,7 @@
   "Icon": "Images/Icon.png",
   "GameOver": "Images/Lena/GameOver.png",
   "Pause": "Images/Lena/GamePaused.png",
+  "Cloud": "Images/Lena/Clouds/variantList.json",
   "dieSound": "Sounds/mono/die.wav",
   "flapSound": "Sounds/mono/flap.wav",
   "hitSound": "Sounds/mono/hit.wav",

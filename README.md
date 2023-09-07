@@ -56,6 +56,7 @@ Press `F3` + `R` to toggle the reverse mode or `F3` + `C` to change through the 
   "Icon": "PATH TO YOUR ICON",
   "GameOver": "PATH TO YOUR GAME OVER SCREEN",
   "Pause": "PATH TO YOUR PAUSE SCREEN",
+  "Cloud": "PATH TO YOUR VARIANT LIST",
   "dieSound": "PATH TO YOUR DIE SOUND",
   "flapSound": "PATH TO YOUR FLAP SOUND",
   "hitSound": "PATH TO YOUR HIT SOUND",
@@ -68,7 +69,19 @@ Press `F3` + `R` to toggle the reverse mode or `F3` + `C` to change through the 
 }
 ```
 
-2. Replace the values with the absolute path to your assets.
+2. In the `PATH TO YOUR VARIANT LIST` you link a variantList`.json` file with the following structure:
+
+```json
+{
+  "variant1": "PATH TO YOUR VARIANT 1",
+  "variant2": "PATH TO YOUR VARIANT 2",
+  "variant3": "PATH TO YOUR VARIANT 3"
+}
+```   
+
+and so on, you can add as many variants as you want, you need at least one.
+
+3. Replace the values with the absolute path to your assets.
    <br> <br> For example: `"Background": "C:\\Users\\User\\Desktop\\MyBackground.png"`
    <br> You can only use `.png` files and for audio only `.wav` files encoded with 16 bit.
    <br> <br> The size of the assets should be the same as the default assets.
@@ -76,7 +89,7 @@ Press `F3` + `R` to toggle the reverse mode or `F3` + `C` to change through the 
    <br> The background should be bigger than the window width and height.
    <br> Rainbow should the same size as the player and `.gif` format.
    <br> <br>
-3. Run the game with the custom config file.
+4. Run the game with the custom config file.
    <br> For example: `java -jar FlappyBird.jar <PathToTheConfigFile>` <br> <br>
 
 ## Features
@@ -98,6 +111,7 @@ Press `F3` + `R` to toggle the reverse mode or `F3` + `C` to change through the 
 - [x] Music
 - [x] Variable Tickrate
 - [x] Pause
+- [x] Clouds
 - [x] Username Checker
 - [x] Highscore
 - [x] Leaderboard
