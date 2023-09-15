@@ -33,7 +33,7 @@ public class UI extends JFrame {
     private JLabel score;
     private JSpinner spinnerFPS;
     private JScrollPane scrollPane;
-    private Timer updateDatabase, focusTimer;
+    private Timer updateDatabase;
     private boolean f3Pressed = false;
 
     // Constructor
@@ -71,7 +71,7 @@ public class UI extends JFrame {
         // Timer for updating the leaderboard
         new Thread(() -> {
             updateDatabase = new Timer(5000, e -> initLeaderBoard());
-            focusTimer = new Timer((int) config.getFPS(), e -> requestFocusInWindow());
+            while (!spinnerFPS.isFocusOwner() && !playerName.isFocusOwner()) requestFocus();
         }).start();
 
         // Initialize database connection and leaderboard
@@ -96,7 +96,6 @@ public class UI extends JFrame {
 
                 Main.isRunning = true;
 
-                focusTimer.stop();
                 setVisible(false);
 
                 JFrame frame = new JFrame(config.getTitle());
@@ -188,7 +187,6 @@ public class UI extends JFrame {
                 if (e.getKeyCode() == KeyEvent.VK_F3) f3Pressed = false;
             }
         });
-
         initUI();
     }
 
@@ -214,7 +212,6 @@ public class UI extends JFrame {
         if (utils.checkSQLConnection(host, port) && updateDatabase != null) updateDatabase.start();
 
         setVisible(true);
-        focusTimer.start();
     }
 
     // Method to initialize UI components
@@ -295,13 +292,32 @@ public class UI extends JFrame {
         JFormattedTextField txt = ((JSpinner.DefaultEditor) spinnerFPS.getEditor()).getTextField();
         ((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
 
-        // TODO Attention Trigger Warning!!!
+
         spinnerFPS.addChangeListener(e -> {
+            spinnerFPS.requestFocus();
             if (spinnerFPS.getValue() != null) {
                 if ((int) Double.parseDouble(spinnerFPS.getValue().toString()) >= 360) spinnerFPS.setValue(360);
                 if ((int) Double.parseDouble(spinnerFPS.getValue().toString()) <= 1) spinnerFPS.setValue(1);
             }
         });
+
+        spinnerFPS.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                super.keyPressed(e);
+                if (e.getKeyChar() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_ESCAPE) requestFocusInWindow();
+            }
+        });
+
+        playerName.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                super.keyPressed(e);
+                if (e.getKeyChar() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_ESCAPE) requestFocusInWindow();
+            }
+        });
+
+
     }
 
     private void changeArgs(String profile, boolean reversed) {

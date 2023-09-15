@@ -39,6 +39,8 @@ If you don't want to submit your score, leave the username blank and click `Subm
 Press `F3` + `B` to toggle the hitbox visualization or `F3` + `F` to toggle the FPS counter.
 <br>
 Press `F3` + `R` to toggle the reverse mode or `F3` + `C` to change through the assets.
+<br>
+If this doesn't work change the FPS or Username and press `Enter` or `Escape`.
 <br> <br>
 
 ## How to use custom assets
