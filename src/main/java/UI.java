@@ -251,6 +251,7 @@ public class UI extends JFrame {
         soundCheckBox.setToolTipText("Enable or disable sound");
         soundCheckBox.setBorder(BorderFactory.createEmptyBorder());
         soundCheckBox.setFont(new Font("Roboto", Font.PLAIN, 24));
+        soundCheckBox.addChangeListener(e -> requestFocusInWindow());
         soundCheckBox.setForeground(utils.calculateForegroundColor(utils.getAverageColorInRectangle(utils.getBottomMenuBounds(backgroundFrame), backgroundFrame)));
 
         // Initialize Username Textfield
@@ -316,8 +317,6 @@ public class UI extends JFrame {
                 if (e.getKeyChar() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_ESCAPE) requestFocusInWindow();
             }
         });
-
-
     }
 
     private void changeArgs(String profile, boolean reversed) {
