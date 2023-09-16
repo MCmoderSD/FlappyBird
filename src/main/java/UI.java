@@ -100,9 +100,10 @@ public class UI extends JFrame {
 
                 JFrame frame = new JFrame(config.getTitle());
                 GamePanel gamePanel = new GamePanel(frame, config);
+                gamePanel.setPreferredSize(new Dimension(config.getWindowSizeX(), config.getWindowSizeY()));
                 frame.add(gamePanel);
+                frame.pack();
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setSize(config.getWindowSizeX(), config.getWindowSizeY());
                 frame.setResizable(config.isResizable());
                 frame.setLocationRelativeTo(null);
                 frame.setLocation(utils.centerFrame(frame));
@@ -235,6 +236,8 @@ public class UI extends JFrame {
         };
         // Add panel to Frame
         add(backgroundFrame);
+        backgroundFrame.setPreferredSize(new Dimension(config.getWindowSizeX(), config.getWindowSizeY()));
+        pack();
 
         // Initialize window position
         setLocation(utils.centerFrame(this));

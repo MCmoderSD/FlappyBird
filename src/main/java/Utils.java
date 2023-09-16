@@ -30,7 +30,7 @@ public class Utils {
     private final ArrayList<BufferedInputStream> heavyBufferedInputStreamCache = new ArrayList<>(); // Cache for BufferedInputStreams
     private final ArrayList<AudioInputStream> heavyAudioInputStreamCache = new ArrayList<>(); // Cache for AudioInputStreams
     private long startTime = System.currentTimeMillis();
-    private boolean audioIsStopped, customConfig = false, smallScreen = false;
+    private boolean audioIsStopped, customConfig = false, smallX = false, smallY = false;
 
     // Calculate the player's trajectory
     public int calculateGravity(int x) {
@@ -246,7 +246,8 @@ public class Utils {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Screen size
         int x = ((screenSize.width - frame.getWidth()) / 2);
         int y = ((screenSize.height - frame.getHeight()) / 2);
-        if (smallScreen) y = 0;
+        if (smallX) x = 0;
+        if (smallY) y = 0;
         return new Point(x, y);
     }
 
@@ -309,16 +310,13 @@ public class Utils {
 
     // Checks if the resolution is too large
     public int[] maxDimension(int x, int y) {
-        int width = Toolkit.getDefaultToolkit().getScreenSize().width;
-        long height = Math.round(Toolkit.getDefaultToolkit().getScreenSize().height * 0.95);
-        if (x > width) {
-            x = width;
-            smallScreen = true;
-        }
-        if (y > height) {
-            y = (int) height;
-            smallScreen = true;
-        }
+        int width = Math.toIntExact(Math.round(Toolkit.getDefaultToolkit().getScreenSize().width * 0.9950249));
+        int height = Math.toIntExact(Math.round(Toolkit.getDefaultToolkit().getScreenSize().height * 0.9259259));
+        if (x > width) x = width;
+        if (y > height) y = height;
+        if (x == width) smallX = true;
+        if (y == height) smallY = true;
+
         return new int[]{x, y};
     }
 
