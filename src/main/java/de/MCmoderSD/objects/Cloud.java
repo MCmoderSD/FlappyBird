@@ -11,13 +11,14 @@ public class Cloud {
     // Attributes
     private final int width;
     private final int height;
-    private final int speed;
     private final BufferedImage image;
     private final Color color;
     private final Color hitboxColor;
-    private final int y;
+
     // Variables
-    private int x;
+    private float x;
+    private float y;
+    private float speed;
 
     // Constructors
     public Cloud(Config config, int x, int y) {
@@ -81,19 +82,19 @@ public class Cloud {
     }
 
     public Point getLocation() {
-        return new Point(x, y);
+        return new Point((int) x, (int) y);
     }
 
     public int getX() {
-        return x;
+        return (int) x;
     }
 
     public int getY() {
-        return y;
+        return (int) y;
     }
 
     public Rectangle getHitbox() {
-        return new Rectangle(x, y, width, height);
+        return new Rectangle((int) x, (int) y, width, height);
     }
 
     public Dimension getDimension() {

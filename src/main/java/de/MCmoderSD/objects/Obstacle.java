@@ -11,15 +11,15 @@ public class Obstacle {
     // Attributes
     private final int width;
     private final int height;
-    private final int speed;
     private final BufferedImage image;
     private final Color color;
     private final Color hitboxColor;
     private final boolean isTop;
 
     // Variables
-    private int x;
-    private int y;
+    private float x;
+    private float y;
+    private float speed;
 
     // Constructor
     public Obstacle(Config config, boolean isTop) {
@@ -73,15 +73,15 @@ public class Obstacle {
     }
 
     public int getX() {
-        return x;
+        return (int) x;
     }
 
     public int getY() {
-        return y;
+        return (int) y;
     }
 
     public Point getLocation() {
-        return new Point(x, y);
+        return new Point((int) x, (int) y);
     }
 
     public void setLocation(Point location) {
@@ -90,6 +90,6 @@ public class Obstacle {
     }
 
     public Rectangle getHitbox() {
-        return new Rectangle(x, y, width, height);
+        return new Rectangle((int) x, (int) y, width, height);
     }
 }

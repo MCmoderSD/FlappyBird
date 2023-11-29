@@ -7,12 +7,13 @@ import java.awt.*;
 public class SafeZone {
     private final int width;
     private final int height;
-    private final int speed;
     private final Color color;
     private final Color hitboxColor;
-    private final int y;
+
     // Variables
-    private int x;
+    private float x;
+    private float y;
+    private float speed;
 
     // Constructors
     public SafeZone(Config config, Obstacle top, Obstacle bottom) {
@@ -21,7 +22,7 @@ public class SafeZone {
         hitboxColor = /* ToDo config.getSafeZoneColor(); */ Color.GREEN;
 
         width = top.getWidth();
-        height = bottom.getY() - top.getY() + bottom.getHeight();
+        height = bottom.getY() - top.getY() - top.getHeight();
 
         x = top.getX();
         y = top.getY() + top.getHeight();
@@ -56,18 +57,18 @@ public class SafeZone {
     }
 
     public int getX() {
-        return x;
+        return (int) x;
     }
 
     public int getY() {
-        return y;
+        return (int) y;
     }
 
     public Point getLocation() {
-        return new Point(x, y);
+        return new Point((int) x, (int) y);
     }
 
     public Rectangle getHitbox() {
-        return new Rectangle(x, y, width, height);
+        return new Rectangle((int) x, (int) y, width, height);
     }
 }

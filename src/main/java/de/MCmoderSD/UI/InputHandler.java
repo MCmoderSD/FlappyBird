@@ -7,11 +7,17 @@ import java.awt.event.MouseEvent;
 
 public class InputHandler implements KeyListener {
 
+    // Associations
+    private final Frame frame;
+
     // Attributes
     private boolean space;
+    private boolean isPause;
 
     // Constructor
     public InputHandler(Frame frame) {
+        this.frame = frame;
+
         space = false;
         frame.addKeyListener(this);
         frame.addMouseListener(new MouseAdapter() {
@@ -45,8 +51,15 @@ public class InputHandler implements KeyListener {
         if (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_Q) System.exit(0);
         if (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_F4) System.exit(0);
 
+        // Pause
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) frame.getController().togglePause();
+        if (e.getKeyCode() == KeyEvent.VK_P) frame.getController().togglePause();
+
         // Controls
         if (e.getKeyCode() == KeyEvent.VK_SPACE) space = true;
+        if (e.getKeyCode() == KeyEvent.VK_UP) space = true;
+        if (e.getKeyCode() == KeyEvent.VK_W) space = true;
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) space = true;
     }
 
     @Override
@@ -54,10 +67,13 @@ public class InputHandler implements KeyListener {
 
         // Controls
         if (e.getKeyCode() == KeyEvent.VK_SPACE) space = false;
+        if (e.getKeyCode() == KeyEvent.VK_UP) space = false;
+        if (e.getKeyCode() == KeyEvent.VK_W) space = false;
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) space = false;
     }
 
     // Getter
-    public boolean spacePressed() {
+    public boolean isJump() {
         return space;
     }
 }

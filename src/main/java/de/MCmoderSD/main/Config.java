@@ -27,10 +27,11 @@ public class Config {
     // Game logic constants
     private final int percentage;
     private final int gap;
-    private final int jumpHeight;
-    private final int backgroundSpeed;
-    private final int obstacleSpeed;
-    private final int cloudSpeed;
+    private final float jumpHeight;
+    private final float gravity;
+    private final float backgroundSpeed;
+    private final float obstacleSpeed;
+    private final float cloudSpeed;
     private final int maxFPS;
 
     // Assets
@@ -54,6 +55,8 @@ public class Config {
     private final Color obstacleBottomHitboxColor;
     private final Color obstacleHitboxColor;
     private final Color backgroundColor;
+    private final Color fontColor;
+    private final Color scoreColor;
 
     // Animations
     private final ImageIcon rainbowAnimation;
@@ -69,6 +72,7 @@ public class Config {
     // Messages
     private final String language;
     private final String title;
+    private final String scorePrefix;
 
     // Constructor
     public Config(String[] args) {
@@ -89,10 +93,11 @@ public class Config {
 
         percentage = config.get("percentage").asInt();
         gap = config.get("gap").asInt();
-        jumpHeight = config.get("jumpHeight").asInt();
-        backgroundSpeed = config.get("backgroundSpeed").asInt();
-        obstacleSpeed = config.get("obstacleSpeed").asInt();
-        cloudSpeed = config.get("cloudSpeed").asInt();
+        jumpHeight = config.get("jumpHeight").asFloat();
+        gravity = config.get("gravity").asFloat();
+        backgroundSpeed = config.get("backgroundSpeed").asFloat();
+        obstacleSpeed = config.get("obstacleSpeed").asFloat();
+        cloudSpeed = config.get("cloudSpeed").asFloat();
         maxFPS = config.get("maxFPS").asInt();
 
 
@@ -127,23 +132,26 @@ public class Config {
         obstacleBottomHitboxColor = Calculate.hexToColor(config.get("obstacleBottomHitboxColor").asText());
         obstacleHitboxColor = Calculate.hexToColor(config.get("obstacleHitboxColor").asText());
         backgroundColor = Calculate.hexToColor(config.get("backgroundColor").asText());
+        fontColor = Calculate.hexToColor(config.get("fontColor").asText());
+        scoreColor = Calculate.hexToColor(config.get("scoreColor").asText());
 
 
         audioPlayer = new AudioPlayer();
 
         // Sounds
-        dieSound = config.get("dieSound").asText();
-        flapSound = config.get("flapSound").asText();
-        hitSound = config.get("hitSound").asText();
-        pointSound = config.get("pointSound").asText();
-        rainbowSound = config.get("rainbowSound").asText();
-        backgroundMusic = config.get("backgroundMusic").asText();
+        audioPlayer.loadAudio(dieSound = config.get("dieSound").asText());
+        audioPlayer.loadAudio(flapSound = config.get("flapSound").asText());
+        audioPlayer.loadAudio(hitSound = config.get("hitSound").asText());
+        audioPlayer.loadAudio(pointSound = config.get("pointSound").asText());
+        audioPlayer.loadAudio(rainbowSound = config.get("rainbowSound").asText());
+        audioPlayer.loadAudio(backgroundMusic = config.get("backgroundMusic").asText());
 
 
         JsonNode messages = jsonUtility.load("/languages/" + language + ".json");
 
         // Messages
         title = messages.get("title").asText();
+        scorePrefix = messages.get("scorePrefix").asText();
     }
 
     // Constructor with URL
@@ -165,10 +173,11 @@ public class Config {
 
         percentage = config.get("percentage").asInt();
         gap = config.get("gap").asInt();
-        jumpHeight = config.get("jumpHeight").asInt();
-        backgroundSpeed = config.get("backgroundSpeed").asInt();
-        obstacleSpeed = config.get("obstacleSpeed").asInt();
-        cloudSpeed = config.get("cloudSpeed").asInt();
+        jumpHeight = config.get("jumpHeight").asFloat();
+        gravity = config.get("gravity").asFloat();
+        backgroundSpeed = config.get("backgroundSpeed").asFloat();
+        obstacleSpeed = config.get("obstacleSpeed").asFloat();
+        cloudSpeed = config.get("cloudSpeed").asFloat();
         maxFPS = config.get("maxFPS").asInt();
 
 
@@ -203,23 +212,26 @@ public class Config {
         obstacleBottomHitboxColor = Calculate.hexToColor(config.get("obstacleBottomHitboxColor").asText());
         obstacleHitboxColor = Calculate.hexToColor(config.get("obstacleHitboxColor").asText());
         backgroundColor = Calculate.hexToColor(config.get("backgroundColor").asText());
+        fontColor = Calculate.hexToColor(config.get("fontColor").asText());
+        scoreColor = Calculate.hexToColor(config.get("scoreColor").asText());
 
 
         audioPlayer = new AudioPlayer();
 
         // Sounds
-        dieSound = config.get(url + "dieSound").asText();
-        flapSound = config.get(url + "flapSound").asText();
-        hitSound = config.get(url + "hitSound").asText();
-        pointSound = config.get(url + "pointSound").asText();
-        rainbowSound = config.get(url + "rainbowSound").asText();
-        backgroundMusic = config.get(url + "backgroundMusic").asText();
+        audioPlayer.loadAudio(dieSound = config.get("dieSound").asText());
+        audioPlayer.loadAudio(flapSound = config.get("flapSound").asText());
+        audioPlayer.loadAudio(hitSound = config.get("hitSound").asText());
+        audioPlayer.loadAudio(pointSound = config.get("pointSound").asText());
+        audioPlayer.loadAudio(rainbowSound = config.get("rainbowSound").asText());
+        audioPlayer.loadAudio(backgroundMusic = config.get("backgroundMusic").asText());
 
 
         JsonNode messages = jsonUtility.load("languages" + language + ".json");
 
         // Messages
         title = messages.get("title").asText();
+        scorePrefix = messages.get("scorePrefix").asText();
     }
 
     // Association getter
@@ -256,19 +268,23 @@ public class Config {
         return gap;
     }
 
-    public int getJumpHeight() {
+    public float getJumpHeight() {
         return jumpHeight;
     }
 
-    public int getBackgroundSpeed() {
+    public float getGravity() {
+        return gravity;
+    }
+
+    public float getBackgroundSpeed() {
         return backgroundSpeed;
     }
 
-    public int getObstacleSpeed() {
+    public float getObstacleSpeed() {
         return obstacleSpeed;
     }
 
-    public int getCloudSpeed() {
+    public float getCloudSpeed() {
         return cloudSpeed;
     }
 
@@ -355,6 +371,14 @@ public class Config {
         return backgroundColor;
     }
 
+    public Color getFontColor() {
+        return fontColor;
+    }
+
+    public Color getScoreColor() {
+        return scoreColor;
+    }
+
     // Sounds getter
     public String getDieSound() {
         return dieSound;
@@ -387,5 +411,9 @@ public class Config {
 
     public String getTitle() {
         return title;
+    }
+
+    public String getScorePrefix() {
+        return scorePrefix;
     }
 }

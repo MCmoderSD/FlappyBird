@@ -13,11 +13,11 @@ public class Background {
     private final Color color;
     private final int width;
     private final int height;
-    private final int speed;
 
     // Variables
-    private int x;
-    private int y;
+    private float x;
+    private float y;
+    private float speed;
 
     // Constructors
     public Background(Config config, int x, int y) {
@@ -28,6 +28,9 @@ public class Background {
 
         width = image.getWidth();
         height = image.getHeight();
+
+        this.x = x;
+        this.y = y;
     }
 
     public Background(Config config, Point location) {
@@ -66,18 +69,22 @@ public class Background {
     }
 
     public Point getLocation() {
-        return new Point(x, 0);
+        return new Point((int) x, 0);
     }
 
     public int getX() {
-        return x;
+        return (int) x;
     }
 
     public int getY() {
-        return y;
+        return (int) y;
     }
 
     public Dimension getDimension() {
         return new Dimension(width, height);
+    }
+
+    public Rectangle getHitbox() {
+        return new Rectangle((int) x, (int) y, width, height);
     }
 }

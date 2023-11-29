@@ -1,3 +1,4 @@
 {
-  "title": "Flappy Bird"
+  "title": "Flappy Bird",
+  "scorePrefix": "Score: "
 }

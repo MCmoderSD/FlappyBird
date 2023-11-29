@@ -16,10 +16,13 @@ public class Player {
     private final ImageIcon animation;
     private final Color color;
     private final Color hitboxColor;
+    private final float jumpHeight;
+    private final float gravity;
 
     // Variables
-    private final int x;
-    private int y;
+    private float x;
+    private float y;
+    private float fallSpeed;
 
     // Constructor
     public Player(Config config) {
@@ -29,11 +32,26 @@ public class Player {
         width = image.getWidth();
         height = image.getHeight();
 
+        jumpHeight = config.getJumpHeight();
+
         color = config.getPlayerColor();
         hitboxColor = config.getPlayerHitboxColor();
 
-        x = config.getWidth() / 4 - width / 2;
-        y = (config.getHeight() - height) / 2;
+        gravity = config.getGravity();
+
+
+        x = (float) config.getWidth() / 4 - (float) width / 2;
+        y = (float) (config.getHeight() - height) / 2;
+    }
+
+    // Methods
+    public void jump() {
+        fallSpeed = -jumpHeight;
+    }
+
+    public void fall() {
+        fallSpeed += gravity;
+        y += fallSpeed;
     }
 
     // Getter
@@ -66,19 +84,19 @@ public class Player {
     }
 
     public Point getLocation() {
-        return new Point(x, y);
+        return new Point((int) x, (int) y);
     }
 
     public Rectangle getHitbox() {
-        return new Rectangle(x, y, width, height);
+        return new Rectangle((int) x, (int) y, width, height);
     }
 
     public int getX() {
-        return x;
+        return (int) x;
     }
 
     public int getY() {
-        return y;
+        return (int) y;
     }
 
     // Setter
