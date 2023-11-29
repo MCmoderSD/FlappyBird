@@ -19,7 +19,7 @@ To run with alternative assets, you need to run the game via command line.
 2. Navigate to the folder where the game is located
 3. Run the following command: `java -jar FlappyBird.jar <firstArgument> <secondArgument>`
 4. Replace `<firstArgument>` with the path to the asset config file you want to
-   run. `911`, `911beta`, `alpha`, `lenabeta`. <br> The Default-Config is: `lena`
+   run. `911`, `911beta`, `alpha`, `lenabeta`. <br> The Default-main.Config is: `lena`
 5. Put as second an argument whatever you want, to run in reverse mode.
    As example put `reverse`
    <br> <br>
