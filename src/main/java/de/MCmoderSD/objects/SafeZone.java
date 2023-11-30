@@ -21,10 +21,10 @@ public class SafeZone {
         color = /* ToDo config.getSafeZoneColor(); */ Color.GREEN;
         hitboxColor = /* ToDo config.getSafeZoneColor(); */ Color.GREEN;
 
-        width = top.getWidth();
+        width = top.getWidth() - top.getWidth() / 10;
         height = bottom.getY() - top.getY() - top.getHeight();
 
-        x = top.getX();
+        x = top.getX() + (float) top.getWidth() / 20;
         y = top.getY() + top.getHeight();
 
         speed = config.getObstacleSpeed();

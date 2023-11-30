@@ -8,7 +8,7 @@
   "gravity": 0.00981,
   "backgroundSpeed": 0.15,
   "obstacleSpeed": 0.25,
-  "cloudSpeed": 1,
+  "cloudSpeed": 0.1,
   "maxFPS": 360,
   "icon": "/Images/Icon.png",
   "backgroundImage": "/Images/Background.png",

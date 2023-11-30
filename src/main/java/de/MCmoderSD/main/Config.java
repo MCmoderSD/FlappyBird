@@ -184,25 +184,25 @@ public class Config {
         maxFPS = config.get("maxFPS").asInt();
 
 
-        ImageStreamer imageReader = new ImageStreamer(url);
+        ImageStreamer imageStreamer = new ImageStreamer(url);
 
         // Assets
-        icon = imageReader.read(config.get("icon").asText());
-        backgroundImage = imageReader.read(config.get("backgroundImage").asText());
-        playerImage = imageReader.read(config.get("playerImage").asText());
-        obstacleTopImage = imageReader.read(config.get("obstacleTop").asText());
-        obstacleBottomImage = imageReader.read(config.get("obstacleBottom").asText());
-        gameOverImage = imageReader.read(config.get("gameOverImage").asText(), Math.min(width, height));
-        pauseImage = imageReader.read(config.get("pauseImage").asText(), Math.min(width, height));
+        icon = imageStreamer.read(config.get("icon").asText());
+        backgroundImage = imageStreamer.read(config.get("backgroundImage").asText());
+        playerImage = imageStreamer.read(config.get("playerImage").asText());
+        obstacleTopImage = imageStreamer.read(config.get("obstacleTop").asText());
+        obstacleBottomImage = imageStreamer.read(config.get("obstacleBottom").asText());
+        gameOverImage = imageStreamer.read(config.get("gameOverImage").asText(), Math.min(width, height));
+        pauseImage = imageStreamer.read(config.get("pauseImage").asText(), Math.min(width, height));
 
         // Cloud
         JsonNode clouds = jsonUtility.load(config.get("clouds").asText());
         cloudImages = new BufferedImage[clouds.getSize()];
         for (int i = 0; i < clouds.getSize(); i++)
-            cloudImages[i] = imageReader.read(clouds.get("variant" + i).asText());
+            cloudImages[i] = imageStreamer.read(clouds.get("variant" + i).asText());
 
         // Animations
-        rainbowAnimation = imageReader.readGif(config.get("rainbowAnimation").asText());
+        rainbowAnimation = imageStreamer.readGif(config.get("rainbowAnimation").asText());
 
         // Colors
         playerColor = config.get("playerColor").asColor();

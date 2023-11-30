@@ -35,9 +35,10 @@ public class Controller implements Runnable {
 
     // Variables
     private boolean isPaused;
+    private boolean hasCollided;
     private boolean gameOver;
     private boolean showFps;
-    private boolean hithoxes;
+    private boolean hitboxes;
     private boolean debug;
     private boolean cheatsActive;
     private boolean gameStarted;
@@ -63,10 +64,11 @@ public class Controller implements Runnable {
         // Init Game Variables
         speedModifier = 1;
         isPaused = false;
+        hasCollided = false;
         gameOver = false;
         gameStarted = false;
         showFps = false;
-        hithoxes = false;
+        hitboxes = false;
         debug = false;
         cheatsActive = false;
         score = 0;
@@ -125,25 +127,22 @@ public class Controller implements Runnable {
                         ArrayList<SafeZone> safeZonesToRemove = new ArrayList<>();
                         ArrayList<Cloud> cloudsToRemove = new ArrayList<>();
 
+                        // Check for fall
+                        if (!gameOver && !cheatsActive && player.getY() - player.getHeight() >= config.getHeight())
+                            fall();
 
-                        if (!gameOver) {
-                            if (!cheatsActive) {
+                        // Check for Collision
+                        if (!gameOver && !cheatsActive && !hasCollided) for (Obstacle obstacle : obstacles)
+                            if (player.getHitbox().intersects(obstacle.getHitbox())) collision();
 
-                                // Check for fall
-                                if (player.getY() - player.getHeight() >= config.getHeight()) fall();
 
-                                // Check for Collision
-                                for (Obstacle obstacle : obstacles)
-                                    if (player.getHitbox().intersects(obstacle.getHitbox())) collision();
+                        // Check for Safe Zone
+                        if (!gameOver) for (SafeZone safeZone : safeZones)
+                            if (player.getHitbox().intersects(safeZone.getHitbox())) {
+                                safeZonesToRemove.add(safeZone);
+                                point(event);
                             }
 
-                            // Check for Safe Zone
-                            for (SafeZone safeZone : safeZones)
-                                if (player.getHitbox().intersects(safeZone.getHitbox())) {
-                                    safeZonesToRemove.add(safeZone);
-                                    point(event);
-                                }
-                        }
 
                         // Remove elements that are out of bounds
                         for (Background background : backgrounds)
@@ -208,7 +207,7 @@ public class Controller implements Runnable {
 
                         player.fall();
 
-                        if (!gameOver) {
+                        if (!(gameOver || hasCollided)) {
 
                             // Move Clouds
                             for (Cloud cloud : clouds) cloud.move();
@@ -258,7 +257,7 @@ public class Controller implements Runnable {
 
     private void fall() {
         audioPlayer.playAudio(config.getDieSound());
-        if (!gameOver) gameOver();
+        gameOver = true;
     }
 
     private void point(double event) {
@@ -268,13 +267,8 @@ public class Controller implements Runnable {
     }
 
     private void collision() {
-        audioPlayer.playAudio(config.getDieSound());
-        gameOver();
-    }
-
-    private void gameOver() {
-        gameOver = true;
-        gameStarted = false;
+        audioPlayer.playAudio(config.getHitSound());
+        hasCollided = true;
     }
 
     private boolean hasCheated() {
@@ -317,7 +311,7 @@ public class Controller implements Runnable {
     }
 
     public boolean isHitboxes() {
-        return hithoxes;
+        return hitboxes;
     }
 
     public boolean isDebug() {
@@ -342,7 +336,7 @@ public class Controller implements Runnable {
     }
 
     public void toggleHitboxes() {
-        hithoxes = !hithoxes;
+        hitboxes = !hitboxes;
     }
 
     public void toggleKonami() {
