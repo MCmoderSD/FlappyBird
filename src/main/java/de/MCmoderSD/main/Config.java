@@ -1,6 +1,5 @@
 package de.MCmoderSD.main;
 
-import de.MCmoderSD.utilities.Calculate;
 import de.MCmoderSD.utilities.image.ImageReader;
 import de.MCmoderSD.utilities.image.ImageStreamer;
 import de.MCmoderSD.utilities.json.JsonNode;
@@ -57,6 +56,7 @@ public class Config {
     private final Color backgroundColor;
     private final Color fontColor;
     private final Color scoreColor;
+    private final Color fpsColor;
 
     // Animations
     private final ImageIcon rainbowAnimation;
@@ -73,6 +73,7 @@ public class Config {
     private final String language;
     private final String title;
     private final String scorePrefix;
+    private final String fpsPrefix;
 
     // Constructor
     public Config(String[] args) {
@@ -109,8 +110,8 @@ public class Config {
         playerImage = imageReader.read(config.get("playerImage").asText());
         obstacleTopImage = imageReader.read(config.get("obstacleTopImage").asText());
         obstacleBottomImage = imageReader.read(config.get("obstacleBottomImage").asText());
-        gameOverImage = imageReader.read(config.get("gameOverImage").asText());
-        pauseImage = imageReader.read(config.get("pauseImage").asText());
+        gameOverImage = imageReader.read(config.get("gameOverImage").asText(), Math.min(width, height));
+        pauseImage = imageReader.read(config.get("pauseImage").asText(), Math.min(width, height));
 
         // Cloud
         JsonNode clouds = jsonUtility.load(config.get("clouds").asText());
@@ -122,18 +123,19 @@ public class Config {
         rainbowAnimation = imageReader.readGif(config.get("rainbowAnimation").asText());
 
         // Colors
-        playerColor = Calculate.hexToColor(config.get("playerColor").asText());
-        playerHitboxColor = Calculate.hexToColor(config.get("playerHitboxColor").asText());
-        cloudColor = Calculate.hexToColor(config.get("cloudColor").asText());
-        cloudHitboxColor = Calculate.hexToColor(config.get("cloudHitboxColor").asText());
-        obstacleTopColor = Calculate.hexToColor(config.get("obstacleTopColor").asText());
-        obstacleTopHitboxColor = Calculate.hexToColor(config.get("obstacleTopHitboxColor").asText());
-        obstacleBottomColor = Calculate.hexToColor(config.get("obstacleBottomColor").asText());
-        obstacleBottomHitboxColor = Calculate.hexToColor(config.get("obstacleBottomHitboxColor").asText());
-        obstacleHitboxColor = Calculate.hexToColor(config.get("obstacleHitboxColor").asText());
-        backgroundColor = Calculate.hexToColor(config.get("backgroundColor").asText());
-        fontColor = Calculate.hexToColor(config.get("fontColor").asText());
-        scoreColor = Calculate.hexToColor(config.get("scoreColor").asText());
+        playerColor = config.get("playerColor").asColor();
+        playerHitboxColor = config.get("playerHitboxColor").asColor();
+        cloudColor = config.get("cloudColor").asColor();
+        cloudHitboxColor = config.get("cloudHitboxColor").asColor();
+        obstacleTopColor = config.get("obstacleTopColor").asColor();
+        obstacleTopHitboxColor = config.get("obstacleTopHitboxColor").asColor();
+        obstacleBottomColor = config.get("obstacleBottomColor").asColor();
+        obstacleBottomHitboxColor = config.get("obstacleBottomHitboxColor").asColor();
+        obstacleHitboxColor = config.get("obstacleHitboxColor").asColor();
+        backgroundColor = config.get("backgroundColor").asColor();
+        fontColor = config.get("fontColor").asColor();
+        scoreColor = config.get("scoreColor").asColor();
+        fpsColor = config.get("fpsColor").asColor();
 
 
         audioPlayer = new AudioPlayer();
@@ -152,6 +154,7 @@ public class Config {
         // Messages
         title = messages.get("title").asText();
         scorePrefix = messages.get("scorePrefix").asText();
+        fpsPrefix = messages.get("fpsPrefix").asText();
     }
 
     // Constructor with URL
@@ -189,8 +192,8 @@ public class Config {
         playerImage = imageReader.read(config.get("playerImage").asText());
         obstacleTopImage = imageReader.read(config.get("obstacleTop").asText());
         obstacleBottomImage = imageReader.read(config.get("obstacleBottom").asText());
-        gameOverImage = imageReader.read(config.get("gameOverImage").asText());
-        pauseImage = imageReader.read(config.get("pauseImage").asText());
+        gameOverImage = imageReader.read(config.get("gameOverImage").asText(), Math.min(width, height));
+        pauseImage = imageReader.read(config.get("pauseImage").asText(), Math.min(width, height));
 
         // Cloud
         JsonNode clouds = jsonUtility.load(config.get("clouds").asText());
@@ -202,18 +205,19 @@ public class Config {
         rainbowAnimation = imageReader.readGif(config.get("rainbowAnimation").asText());
 
         // Colors
-        playerColor = Calculate.hexToColor(config.get("playerColor").asText());
-        playerHitboxColor = Calculate.hexToColor(config.get("playerHitboxColor").asText());
-        cloudColor = Calculate.hexToColor(config.get("cloudColor").asText());
-        cloudHitboxColor = Calculate.hexToColor(config.get("cloudHitboxColor").asText());
-        obstacleTopColor = Calculate.hexToColor(config.get("obstacleTopColor").asText());
-        obstacleTopHitboxColor = Calculate.hexToColor(config.get("obstacleTopHitboxColor").asText());
-        obstacleBottomColor = Calculate.hexToColor(config.get("obstacleBottomColor").asText());
-        obstacleBottomHitboxColor = Calculate.hexToColor(config.get("obstacleBottomHitboxColor").asText());
-        obstacleHitboxColor = Calculate.hexToColor(config.get("obstacleHitboxColor").asText());
-        backgroundColor = Calculate.hexToColor(config.get("backgroundColor").asText());
-        fontColor = Calculate.hexToColor(config.get("fontColor").asText());
-        scoreColor = Calculate.hexToColor(config.get("scoreColor").asText());
+        playerColor = config.get("playerColor").asColor();
+        playerHitboxColor = config.get("playerHitboxColor").asColor();
+        cloudColor = config.get("cloudColor").asColor();
+        cloudHitboxColor = config.get("cloudHitboxColor").asColor();
+        obstacleTopColor = config.get("obstacleTopColor").asColor();
+        obstacleTopHitboxColor = config.get("obstacleTopHitboxColor").asColor();
+        obstacleBottomColor = config.get("obstacleBottomColor").asColor();
+        obstacleBottomHitboxColor = config.get("obstacleBottomHitboxColor").asColor();
+        obstacleHitboxColor = config.get("obstacleHitboxColor").asColor();
+        backgroundColor = config.get("backgroundColor").asColor();
+        fontColor = config.get("fontColor").asColor();
+        scoreColor = config.get("scoreColor").asColor();
+        fpsColor = config.get("fpsColor").asColor();
 
 
         audioPlayer = new AudioPlayer();
@@ -232,6 +236,7 @@ public class Config {
         // Messages
         title = messages.get("title").asText();
         scorePrefix = messages.get("scorePrefix").asText();
+        fpsPrefix = messages.get("fpsPrefix").asText();
     }
 
     // Association getter
@@ -379,6 +384,10 @@ public class Config {
         return scoreColor;
     }
 
+    public Color getFpsColor() {
+        return fpsColor;
+    }
+
     // Sounds getter
     public String getDieSound() {
         return dieSound;
@@ -415,5 +424,9 @@ public class Config {
 
     public String getScorePrefix() {
         return scorePrefix;
+    }
+
+    public String getFpsPrefix() {
+        return fpsPrefix;
     }
 }

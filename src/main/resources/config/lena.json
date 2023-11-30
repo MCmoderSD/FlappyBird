@@ -31,6 +31,7 @@
   "backgroundColor": "#ffffff",
   "fontColor": "#000000",
   "scoreColor": "#ffff00",
+  "fpsColor": "#00ff00",
   "dieSound": "/Sounds/mono/die.wav",
   "flapSound": "/Sounds/mono/flap.wav",
   "hitSound": "/Sounds/mono/hit.wav",

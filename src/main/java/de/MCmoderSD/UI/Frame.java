@@ -22,10 +22,10 @@ public class Frame extends JFrame {
         InputHandler inputHandler = new InputHandler(this);
 
         // Create GameUI
-        GameUI gameUI = new GameUI(this, config);
+        new GameUI(this, config);
 
         // Create Controller
-        controller = new Controller(this, inputHandler, gameUI, config);
+        controller = new Controller(this, inputHandler, config);
 
         // Finalize and set visible
         pack();

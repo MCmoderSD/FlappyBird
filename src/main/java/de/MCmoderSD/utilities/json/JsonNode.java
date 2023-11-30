@@ -1,5 +1,6 @@
 package de.MCmoderSD.utilities.json;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -108,7 +109,8 @@ public class JsonNode {
                 String key = pair.substring(0, colonIndex).trim().replaceAll("\"", "");
                 String rawValue = pair.substring(colonIndex + 1).trim();
                 JsonValue value;
-                if (rawValue.startsWith("\"") && rawValue.endsWith("\"")) value = new JsonValue(rawValue.replaceAll("\"", ""));
+                if (rawValue.startsWith("\"") && rawValue.endsWith("\""))
+                    value = new JsonValue(rawValue.replaceAll("\"", ""));
                 else value = new JsonValue(rawValue);
                 jsonMap.put(key, value);
             }
@@ -187,6 +189,10 @@ public class JsonNode {
 
     public JsonValue getAsValue(String key) {
         return jsonMap.get(key).asValue();
+    }
+
+    public Color getAsColor(String key) {
+        return jsonMap.get(key).asColor();
     }
 
     // Setter
@@ -283,6 +289,14 @@ public class JsonNode {
     }
 
     public void set(String[] keys, JsonNode[] values) {
+        for (int i = 0; i < keys.length; i++) jsonMap.put(keys[i], new JsonValue(String.valueOf(values[i])));
+    }
+
+    public void set(String key, Color value) {
+        jsonMap.put(key, new JsonValue(String.valueOf(value)));
+    }
+
+    public void set(String[] keys, Color[] values) {
         for (int i = 0; i < keys.length; i++) jsonMap.put(keys[i], new JsonValue(String.valueOf(values[i])));
     }
 

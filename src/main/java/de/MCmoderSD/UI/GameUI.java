@@ -1,10 +1,12 @@
 package de.MCmoderSD.UI;
 
+import de.MCmoderSD.core.Controller;
 import de.MCmoderSD.main.Config;
 import de.MCmoderSD.objects.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class GameUI extends JPanel {
@@ -15,6 +17,7 @@ public class GameUI extends JPanel {
 
     // Attributes
     private final JLabel scoreLabel;
+    private final JLabel fpsLabel;
 
     // Constructor
     public GameUI(Frame frame, Config config) {
@@ -36,6 +39,15 @@ public class GameUI extends JPanel {
         scoreLabel.setSize((int) (config.getWidth() * 0.125), (int) (config.getHeight() * 0.05));
         scoreLabel.setLocation(config.getWidth() - scoreLabel.getWidth() - 10, 10);
         add(scoreLabel);
+
+        // Init FPS Label
+        fpsLabel = new JLabel("FPS: " + config.getMaxFPS());
+        fpsLabel.setFont(font);
+        fpsLabel.setForeground(config.getFpsColor());
+        fpsLabel.setSize((int) (config.getWidth() * 0.125), (int) (config.getHeight() * 0.05));
+        fpsLabel.setLocation(10, 10);
+        fpsLabel.setVisible(false);
+        add(fpsLabel);
     }
 
     @Override
@@ -44,17 +56,25 @@ public class GameUI extends JPanel {
 
         Graphics2D g = (Graphics2D) graphics;
 
-        Player player = frame.getController().getPlayer();
-        ArrayList<Obstacle> obstacles = frame.getController().getObstacles();
-        ArrayList<SafeZone> safeZones = frame.getController().getSafeZones();
-        ArrayList<Cloud> clouds = frame.getController().getClouds();
-        ArrayList<Background> backgrounds = frame.getController().getBackgrounds();
+        Controller controller = frame.getController();
+        Player player = controller.getPlayer();
+        ArrayList<Obstacle> obstacles = controller.getObstacles();
+        ArrayList<SafeZone> safeZones = controller.getSafeZones();
+        ArrayList<Cloud> clouds = controller.getClouds();
+        ArrayList<Background> backgrounds = controller.getBackgrounds();
 
         // Draw Background
         for (Background background : backgrounds) {
             g.setColor(background.getColor());
             g.fill(background.getHitbox());
             g.drawImage(background.getImage(), background.getX(), background.getY(), null);
+        }
+
+        // Draw Clouds
+        for (Cloud cloud : clouds) {
+            g.setColor(cloud.getColor());
+            //g.fill(cloud.getHitbox());
+            g.drawImage(cloud.getImage(), cloud.getX(), cloud.getY(), null);
         }
 
         // Draw Player
@@ -69,19 +89,37 @@ public class GameUI extends JPanel {
             g.drawImage(obstacle.getImage(), obstacle.getX(), obstacle.getY(), null);
         }
 
-        for (SafeZone safeZone : safeZones) {
-            g.setColor(safeZone.getColor());
-            g.draw(safeZone.getHitbox());
+        // Draw Pause or GameOver Image
+        if (controller.isPaused() || controller.isGameOver()) {
+            BufferedImage image = controller.isPaused() ? config.getPauseImage() : config.getGameOverImage();
+            g.drawImage(image, (config.getWidth() - image.getWidth()) / 2, (config.getHeight() - image.getHeight()) / 2, null);
         }
 
-        // Draw Clouds
-        for (Cloud cloud : clouds) {
-            g.setColor(cloud.getColor());
-            //g.fill(cloud.getHitbox());
-            g.drawImage(cloud.getImage(), cloud.getX(), cloud.getY(), null);
+        // HitBox
+        if (controller.isHitboxes() || controller.isDebug()) {
+
+            for (Cloud cloud : clouds) {
+                g.setColor(cloud.getHitboxColor());
+                g.draw(cloud.getHitbox());
+            }
+
+            g.setColor(player.getHitboxColor());
+            g.draw(player.getHitbox());
+
+            for (Obstacle obstacle : obstacles) {
+                g.setColor(obstacle.getHitboxColor());
+                g.draw(obstacle.getHitbox());
+            }
+
+            for (SafeZone safeZone : safeZones) {
+                g.setColor(safeZone.getHitboxColor());
+                g.draw(safeZone.getHitbox());
+            }
         }
 
-        scoreLabel.setText(config.getScorePrefix() + frame.getController().getScore());
+        scoreLabel.setText(config.getScorePrefix() + controller.getScore());
+        fpsLabel.setVisible(controller.isShowFps() || controller.isDebug());
+        fpsLabel.setText(config.getFpsPrefix() + controller.getFps());
 
         // Draw UI Elements
         paintComponents(g);
