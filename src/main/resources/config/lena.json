@@ -2,6 +2,7 @@
   "width": 800,
   "height": 800,
   "resizable": false,
+  "blockedTermsPath": "/data/blockedTerms",
   "percentage": 25,
   "gap": 200,
   "jumpHeight": 1.5,

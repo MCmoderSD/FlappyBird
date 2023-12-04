@@ -15,5 +15,7 @@
   "cheatsDetectedTitle": "My anti-cheat detected that you've modified the Memory of the game.",
   "instruction": "Fill in your username and click confirm to upload your score of ",
   "confirm": "Confirm",
-  "confirmToolTip": "Confirm your username and upload your score"
+  "confirmToolTip": "Confirm your username and upload your score",
+  "invalidUsername": "Your username is not valid! Please try again.",
+  "invalidUsernameTitle": "Invalid username!"
 }

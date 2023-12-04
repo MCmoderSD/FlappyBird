@@ -23,6 +23,7 @@ public class Config {
     private final boolean resizable;
     private final Dimension size;
     private final JsonNode database;
+    private final String blockedTermsPath;
 
     // Game logic constants
     private final int percentage;
@@ -89,6 +90,8 @@ public class Config {
     private final String instruction;
     private final String confirm;
     private final String confirmToolTip;
+    private final String invalidUsername;
+    private final String invalidUsernameTitle;
 
     // Constructor
     public Config(String[] args) {
@@ -107,6 +110,7 @@ public class Config {
         height = config.get("height").asInt();
         resizable = config.get("resizable").asBoolean();
         size = new Dimension(width, height);
+        blockedTermsPath = config.get("blockedTermsPath").asText();
 
         percentage = config.get("percentage").asInt();
         gap = config.get("gap").asInt();
@@ -185,6 +189,8 @@ public class Config {
         instruction = messages.get("instruction").asText();
         confirm = messages.get("confirm").asText();
         confirmToolTip = messages.get("confirmToolTip").asText();
+        invalidUsername = messages.get("invalidUsername").asText();
+        invalidUsernameTitle = messages.get("invalidUsernameTitle").asText();
     }
 
     // Constructor with URL
@@ -204,6 +210,7 @@ public class Config {
         height = config.get("height").asInt();
         resizable = config.get("resizable").asBoolean();
         size = new Dimension(width, height);
+        blockedTermsPath = config.get("blockedTermsPath").asText();
 
         percentage = config.get("percentage").asInt();
         gap = config.get("gap").asInt();
@@ -262,7 +269,7 @@ public class Config {
         audioPlayer.loadAudio(backgroundMusic = config.get("backgroundMusic").asText());
 
 
-        JsonNode messages = jsonUtility.load("languages" + language + ".json");
+        JsonNode messages = jsonUtility.load("/languages" + language + ".json");
 
         // Messages
         title = messages.get("title").asText();
@@ -282,6 +289,8 @@ public class Config {
         instruction = messages.get("instruction").asText();
         confirm = messages.get("confirm").asText();
         confirmToolTip = messages.get("confirmToolTip").asText();
+        invalidUsername = messages.get("invalidUsername").asText();
+        invalidUsernameTitle = messages.get("invalidUsernameTitle").asText();
     }
 
     // Association getter
@@ -312,6 +321,10 @@ public class Config {
 
     public JsonNode getDatabase() {
         return database;
+    }
+
+    public String getBlockedTermsPath() {
+        return blockedTermsPath;
     }
 
     public int getPercentage() {
@@ -533,5 +546,13 @@ public class Config {
 
     public String getConfirmToolTip() {
         return confirmToolTip;
+    }
+
+    public String getInvalidUsername() {
+        return invalidUsername;
+    }
+
+    public String getInvalidUsernameTitle() {
+        return invalidUsernameTitle;
     }
 }

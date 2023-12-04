@@ -96,6 +96,10 @@ public class Menu extends JPanel {
         return scoreBoard;
     }
 
+    public int getScore(String user) {
+        return scoreBoard.getScore(user);
+    }
+
     public int getFps() {
         return (int) fpsSpinner.getValue();
     }
@@ -121,6 +125,7 @@ public class Menu extends JPanel {
             soundButton.setLocation((int) (config.getWidth() * 0.7) - soundButton.getWidth() / 2, (int) (config.getHeight() * 0.85) - soundButton.getHeight() / 2);
             startButton.setText(config.getConfirm());
             startButton.setToolTipText(config.getConfirmToolTip());
+            startButton.addActionListener(e -> frame.getController().uploadScore());
             usernameField.setVisible(true);
         } else {
             usernameField.setText("");
@@ -131,6 +136,7 @@ public class Menu extends JPanel {
             headline.setText(config.getTitle());
             startButton.setText(config.getStart());
             startButton.setToolTipText(config.getStartToolTip());
+            startButton.addActionListener(e -> frame.getController().startGame());
             usernameField.setVisible(false);
         }
     }
