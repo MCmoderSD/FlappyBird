@@ -78,6 +78,7 @@ public class Controller {
     public void startGame() {
         Menu menu = frame.getMenu();
 
+        frame.getGame().init();
         frame.getGame().initGameConstants(menu.isSound(), menu.getFps());
 
         // Set GameUI visible
@@ -106,9 +107,9 @@ public class Controller {
         Menu menu = frame.getMenu();
         String username = menu.getUsername();
 
-        if (score > menu.getScore(username) && isUsernameValid(username, config.getBlockedTermsPath())) {
+        if (score > menu.getScore(username)) {
+            if (!isUsernameValid(username, config.getBlockedTermsPath())) return;
             mySQL.addScore(menu.getUsername(), score);
-            menu.setUsername(false);
             menu.setUsername(false);
         } else frame.showMessage(config.getInvalidUsername(), config.getInvalidUsernameTitle());
     }

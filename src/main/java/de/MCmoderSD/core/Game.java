@@ -237,7 +237,7 @@ public class Game implements Runnable {
     }
 
     // Methods
-    private void init() {
+    public void init() {
         // Init Game Variables
         speedModifier = 1;
         isPaused = false;
