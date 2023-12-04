@@ -1,5 +1,6 @@
 package de.MCmoderSD.main;
 
+import de.MCmoderSD.utilities.Calculate;
 import de.MCmoderSD.utilities.image.ImageReader;
 import de.MCmoderSD.utilities.image.ImageStreamer;
 import de.MCmoderSD.utilities.json.JsonNode;
@@ -18,6 +19,7 @@ public class Config {
 
     // Constants
     private final String[] args;
+    private final String configuration;
     private final int width;
     private final int height;
     private final boolean resizable;
@@ -103,11 +105,14 @@ public class Config {
         if (args.length == 0) language = "en";
         else language = args[0];
 
-        JsonNode config = jsonUtility.load("/config/lena.json");
+        if (args.length == 2) configuration = args[1];
+        else configuration = "lena";
+
+        JsonNode config = jsonUtility.load("/config/" + configuration + ".json");
         database = jsonUtility.load("/config/Database.json");
 
-        width = config.get("width").asInt();
-        height = config.get("height").asInt();
+        width = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).width;
+        height = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).height;
         resizable = config.get("resizable").asBoolean();
         size = new Dimension(width, height);
         blockedTermsPath = config.get("blockedTermsPath").asText();
@@ -203,7 +208,10 @@ public class Config {
         if (args.length == 0) language = "en";
         else language = args[0];
 
-        JsonNode config = jsonUtility.load("/config/lena");
+        if (args.length == 2 && !args[1].endsWith(".json")) configuration = args[1];
+        else configuration = "lena";
+
+        JsonNode config = jsonUtility.load("/config/" + configuration + ".json");
         database = jsonUtility.load("/config/Database.json");
 
         width = config.get("width").asInt();
@@ -301,6 +309,10 @@ public class Config {
     // Constants getter
     public String[] getArgs() {
         return args;
+    }
+
+    public String getConfiguration() {
+        return configuration;
     }
 
     public int getWidth() {

@@ -118,9 +118,4 @@ public class ScoreBoard extends JPanel {
         this.scores = scores;
         updateTable();
     }
-
-    public int getScore(String user) {
-        if (!scores.containsKey(user)) return 0;
-        return scores.get(user);
-    }
 }

@@ -36,7 +36,7 @@ public class Frame extends JFrame {
         game = new Game(this, inputHandler, config);
 
         // Create Controller
-        controller = new Controller(this, inputHandler, config);
+        controller = new Controller(this, config);
 
         // Finalize and set visible
         pack();
@@ -47,14 +47,6 @@ public class Frame extends JFrame {
     // Setter
     public void showMessage(String message, String title) {
         new Thread(() -> JOptionPane.showMessageDialog(this, message, title, JOptionPane.INFORMATION_MESSAGE)).start();
-    }
-
-    public void setUiVisible(boolean visible) {
-        gameUI.setVisible(visible);
-    }
-
-    public void setMenuVisible(boolean visible) {
-        menu.setVisible(!visible);
     }
 
     // Getter

@@ -7,7 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Map;
 
 @SuppressWarnings("unused")
 public class MySQL {
@@ -22,7 +21,6 @@ public class MySQL {
 
     // Attributes
     private Connection connection;
-    private HashMap<String, Integer> scores;
 
     // Constructors
     public MySQL(JsonNode config) {
@@ -59,17 +57,11 @@ public class MySQL {
         }
     }
 
-    // Add a new score to the HashMap
-    public void addScore(String username, int score) {
-        pullFromMySQL();
-        scores.put(username, score);
-        pushToMySQL();
-    }
-
     // Get encoded data from MySQL
     public HashMap<String, Integer> pullFromMySQL() {
+        HashMap<String, Integer> scores;
         try {
-            if (!isConnected()) return scores; // not connected
+            if (!isConnected()) return null; // not connected
 
             // Select all records from the table
             String selectQuery = "SELECT * FROM " + table;
@@ -87,48 +79,31 @@ public class MySQL {
 
             resultSet.close();
             selectStatement.close();
+
+            return scores;
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }
-        return scores;
+        return null;
     }
 
     // Insert data into MySQL
-    public void pushToMySQL() {
+    public void pushToMySQL(String username, int score) {
         try {
             if (!isConnected()) return; // not connected
 
-            for (Map.Entry<String, Integer> entry : scores.entrySet()) {
-                String username = entry.getKey();
-                int score = entry.getValue();
+            // Prepare an SQL INSERT statement
+            String insertQuery = "INSERT INTO " + table + " (usernames, scores) VALUES (?, ?)";
+            PreparedStatement insertStatement = connection.prepareStatement(insertQuery);
 
-                // Check if the username already exists in the database
-                String selectQuery = "SELECT * FROM " + table + " WHERE usernames = ?";
-                PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
-                selectStatement.setString(1, username);
-                ResultSet resultSet = selectStatement.executeQuery();
+            // Set the parameters of the prepared statement
+            insertStatement.setString(1, username);
+            insertStatement.setInt(2, score);
 
-                if (resultSet.next()) {
-                    // If the username exists, update the score
-                    String updateQuery = "UPDATE " + table + " SET scores = ? WHERE usernames = ?";
-                    PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
-                    updateStatement.setInt(1, score);
-                    updateStatement.setString(2, username);
-                    updateStatement.executeUpdate();
-                    updateStatement.close();
-                } else {
-                    // If the username does not exist, insert a new record
-                    String insertQuery = "INSERT INTO " + table + " (usernames, scores) VALUES (?, ?)";
-                    PreparedStatement insertStatement = connection.prepareStatement(insertQuery);
-                    insertStatement.setString(1, username);
-                    insertStatement.setInt(2, score);
-                    insertStatement.executeUpdate();
-                    insertStatement.close();
-                }
+            // Execute the prepared statement
+            insertStatement.executeUpdate();
 
-                resultSet.close();
-                selectStatement.close();
-            }
+            insertStatement.close();
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }

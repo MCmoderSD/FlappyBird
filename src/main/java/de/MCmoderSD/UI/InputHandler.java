@@ -1,5 +1,6 @@
 package de.MCmoderSD.UI;
 
+import de.MCmoderSD.core.Controller;
 import de.MCmoderSD.core.Game;
 
 import java.awt.event.KeyEvent;
@@ -61,11 +62,15 @@ public class InputHandler implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         Game game = frame.getGame();
+        Controller controller = frame.getController();
 
         // Exit
         if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Q) System.exit(0);
         if (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_Q) System.exit(0);
         if (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_F4) System.exit(0);
+
+        // Asset Switch
+        if (f3Pressed && e.getKeyCode() == KeyEvent.VK_C) controller.switchAsset();
 
         // Pause
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) game.togglePause();

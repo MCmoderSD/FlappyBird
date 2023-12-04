@@ -145,4 +145,16 @@ public class Calculate {
             if (!map2.containsKey(entry.getKey()) || !map2.get(entry.getKey()).equals(entry.getValue())) return false;
         return true;
     }
+
+    public static Dimension calculateMaxDimension(int width, int height) {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Screen Size
+
+        int finalWidth = width;
+        int finalHeight = height;
+
+        if (width > screenSize.width * 0.95) finalWidth = Math.toIntExact(Math.round(screenSize.width * 0.95));
+        if (height > screenSize.height * 0.9) finalHeight = Math.toIntExact(Math.round(screenSize.height * 0.9));
+
+        return new Dimension(finalWidth, finalHeight);
+    }
 }

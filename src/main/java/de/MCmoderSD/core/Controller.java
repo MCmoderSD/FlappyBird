@@ -1,10 +1,9 @@
 package de.MCmoderSD.core;
 
 import de.MCmoderSD.UI.Frame;
-import de.MCmoderSD.UI.InputHandler;
 import de.MCmoderSD.UI.Menu;
-import de.MCmoderSD.UI.ScoreBoard;
 import de.MCmoderSD.main.Config;
+import de.MCmoderSD.main.Main;
 import de.MCmoderSD.utilities.database.MySQL;
 
 import java.io.BufferedReader;
@@ -14,7 +13,6 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -25,34 +23,27 @@ public class Controller {
 
     // Associations
     private final Frame frame;
-    private final InputHandler inputHandler;
     private final Config config;
     private final MySQL mySQL;
 
     // Attributes
+    private final ArrayList<String> blockedTerms;
     private int score;
 
-    public Controller(Frame frame, InputHandler inputHandler, Config config) {
+    public Controller(Frame frame, Config config) {
         super();
         this.frame = frame;
-        this.inputHandler = inputHandler;
         this.config = config;
 
         mySQL = new MySQL(config.getDatabase());
 
-        // Update Loop
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(this::updateScoreBoard, 0, 100, TimeUnit.MILLISECONDS);
-    }
+        blockedTerms = new ArrayList<>();
 
-    // Checks if the username is valid
-    public boolean isUsernameValid(String username, String blockListPath) {
-        List<String> blockedTerms = new ArrayList<>();
         try {
             InputStream inputStream;
-            if (blockListPath.startsWith("/"))
-                inputStream = getClass().getResourceAsStream(blockListPath); // Relative path
-            else inputStream = Files.newInputStream(Paths.get(blockListPath)); // Absolute path
+            if (config.getBlockedTermsPath().startsWith("/"))
+                inputStream = getClass().getResourceAsStream(config.getBlockedTermsPath()); // Relative path
+            else inputStream = Files.newInputStream(Paths.get(config.getBlockedTermsPath())); // Absolute path
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
 
@@ -62,16 +53,41 @@ public class Controller {
             System.err.println(e.getMessage());
         }
 
-        String[] usernameWords = username.toLowerCase().split("\\W+");
-
-        for (String word : usernameWords) if (blockedTerms.contains(word)) return false;
-        return true;
+        // Update Loop
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
+        scheduler.scheduleAtFixedRate(() -> frame.getMenu().getScoreBoard().setHashMap(mySQL.pullFromMySQL()), 0, 100, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(this::requestFocusLoop, 0, 100, TimeUnit.MILLISECONDS);
     }
 
-    // Updates the ScoreBoard
-    private void updateScoreBoard() {
-        ScoreBoard scoreBoard = frame.getMenu().getScoreBoard();
-        scoreBoard.setHashMap(mySQL.pullFromMySQL());
+    // Request Focus
+    private void requestFocusLoop() {
+        if (frame.getMenu().isVisible() && frame.getMenu().canFocus()) frame.requestFocusInWindow();
+    }
+
+    // Check for Asset Switch
+    public void switchAsset() {
+        if (frame.getGameUI().isVisible()) return;
+
+        int i = 0;
+        while (i < Main.CONFIGURATIONS.length) {
+            if (Objects.equals(Main.CONFIGURATIONS[i], config.getConfiguration())) break;
+            i++;
+        }
+
+        if (i + 1 == Main.CONFIGURATIONS.length) i = 0;
+        else i++;
+
+
+        if (config.getArgs().length == 3)
+            Main.main(new String[]{config.getLanguage(), Main.CONFIGURATIONS[i], config.getArgs()[2]});
+        else Main.main(new String[]{config.getLanguage(), Main.CONFIGURATIONS[i]});
+        frame.dispose();
+    }
+
+    // Checks if the username is valid
+    private boolean isUsernameValid(String username) {
+        for (String word : username.toLowerCase().split("\\W+")) if (blockedTerms.contains(word)) return false;
+        return true;
     }
 
     // Starts the game
@@ -107,10 +123,15 @@ public class Controller {
         Menu menu = frame.getMenu();
         String username = menu.getUsername();
 
-        if (score > menu.getScore(username)) {
-            if (!isUsernameValid(username, config.getBlockedTermsPath())) return;
-            mySQL.addScore(menu.getUsername(), score);
-            menu.setUsername(false);
-        } else frame.showMessage(config.getInvalidUsername(), config.getInvalidUsernameTitle());
+        while (username.startsWith(" ")) username = username.substring(1);
+        while (username.endsWith(" ")) username = username.substring(0, username.length() - 1);
+
+        if (!isUsernameValid(username) || username.length() < 3 || username.length() > 32) {
+            frame.showMessage(config.getInvalidUsername(), config.getInvalidUsernameTitle());
+            return;
+        } else menu.setUsername(false);
+
+        if (score > mySQL.pullFromMySQL().getOrDefault(username, 0)) mySQL.pushToMySQL(username, score);
+        menu.setUsername(false);
     }
 }

@@ -70,7 +70,7 @@ public class Game implements Runnable {
 
     @Override
     public void run() {
-        while (Main.isRunning) {
+        while (Main.IS_RUNNING) {
             // Timer
             double delta = 0;
             long current;
@@ -179,7 +179,7 @@ public class Game implements Runnable {
                         } else obstacleSpawnTimer++;
 
                         // Player Movement
-                        if (inputHandler.isJump() && !gameOver && !hasCollided) {
+                        if (inputHandler.isJump() && player.getY() + player.getHeight() > 0 && !gameOver && !hasCollided) {
                             player.jump();
                             if (sound) audioPlayer.instantPlay(config.getFlapSound());
                         }

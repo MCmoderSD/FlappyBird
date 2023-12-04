@@ -1,9 +1,14 @@
 package de.MCmoderSD.UI;
 
 import de.MCmoderSD.main.Config;
+import de.MCmoderSD.objects.Background;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 public class Menu extends JPanel {
 
@@ -19,7 +24,10 @@ public class Menu extends JPanel {
     private final JCheckBox soundButton;
     private final JTextField usernameField;
 
-    // Constants
+    // Variables
+    private boolean canFocus;
+
+    // Constructor
     public Menu(Frame frame, Config config) {
         super();
         setLayout(null);
@@ -47,18 +55,19 @@ public class Menu extends JPanel {
         fpsSpinner = new JSpinner(new SpinnerNumberModel(config.getMaxFPS(), 1, config.getMaxFPS(), 1));
         fpsSpinner.setSize((int) (config.getWidth() * 0.075), (int) (config.getHeight() * 0.05));
         fpsSpinner.setLocation((int) (config.getWidth() * 0.3) - fpsSpinner.getWidth() / 2, (int) (config.getHeight() * 0.9) - fpsSpinner.getHeight() / 2);
-        fpsSpinner.setFont(font);
         fpsSpinner.setToolTipText(config.getFpsToolTip());
+        fpsSpinner.setOpaque(false);
+        fpsSpinner.setFont(font);
         fpsSpinner.setVisible(true);
         add(fpsSpinner);
 
         // Init startButton
         startButton = new JButton(config.getStart());
-        startButton.setSize((int) (config.getWidth() * 0.125), (int) (config.getHeight() * 0.05));
+        startButton.setSize((int) (config.getWidth() * 0.25), (int) (config.getHeight() * 0.05));
         startButton.setLocation((int) (config.getWidth() * 0.5) - startButton.getWidth() / 2, (int) (config.getHeight() * 0.9) - startButton.getHeight() / 2);
         startButton.addActionListener(e -> frame.getController().startGame());
-        startButton.setFont(font);
         startButton.setToolTipText(config.getStartToolTip());
+        startButton.setFont(font);
         startButton.setVisible(true);
         add(startButton);
 
@@ -66,8 +75,8 @@ public class Menu extends JPanel {
         soundButton = new JCheckBox(config.getSound());
         soundButton.setSize((int) (config.getWidth() * 0.125), (int) (config.getHeight() * 0.05));
         soundButton.setLocation((int) (config.getWidth() * 0.7) - soundButton.getWidth() / 2, (int) (config.getHeight() * 0.9) - soundButton.getHeight() / 2);
-        soundButton.setFont(font);
         soundButton.setToolTipText(config.getSoundToolTip());
+        soundButton.setFont(font);
         soundButton.setOpaque(false);
         soundButton.setSelected(true);
         soundButton.setVisible(true);
@@ -77,8 +86,10 @@ public class Menu extends JPanel {
         usernameField = new JTextField();
         usernameField.setSize((int) (config.getWidth() * 0.5), (int) (config.getHeight() * 0.05));
         usernameField.setLocation((config.getWidth() - usernameField.getWidth()) / 2, (int) (config.getHeight() * 0.90));
-        usernameField.setToolTipText(config.getUsernameToolTip());
+        usernameField.setBorder(new EmptyBorder(0, 0, 0, 0));
         usernameField.setHorizontalAlignment(SwingConstants.CENTER);
+        usernameField.setToolTipText(config.getUsernameToolTip());
+        usernameField.setText(config.getUsername());
         usernameField.setOpaque(false);
         usernameField.setFont(font);
         usernameField.setVisible(false);
@@ -89,15 +100,48 @@ public class Menu extends JPanel {
         scoreBoard.setSize((int) (config.getWidth() * 0.9), (int) (config.getHeight() * 0.7));
         scoreBoard.setLocation((int) (config.getWidth() * 0.05), (int) (config.getHeight() * 0.1));
         scoreBoard.setVisible(true);
+
+        // Init Focus Listener
+        canFocus = true;
+
+        ((JSpinner.DefaultEditor) fpsSpinner.getEditor()).getTextField().addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                canFocus = false;
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                canFocus = true;
+            }
+        });
+
+        usernameField.addFocusListener(new FocusListener() {
+
+            @Override
+            public void focusGained(FocusEvent evt) {
+                canFocus = false;
+            }
+
+            @Override
+            public void focusLost(FocusEvent evt) {
+                canFocus = true;
+            }
+        });
+    }
+
+    public void paintComponent(Graphics graphics) {
+        super.paintComponent(graphics);
+
+        Graphics2D g = (Graphics2D) graphics;
+
+        Background background = new Background(config, 0, 0);
+        g.drawImage(background.getImage(), background.getX(), background.getY(), background.getWidth(), background.getHeight(), null);
     }
 
     // Getter
     public ScoreBoard getScoreBoard() {
         return scoreBoard;
-    }
-
-    public int getScore(String user) {
-        return scoreBoard.getScore(user);
     }
 
     public int getFps() {
@@ -113,7 +157,7 @@ public class Menu extends JPanel {
     }
 
     public boolean canFocus() {
-        return !fpsSpinner.hasFocus();
+        return canFocus;
     }
 
     // Setter
@@ -125,6 +169,8 @@ public class Menu extends JPanel {
             soundButton.setLocation((int) (config.getWidth() * 0.7) - soundButton.getWidth() / 2, (int) (config.getHeight() * 0.85) - soundButton.getHeight() / 2);
             startButton.setText(config.getConfirm());
             startButton.setToolTipText(config.getConfirmToolTip());
+            for (ActionListener actionListener : startButton.getActionListeners())
+                startButton.removeActionListener(actionListener);
             startButton.addActionListener(e -> frame.getController().uploadScore());
             usernameField.setVisible(true);
         } else {
@@ -136,6 +182,8 @@ public class Menu extends JPanel {
             headline.setText(config.getTitle());
             startButton.setText(config.getStart());
             startButton.setToolTipText(config.getStartToolTip());
+            for (ActionListener actionListener : startButton.getActionListeners())
+                startButton.removeActionListener(actionListener);
             startButton.addActionListener(e -> frame.getController().startGame());
             usernameField.setVisible(false);
         }
