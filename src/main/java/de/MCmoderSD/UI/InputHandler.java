@@ -1,11 +1,14 @@
 package de.MCmoderSD.UI;
 
-import de.MCmoderSD.core.Controller;
+import de.MCmoderSD.core.Game;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class InputHandler implements KeyListener {
 
@@ -40,10 +43,16 @@ public class InputHandler implements KeyListener {
                 space = false;
             }
         });
+
+        // Request focus
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(this::requestFocusLoop, 0, 100, TimeUnit.MILLISECONDS);
     }
 
-
     // Methods
+    private void requestFocusLoop() {
+        if (frame.isFocusAllowed()) frame.requestFocusInWindow();
+    }
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -51,7 +60,7 @@ public class InputHandler implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        Controller controller = frame.getController();
+        Game game = frame.getGame();
 
         // Exit
         if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Q) System.exit(0);
@@ -59,8 +68,8 @@ public class InputHandler implements KeyListener {
         if (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_F4) System.exit(0);
 
         // Pause
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) controller.togglePause();
-        if (e.getKeyCode() == KeyEvent.VK_P) controller.togglePause();
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) game.togglePause();
+        if (e.getKeyCode() == KeyEvent.VK_P) game.togglePause();
 
         // Controls
         if (e.getKeyCode() == KeyEvent.VK_SPACE) space = true;
@@ -72,15 +81,15 @@ public class InputHandler implements KeyListener {
         if (e.getKeyCode() == konamiCode[konamiIndex]) {
             konamiIndex++;
             if (konamiIndex == konamiCode.length) {
-                controller.toggleKonami();
+                game.toggleKonami();
                 konamiIndex = 0;
             }
         } else konamiIndex = 0;
 
         // Debug
         if (e.getKeyCode() == KeyEvent.VK_F3) f3Pressed = true;
-        if (f3Pressed && e.getKeyCode() == KeyEvent.VK_F) controller.toggleFps();
-        if (f3Pressed && e.getKeyCode() == KeyEvent.VK_B) controller.toggleHitboxes();
+        if (f3Pressed && e.getKeyCode() == KeyEvent.VK_F) game.toggleFps();
+        if (f3Pressed && e.getKeyCode() == KeyEvent.VK_B) game.toggleHitboxes();
     }
 
     @Override

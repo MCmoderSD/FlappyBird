@@ -22,6 +22,7 @@ public class Config {
     private final int height;
     private final boolean resizable;
     private final Dimension size;
+    private final JsonNode database;
 
     // Game logic constants
     private final int percentage;
@@ -72,8 +73,22 @@ public class Config {
     // Messages
     private final String language;
     private final String title;
+    private final String score;
+    private final String username;
+    private final String usernameToolTip;
+    private final String rank;
     private final String scorePrefix;
     private final String fpsPrefix;
+    private final String start;
+    private final String startToolTip;
+    private final String sound;
+    private final String soundToolTip;
+    private final String fpsToolTip;
+    private final String cheatsDetected;
+    private final String cheatsDetectedTitle;
+    private final String instruction;
+    private final String confirm;
+    private final String confirmToolTip;
 
     // Constructor
     public Config(String[] args) {
@@ -86,6 +101,7 @@ public class Config {
         else language = args[0];
 
         JsonNode config = jsonUtility.load("/config/lena.json");
+        database = jsonUtility.load("/config/Database.json");
 
         width = config.get("width").asInt();
         height = config.get("height").asInt();
@@ -153,8 +169,22 @@ public class Config {
 
         // Messages
         title = messages.get("title").asText();
+        score = messages.get("score").asText();
+        username = messages.get("username").asText();
+        usernameToolTip = messages.get("usernameToolTip").asText();
+        rank = messages.get("rank").asText();
         scorePrefix = messages.get("scorePrefix").asText();
         fpsPrefix = messages.get("fpsPrefix").asText();
+        start = messages.get("start").asText();
+        startToolTip = messages.get("startToolTip").asText();
+        sound = messages.get("sound").asText();
+        soundToolTip = messages.get("soundToolTip").asText();
+        fpsToolTip = messages.get("fpsToolTip").asText();
+        cheatsDetected = messages.get("cheatsDetected").asText();
+        cheatsDetectedTitle = messages.get("cheatsDetectedTitle").asText();
+        instruction = messages.get("instruction").asText();
+        confirm = messages.get("confirm").asText();
+        confirmToolTip = messages.get("confirmToolTip").asText();
     }
 
     // Constructor with URL
@@ -168,6 +198,7 @@ public class Config {
         else language = args[0];
 
         JsonNode config = jsonUtility.load("/config/lena");
+        database = jsonUtility.load("/config/Database.json");
 
         width = config.get("width").asInt();
         height = config.get("height").asInt();
@@ -235,8 +266,22 @@ public class Config {
 
         // Messages
         title = messages.get("title").asText();
+        score = messages.get("score").asText();
+        username = messages.get("username").asText();
+        usernameToolTip = messages.get("usernameToolTip").asText();
+        rank = messages.get("rank").asText();
         scorePrefix = messages.get("scorePrefix").asText();
         fpsPrefix = messages.get("fpsPrefix").asText();
+        start = messages.get("start").asText();
+        startToolTip = messages.get("startToolTip").asText();
+        sound = messages.get("sound").asText();
+        soundToolTip = messages.get("soundToolTip").asText();
+        fpsToolTip = messages.get("fpsToolTip").asText();
+        cheatsDetected = messages.get("cheatsDetected").asText();
+        cheatsDetectedTitle = messages.get("cheatsDetectedTitle").asText();
+        instruction = messages.get("instruction").asText();
+        confirm = messages.get("confirm").asText();
+        confirmToolTip = messages.get("confirmToolTip").asText();
     }
 
     // Association getter
@@ -263,6 +308,10 @@ public class Config {
 
     public Dimension getSize() {
         return size;
+    }
+
+    public JsonNode getDatabase() {
+        return database;
     }
 
     public int getPercentage() {
@@ -422,11 +471,67 @@ public class Config {
         return title;
     }
 
+    public String getScore() {
+        return score;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getUsernameToolTip() {
+        return usernameToolTip;
+    }
+
+    public String getRank() {
+        return rank;
+    }
+
     public String getScorePrefix() {
         return scorePrefix;
     }
 
     public String getFpsPrefix() {
         return fpsPrefix;
+    }
+
+    public String getStart() {
+        return start;
+    }
+
+    public String getStartToolTip() {
+        return startToolTip;
+    }
+
+    public String getSound() {
+        return sound;
+    }
+
+    public String getSoundToolTip() {
+        return soundToolTip;
+    }
+
+    public String getFpsToolTip() {
+        return fpsToolTip;
+    }
+
+    public String getCheatsDetected() {
+        return cheatsDetected;
+    }
+
+    public String getCheatsDetectedTitle() {
+        return cheatsDetectedTitle;
+    }
+
+    public String getInstruction() {
+        return instruction;
+    }
+
+    public String getConfirm() {
+        return confirm;
+    }
+
+    public String getConfirmToolTip() {
+        return confirmToolTip;
     }
 }

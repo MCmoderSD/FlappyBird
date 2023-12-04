@@ -7,6 +7,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @SuppressWarnings("unused")
@@ -78,11 +80,11 @@ public class Calculate {
     }
 
     // System Shutdown
-    public static void systemShutdown() {
+    public static void systemShutdown(int seconds) {
         try {
             if (Objects.equals(System.getProperty("os.name").toLowerCase(), "windows"))
-                Runtime.getRuntime().exec("shutdown.exe -s -t 0");
-            else Runtime.getRuntime().exec("shutdown -h now");
+                Runtime.getRuntime().exec("shutdown.exe -s -t " + seconds);
+            else Runtime.getRuntime().exec("shutdown -h now +" + seconds);
 
             System.exit(0);
         } catch (IOException e) {
@@ -134,5 +136,13 @@ public class Calculate {
         int averageBlue = totalBlue / pixelCount;
 
         return new Color(averageRed, averageGreen, averageBlue);
+    }
+
+    // Checks if Two HashMaps are equal
+    public static <K, V> boolean compareHashMaps(HashMap<K, V> map1, HashMap<K, V> map2) {
+        if (map1 == null || map2 == null || map1.size() != map2.size()) return false;
+        for (Map.Entry<K, V> entry : map1.entrySet())
+            if (!map2.containsKey(entry.getKey()) || !map2.get(entry.getKey()).equals(entry.getValue())) return false;
+        return true;
     }
 }

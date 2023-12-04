@@ -1,5 +1,19 @@
 {
   "title": "Flappy Bird",
+  "score": "Score",
+  "username": "Username",
+  "usernameToolTip": "Enter your username",
+  "rank": "Rank",
   "scorePrefix": "Score: ",
-  "fpsPrefix": "FPS: "
+  "fpsPrefix": "FPS: ",
+  "start": "Start",
+  "startToolTip": "Start the game",
+  "sound": "Sound",
+  "soundToolTip": "Turn sound on/off",
+  "fpsToolTip": "Set FPS",
+  "cheatsDetected": "Cheats detected!",
+  "cheatsDetectedTitle": "My anti-cheat detected that you've modified the Memory of the game.",
+  "instruction": "Fill in your username and click confirm to upload your score of ",
+  "confirm": "Confirm",
+  "confirmToolTip": "Confirm your username and upload your score"
 }

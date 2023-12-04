@@ -1,6 +1,6 @@
 package de.MCmoderSD.UI;
 
-import de.MCmoderSD.core.Controller;
+import de.MCmoderSD.core.Game;
 import de.MCmoderSD.main.Config;
 import de.MCmoderSD.objects.*;
 
@@ -27,8 +27,10 @@ public class GameUI extends JPanel {
         this.config = config;
 
         setPreferredSize(config.getSize());
+        setLocation(-config.getWidth(), -config.getHeight());
         setLayout(null);
-        frame.add(this);
+        setVisible(false);
+        frame.add(this, BorderLayout.CENTER);
 
         Font font = new Font("Roboto", Font.PLAIN, 18);
 
@@ -56,12 +58,12 @@ public class GameUI extends JPanel {
 
         Graphics2D g = (Graphics2D) graphics;
 
-        Controller controller = frame.getController();
-        Player player = controller.getPlayer();
-        ArrayList<Obstacle> obstacles = controller.getObstacles();
-        ArrayList<SafeZone> safeZones = controller.getSafeZones();
-        ArrayList<Cloud> clouds = controller.getClouds();
-        ArrayList<Background> backgrounds = controller.getBackgrounds();
+        Game game = frame.getGame();
+        Player player = game.getPlayer();
+        ArrayList<Obstacle> obstacles = game.getObstacles();
+        ArrayList<SafeZone> safeZones = game.getSafeZones();
+        ArrayList<Cloud> clouds = game.getClouds();
+        ArrayList<Background> backgrounds = game.getBackgrounds();
 
         // Draw Background
         for (Background background : backgrounds) {
@@ -90,13 +92,13 @@ public class GameUI extends JPanel {
         }
 
         // Draw Pause or GameOver Image
-        if (controller.isPaused() || controller.isGameOver()) {
-            BufferedImage image = controller.isPaused() ? config.getPauseImage() : config.getGameOverImage();
+        if (game.isPaused() || game.isGameOver()) {
+            BufferedImage image = game.isPaused() ? config.getPauseImage() : config.getGameOverImage();
             g.drawImage(image, (config.getWidth() - image.getWidth()) / 2, (config.getHeight() - image.getHeight()) / 2, null);
         }
 
         // HitBox
-        if (controller.isHitboxes() || controller.isDebug()) {
+        if (game.isHitboxes() || game.isDebug()) {
 
             for (Cloud cloud : clouds) {
                 g.setColor(cloud.getHitboxColor());
@@ -117,9 +119,9 @@ public class GameUI extends JPanel {
             }
         }
 
-        scoreLabel.setText(config.getScorePrefix() + controller.getScore());
-        fpsLabel.setVisible(controller.isShowFps() || controller.isDebug());
-        fpsLabel.setText(config.getFpsPrefix() + controller.getFps());
+        scoreLabel.setText(config.getScorePrefix() + game.getScore());
+        fpsLabel.setVisible(game.isShowFps() || game.isDebug());
+        fpsLabel.setText(config.getFpsPrefix() + game.getFps());
 
         // Draw UI Elements
         paintComponents(g);
