@@ -40,7 +40,7 @@ public class Frame extends JFrame {
 
         // Finalize and set visible
         pack();
-        setLocation(Calculate.centerOfJFrame(this));
+        setLocation(Calculate.centerOfJFrame(this, config.isSmallScreenMode()));
         setVisible(true);
     }
 

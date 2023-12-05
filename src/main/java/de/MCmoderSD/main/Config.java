@@ -22,6 +22,7 @@ public class Config {
     private final String configuration;
     private final int width;
     private final int height;
+    private final boolean smallScreenMode;
     private final boolean resizable;
     private final Dimension size;
     private final JsonNode database;
@@ -113,6 +114,7 @@ public class Config {
 
         width = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).width;
         height = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).height;
+        smallScreenMode = width != config.get("width").asInt() || height != config.get("height").asInt();
         resizable = config.get("resizable").asBoolean();
         size = new Dimension(width, height);
         blockedTermsPath = config.get("blockedTermsPath").asText();
@@ -214,8 +216,9 @@ public class Config {
         JsonNode config = jsonUtility.load("/config/" + configuration + ".json");
         database = jsonUtility.load("/config/Database.json");
 
-        width = config.get("width").asInt();
-        height = config.get("height").asInt();
+        width = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).width;
+        height = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).height;
+        smallScreenMode = width != config.get("width").asInt() || height != config.get("height").asInt();
         resizable = config.get("resizable").asBoolean();
         size = new Dimension(width, height);
         blockedTermsPath = config.get("blockedTermsPath").asText();
@@ -321,6 +324,10 @@ public class Config {
 
     public int getHeight() {
         return height;
+    }
+
+    public boolean isSmallScreenMode() {
+        return smallScreenMode;
     }
 
     public boolean isResizable() {

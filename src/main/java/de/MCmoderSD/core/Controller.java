@@ -123,6 +123,11 @@ public class Controller {
         Menu menu = frame.getMenu();
         String username = menu.getUsername();
 
+        if (username.isEmpty()) {
+            menu.setUsername(false);
+            return;
+        }
+
         while (username.startsWith(" ")) username = username.substring(1);
         while (username.endsWith(" ")) username = username.substring(0, username.length() - 1);
 
