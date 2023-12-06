@@ -24,6 +24,7 @@ public class Game implements Runnable {
     private final double tickrate;
     private final int obstacleSpawnRate;
     private final int[] cloudSpawnChance;
+    private boolean isReversed;
     private int frameRate;
     private boolean sound;
 

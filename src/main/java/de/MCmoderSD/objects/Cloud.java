@@ -82,19 +82,19 @@ public class Cloud {
     }
 
     public Point getLocation() {
-        return new Point((int) x, (int) y);
+        return new Point(Math.toIntExact(Math.round(x)), Math.toIntExact(Math.round(y)));
     }
 
     public int getX() {
-        return (int) x;
+        return Math.toIntExact(Math.round(x));
     }
 
     public int getY() {
-        return (int) y;
+        return Math.toIntExact(Math.round(y));
     }
 
     public Rectangle getHitbox() {
-        return new Rectangle((int) x, (int) y, width, height);
+        return new Rectangle(Math.toIntExact(Math.round(x)), Math.toIntExact(Math.round(y)), width, height);
     }
 
     public Dimension getDimension() {

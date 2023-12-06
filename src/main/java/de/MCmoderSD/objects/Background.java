@@ -69,15 +69,15 @@ public class Background {
     }
 
     public Point getLocation() {
-        return new Point((int) x, 0);
+        return new Point(Math.toIntExact(Math.round(x)), 0);
     }
 
     public int getX() {
-        return (int) x;
+        return Math.toIntExact(Math.round(x));
     }
 
     public int getY() {
-        return (int) y;
+        return Math.toIntExact(Math.round(y));
     }
 
     public Dimension getDimension() {
@@ -85,6 +85,6 @@ public class Background {
     }
 
     public Rectangle getHitbox() {
-        return new Rectangle((int) x, (int) y, width, height);
+        return new Rectangle(Math.toIntExact(Math.round(x)), Math.toIntExact(Math.round(y)), width, height);
     }
 }

@@ -174,9 +174,9 @@ public class Menu extends JPanel {
     public void setUsername(boolean visible) {
         if (visible) {
             usernameField.setText("");
-            fpsSpinner.setLocation(Math.toIntExact(Math.round((config.getWidth() * 0.3) - fpsSpinner.getWidth())) / 2, Math.toIntExact(Math.round((config.getHeight() * 0.85))) - fpsSpinner.getHeight() / 2);
-            startButton.setLocation(Math.toIntExact(Math.round((config.getWidth() * 0.5) - startButton.getWidth())) / 2, Math.toIntExact(Math.round((config.getHeight() * 0.85))) - startButton.getHeight() / 2);
-            soundCheckBox.setLocation(Math.toIntExact(Math.round((config.getWidth() * 0.7) - soundCheckBox.getWidth())) / 2, Math.toIntExact(Math.round((config.getHeight() * 0.85))) - soundCheckBox.getHeight() / 2);
+            fpsSpinner.setLocation(Math.toIntExact(Math.round((config.getWidth() * 0.3))) - fpsSpinner.getWidth() / 2, Math.toIntExact(Math.round((config.getHeight() * 0.85))) - fpsSpinner.getHeight() / 2);
+            startButton.setLocation(Math.toIntExact(Math.round((config.getWidth() * 0.5))) - startButton.getWidth() / 2, Math.toIntExact(Math.round((config.getHeight() * 0.85))) - startButton.getHeight() / 2);
+            soundCheckBox.setLocation(Math.toIntExact(Math.round((config.getWidth() * 0.7))) - soundCheckBox.getWidth() / 2, Math.toIntExact(Math.round((config.getHeight() * 0.85))) - soundCheckBox.getHeight() / 2);
             startButton.setText(config.getConfirm());
             startButton.setToolTipText(config.getConfirmToolTip());
             for (ActionListener actionListener : startButton.getActionListeners())
