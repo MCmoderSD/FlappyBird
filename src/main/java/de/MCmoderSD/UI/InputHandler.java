@@ -50,13 +50,15 @@ public class InputHandler implements KeyListener {
         scheduler.scheduleAtFixedRate(this::requestFocusLoop, 0, 100, TimeUnit.MILLISECONDS);
     }
 
-    // Methods
+    // Request Focus
     private void requestFocusLoop() {
-        if (frame.isFocusAllowed()) frame.requestFocusInWindow();
+        if (frame.getMenu() != null && frame.getMenu().isVisible() && frame.getMenu().canFocus())
+            frame.requestFocusInWindow();
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
+        // Not used
     }
 
     @Override
@@ -71,6 +73,12 @@ public class InputHandler implements KeyListener {
 
         // Asset Switch
         if (f3Pressed && e.getKeyCode() == KeyEvent.VK_C) controller.switchAsset();
+
+        // Sound Toggle
+        if (e.getKeyCode() == KeyEvent.VK_S) {
+            if (frame.getGameUI().isVisible()) game.toggleSound();
+            else if (frame.getMenu().isVisible()) controller.toggleSound();
+        }
 
         // Pause
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) game.togglePause();

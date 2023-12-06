@@ -30,7 +30,7 @@ public class GameUI extends JPanel {
         setLocation(-config.getWidth(), -config.getHeight());
         setLayout(null);
         setVisible(false);
-        frame.add(this, BorderLayout.CENTER);
+        frame.add(this);
 
         Font font = new Font("Roboto", Font.PLAIN, 18);
 
@@ -38,7 +38,7 @@ public class GameUI extends JPanel {
         scoreLabel = new JLabel(config.getScorePrefix());
         scoreLabel.setFont(font);
         scoreLabel.setForeground(config.getScoreColor());
-        scoreLabel.setSize((int) (config.getWidth() * 0.125), (int) (config.getHeight() * 0.05));
+        scoreLabel.setSize(Math.toIntExact(Math.round((config.getWidth() * 0.125))), Math.toIntExact(Math.round((config.getHeight() * 0.05))));
         scoreLabel.setLocation(config.getWidth() - scoreLabel.getWidth() - 10, 10);
         add(scoreLabel);
 
@@ -46,7 +46,7 @@ public class GameUI extends JPanel {
         fpsLabel = new JLabel("FPS: " + config.getMaxFPS());
         fpsLabel.setFont(font);
         fpsLabel.setForeground(config.getFpsColor());
-        fpsLabel.setSize((int) (config.getWidth() * 0.125), (int) (config.getHeight() * 0.05));
+        fpsLabel.setSize(Math.toIntExact(Math.round((config.getWidth() * 0.125))), Math.toIntExact(Math.round((config.getHeight() * 0.05))));
         fpsLabel.setLocation(10, 10);
         fpsLabel.setVisible(false);
         add(fpsLabel);

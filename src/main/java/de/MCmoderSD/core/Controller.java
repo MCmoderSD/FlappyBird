@@ -56,12 +56,6 @@ public class Controller {
         // Update Loop
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
         scheduler.scheduleAtFixedRate(() -> frame.getMenu().getScoreBoard().setHashMap(mySQL.pullFromMySQL()), 0, 100, TimeUnit.MILLISECONDS);
-        scheduler.scheduleAtFixedRate(this::requestFocusLoop, 0, 100, TimeUnit.MILLISECONDS);
-    }
-
-    // Request Focus
-    private void requestFocusLoop() {
-        if (frame.getMenu().isVisible() && frame.getMenu().canFocus()) frame.requestFocusInWindow();
     }
 
     // Check for Asset Switch
@@ -94,7 +88,7 @@ public class Controller {
     public void startGame() {
         Menu menu = frame.getMenu();
 
-        frame.getGame().init();
+        frame.getGame().init(menu.getBackgroundPos());
         frame.getGame().initGameConstants(menu.isSound(), menu.getFps());
 
         // Set GameUI visible
@@ -104,10 +98,11 @@ public class Controller {
     }
 
     // Restarts the game
-    public void restart(boolean debug, boolean cheats, int score) {
+    public void restart(boolean debug, boolean cheats, boolean sound, int score) {
         Menu menu = frame.getMenu();
 
         this.score = score;
+        menu.setSound(sound);
 
         if (!debug && !cheats && score > 0) {
             menu.setUsername(true);
@@ -138,5 +133,9 @@ public class Controller {
 
         if (score > mySQL.pullFromMySQL().getOrDefault(username, 0)) mySQL.pushToMySQL(username, score);
         menu.setUsername(false);
+    }
+
+    public void toggleSound() {
+        frame.getMenu().setSound(!frame.getMenu().isSound());
     }
 }

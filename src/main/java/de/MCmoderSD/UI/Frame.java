@@ -10,10 +10,10 @@ import javax.swing.*;
 public class Frame extends JFrame {
 
     // Associations
-    private Controller controller;
-    private Game game;
-    private GameUI gameUI;
-    private Menu menu;
+    private final Controller controller;
+    private final Game game;
+    private final GameUI gameUI;
+    private final Menu menu;
 
     // Constructor
     public Frame(Config config) {
@@ -22,6 +22,7 @@ public class Frame extends JFrame {
         setResizable(config.isResizable());
         setLocationRelativeTo(null);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
+        setIconImage(config.getIcon());
 
         // Add InputHandler
         InputHandler inputHandler = new InputHandler(this);
@@ -64,14 +65,5 @@ public class Frame extends JFrame {
 
     public Menu getMenu() {
         return menu;
-    }
-
-    public boolean isFocusAllowed() {
-        boolean isFocusAllowed = true;
-
-        if (menu.canFocus()) isFocusAllowed = false;
-        if (hasFocus()) isFocusAllowed = false;
-
-        return isFocusAllowed;
     }
 }

@@ -18,8 +18,8 @@ public class SafeZone {
     // Constructors
     public SafeZone(Config config, Obstacle top, Obstacle bottom) {
 
-        color = /* ToDo config.getSafeZoneColor(); */ Color.GREEN;
-        hitboxColor = /* ToDo config.getSafeZoneColor(); */ Color.GREEN;
+        color = config.getSafeZoneColor();
+        hitboxColor = config.getSafeZoneHitboxColor();
 
         width = top.getWidth() - top.getWidth() / 10;
         height = bottom.getY() - top.getY() - top.getHeight();

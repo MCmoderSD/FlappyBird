@@ -58,6 +58,8 @@ public class Config {
     private final Color obstacleBottomColor;
     private final Color obstacleBottomHitboxColor;
     private final Color obstacleHitboxColor;
+    private final Color safeZoneColor;
+    private final Color safeZoneHitboxColor;
     private final Color backgroundColor;
     private final Color fontColor;
     private final Color scoreColor;
@@ -159,6 +161,8 @@ public class Config {
         obstacleBottomColor = config.get("obstacleBottomColor").asColor();
         obstacleBottomHitboxColor = config.get("obstacleBottomHitboxColor").asColor();
         obstacleHitboxColor = config.get("obstacleHitboxColor").asColor();
+        safeZoneColor = config.get("safeZoneColor").asColor();
+        safeZoneHitboxColor = config.get("safeZoneHitboxColor").asColor();
         backgroundColor = config.get("backgroundColor").asColor();
         fontColor = config.get("fontColor").asColor();
         scoreColor = config.get("scoreColor").asColor();
@@ -263,6 +267,8 @@ public class Config {
         obstacleBottomColor = config.get("obstacleBottomColor").asColor();
         obstacleBottomHitboxColor = config.get("obstacleBottomHitboxColor").asColor();
         obstacleHitboxColor = config.get("obstacleHitboxColor").asColor();
+        safeZoneColor = config.get("safeZoneColor").asColor();
+        safeZoneHitboxColor = config.get("safeZoneHitboxColor").asColor();
         backgroundColor = config.get("backgroundColor").asColor();
         fontColor = config.get("fontColor").asColor();
         scoreColor = config.get("scoreColor").asColor();
@@ -451,6 +457,14 @@ public class Config {
 
     public Color getObstacleHitboxColor() {
         return obstacleHitboxColor;
+    }
+
+    public Color getSafeZoneColor() {
+        return safeZoneColor;
+    }
+
+    public Color getSafeZoneHitboxColor() {
+        return safeZoneHitboxColor;
     }
 
     public Color getBackgroundColor() {

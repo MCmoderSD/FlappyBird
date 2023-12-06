@@ -4,11 +4,12 @@ import de.MCmoderSD.main.Config;
 import de.MCmoderSD.objects.Background;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.BorderUIResource;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.ArrayList;
 
 public class Menu extends JPanel {
 
@@ -17,14 +18,15 @@ public class Menu extends JPanel {
     private final Config config;
 
     // Attributes
-    private final JLabel headline;
     private final ScoreBoard scoreBoard;
+    private final JLabel headline;
     private final JSpinner fpsSpinner;
     private final JButton startButton;
-    private final JCheckBox soundButton;
+    private final JCheckBox soundCheckBox;
     private final JTextField usernameField;
 
     // Variables
+    private ArrayList<Background> backgrounds;
     private boolean canFocus;
 
     // Constructor
@@ -34,17 +36,17 @@ public class Menu extends JPanel {
         setPreferredSize(new Dimension(config.getWidth(), config.getHeight()));
         setBackground(config.getBackgroundColor());
         setVisible(true);
-        frame.add(this, BorderLayout.CENTER);
+        frame.add(this);
 
         this.frame = frame;
         this.config = config;
 
         Font font = new Font("Roboto", Font.PLAIN, 22);
-        Font headerFont = new Font("Roboto", Font.BOLD, 22);
+        Font headerFont = new Font("Roboto", Font.BOLD, 24);
 
         // Init Headline
         headline = new JLabel(config.getTitle());
-        headline.setSize(config.getWidth(), (int) (config.getHeight() * 0.1));
+        headline.setSize(config.getWidth(), Math.toIntExact(Math.round(config.getHeight() * 0.1)));
         headline.setLocation((config.getWidth() - headline.getWidth()) / 2, 0);
         headline.setHorizontalAlignment(SwingConstants.CENTER);
         headline.setFont(headerFont);
@@ -53,8 +55,8 @@ public class Menu extends JPanel {
 
         // Init fpsSpinner
         fpsSpinner = new JSpinner(new SpinnerNumberModel(config.getMaxFPS(), 1, config.getMaxFPS(), 1));
-        fpsSpinner.setSize((int) (config.getWidth() * 0.075), (int) (config.getHeight() * 0.05));
-        fpsSpinner.setLocation((int) (config.getWidth() * 0.3) - fpsSpinner.getWidth() / 2, (int) (config.getHeight() * 0.9) - fpsSpinner.getHeight() / 2);
+        fpsSpinner.setSize(Math.toIntExact(Math.round(config.getWidth() * 0.075)), Math.toIntExact(Math.round(config.getHeight() * 0.05)));
+        fpsSpinner.setLocation(Math.toIntExact(Math.round(config.getWidth() * 0.3)) - fpsSpinner.getWidth() / 2, Math.toIntExact(Math.round(config.getHeight() * 0.9)) - fpsSpinner.getHeight() / 2);
         fpsSpinner.setToolTipText(config.getFpsToolTip());
         fpsSpinner.setOpaque(false);
         fpsSpinner.setFont(font);
@@ -63,8 +65,8 @@ public class Menu extends JPanel {
 
         // Init startButton
         startButton = new JButton(config.getStart());
-        startButton.setSize((int) (config.getWidth() * 0.25), (int) (config.getHeight() * 0.05));
-        startButton.setLocation((int) (config.getWidth() * 0.5) - startButton.getWidth() / 2, (int) (config.getHeight() * 0.9) - startButton.getHeight() / 2);
+        startButton.setSize(Math.toIntExact(Math.round(config.getWidth() * 0.25)), Math.toIntExact(Math.round(config.getHeight() * 0.05)));
+        startButton.setLocation(Math.toIntExact(Math.round(config.getWidth() * 0.5)) - startButton.getWidth() / 2, Math.toIntExact(Math.round(config.getHeight() * 0.9)) - startButton.getHeight() / 2);
         startButton.addActionListener(e -> frame.getController().startGame());
         startButton.setToolTipText(config.getStartToolTip());
         startButton.setFont(font);
@@ -72,21 +74,21 @@ public class Menu extends JPanel {
         add(startButton);
 
         // Init soundButton
-        soundButton = new JCheckBox(config.getSound());
-        soundButton.setSize((int) (config.getWidth() * 0.125), (int) (config.getHeight() * 0.05));
-        soundButton.setLocation((int) (config.getWidth() * 0.7) - soundButton.getWidth() / 2, (int) (config.getHeight() * 0.9) - soundButton.getHeight() / 2);
-        soundButton.setToolTipText(config.getSoundToolTip());
-        soundButton.setFont(font);
-        soundButton.setOpaque(false);
-        soundButton.setSelected(true);
-        soundButton.setVisible(true);
-        add(soundButton);
+        soundCheckBox = new JCheckBox(config.getSound());
+        soundCheckBox.setSize(Math.toIntExact(Math.round(config.getWidth() * 0.125)), Math.toIntExact(Math.round(config.getHeight() * 0.05)));
+        soundCheckBox.setLocation(Math.toIntExact(Math.round(config.getWidth() * 0.7)) - soundCheckBox.getWidth() / 2, Math.toIntExact(Math.round(config.getHeight() * 0.9) - soundCheckBox.getHeight() / 2));
+        soundCheckBox.setToolTipText(config.getSoundToolTip());
+        soundCheckBox.setFont(font);
+        soundCheckBox.setOpaque(false);
+        soundCheckBox.setSelected(true);
+        soundCheckBox.setVisible(true);
+        add(soundCheckBox);
 
         // Init usernameField
         usernameField = new JTextField();
-        usernameField.setSize((int) (config.getWidth() * 0.5), (int) (config.getHeight() * 0.05));
-        usernameField.setLocation((config.getWidth() - usernameField.getWidth()) / 2, (int) (config.getHeight() * 0.90));
-        usernameField.setBorder(new EmptyBorder(0, 0, 0, 0));
+        usernameField.setSize(Math.toIntExact(Math.round(config.getWidth() * 0.5)), Math.toIntExact(Math.round(config.getHeight() * 0.05)));
+        usernameField.setLocation((config.getWidth() - usernameField.getWidth()) / 2, Math.toIntExact(Math.round(config.getHeight() * 0.90)));
+        usernameField.setBorder(new BorderUIResource.BevelBorderUIResource(0, config.getFontColor(), config.getFontColor(), config.getFontColor(), config.getFontColor()));
         usernameField.setHorizontalAlignment(SwingConstants.CENTER);
         usernameField.setToolTipText(config.getUsernameToolTip());
         usernameField.setText(config.getUsername());
@@ -97,8 +99,8 @@ public class Menu extends JPanel {
 
         // Init ScoreBoard
         scoreBoard = new ScoreBoard(this, config);
-        scoreBoard.setSize((int) (config.getWidth() * 0.9), (int) (config.getHeight() * 0.7));
-        scoreBoard.setLocation((int) (config.getWidth() * 0.05), (int) (config.getHeight() * 0.1));
+        scoreBoard.setSize(Math.toIntExact(Math.round(config.getWidth() * 0.9)), Math.toIntExact(Math.round(config.getHeight() * 0.7)));
+        scoreBoard.setLocation(Math.toIntExact(Math.round(config.getWidth() * 0.05)), Math.toIntExact(Math.round(config.getHeight() * 0.1)));
         scoreBoard.setVisible(true);
 
         // Init Focus Listener
@@ -134,9 +136,13 @@ public class Menu extends JPanel {
         super.paintComponent(graphics);
 
         Graphics2D g = (Graphics2D) graphics;
+        backgrounds = frame.getGame().getBackgrounds();
 
-        Background background = new Background(config, 0, 0);
-        g.drawImage(background.getImage(), background.getX(), background.getY(), background.getWidth(), background.getHeight(), null);
+        for (Background background : backgrounds) {
+            g.setColor(background.getColor());
+            g.fill(background.getHitbox());
+            g.drawImage(background.getImage(), background.getX(), background.getY(), null);
+        }
     }
 
     // Getter
@@ -144,16 +150,20 @@ public class Menu extends JPanel {
         return scoreBoard;
     }
 
-    public int getFps() {
-        return (int) fpsSpinner.getValue();
-    }
-
     public String getUsername() {
         return usernameField.getText();
     }
 
+    public int getFps() {
+        return (int) fpsSpinner.getValue();
+    }
+
+    public int getBackgroundPos() {
+        return backgrounds.get(0).getX();
+    }
+
     public boolean isSound() {
-        return soundButton.isSelected();
+        return soundCheckBox.isSelected();
     }
 
     public boolean canFocus() {
@@ -164,9 +174,9 @@ public class Menu extends JPanel {
     public void setUsername(boolean visible) {
         if (visible) {
             usernameField.setText("");
-            fpsSpinner.setLocation((int) (config.getWidth() * 0.3) - fpsSpinner.getWidth() / 2, (int) (config.getHeight() * 0.85) - fpsSpinner.getHeight() / 2);
-            startButton.setLocation((int) (config.getWidth() * 0.5) - startButton.getWidth() / 2, (int) (config.getHeight() * 0.85) - startButton.getHeight() / 2);
-            soundButton.setLocation((int) (config.getWidth() * 0.7) - soundButton.getWidth() / 2, (int) (config.getHeight() * 0.85) - soundButton.getHeight() / 2);
+            fpsSpinner.setLocation(Math.toIntExact(Math.round((config.getWidth() * 0.3) - fpsSpinner.getWidth())) / 2, Math.toIntExact(Math.round((config.getHeight() * 0.85))) - fpsSpinner.getHeight() / 2);
+            startButton.setLocation(Math.toIntExact(Math.round((config.getWidth() * 0.5) - startButton.getWidth())) / 2, Math.toIntExact(Math.round((config.getHeight() * 0.85))) - startButton.getHeight() / 2);
+            soundCheckBox.setLocation(Math.toIntExact(Math.round((config.getWidth() * 0.7) - soundCheckBox.getWidth())) / 2, Math.toIntExact(Math.round((config.getHeight() * 0.85))) - soundCheckBox.getHeight() / 2);
             startButton.setText(config.getConfirm());
             startButton.setToolTipText(config.getConfirmToolTip());
             for (ActionListener actionListener : startButton.getActionListeners())
@@ -176,9 +186,9 @@ public class Menu extends JPanel {
         } else {
             usernameField.setText("");
             usernameField.setVisible(false);
-            fpsSpinner.setLocation((int) (config.getWidth() * 0.3) - fpsSpinner.getWidth() / 2, (int) (config.getHeight() * 0.9) - fpsSpinner.getHeight() / 2);
-            startButton.setLocation((int) (config.getWidth() * 0.5) - startButton.getWidth() / 2, (int) (config.getHeight() * 0.9) - startButton.getHeight() / 2);
-            soundButton.setLocation((int) (config.getWidth() * 0.7) - soundButton.getWidth() / 2, (int) (config.getHeight() * 0.9) - soundButton.getHeight() / 2);
+            fpsSpinner.setLocation(Math.toIntExact(Math.round((config.getWidth() * 0.3))) - fpsSpinner.getWidth() / 2, Math.toIntExact(Math.round((config.getHeight() * 0.9))) - fpsSpinner.getHeight() / 2);
+            startButton.setLocation(Math.toIntExact(Math.round((config.getWidth() * 0.5))) - startButton.getWidth() / 2, Math.toIntExact(Math.round((config.getHeight() * 0.9))) - startButton.getHeight() / 2);
+            soundCheckBox.setLocation(Math.toIntExact(Math.round((config.getWidth() * 0.7))) - soundCheckBox.getWidth() / 2, Math.toIntExact(Math.round((config.getHeight() * 0.9))) - soundCheckBox.getHeight() / 2);
             headline.setText(config.getTitle());
             startButton.setText(config.getStart());
             startButton.setToolTipText(config.getStartToolTip());
@@ -191,5 +201,9 @@ public class Menu extends JPanel {
 
     public void setHeadline(String headline) {
         this.headline.setText(headline);
+    }
+
+    public void setSound(boolean sound) {
+        soundCheckBox.setSelected(sound);
     }
 }

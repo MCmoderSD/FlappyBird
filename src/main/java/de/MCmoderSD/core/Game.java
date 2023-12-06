@@ -63,7 +63,7 @@ public class Game implements Runnable {
         tickrate = 2777778;
         obstacleSpawnRate = (int) (200 / config.getObstacleSpeed());
         cloudSpawnChance = new int[]{1, 5000};
-        init();
+        init(0);
 
         new Thread(this).start();
     }
@@ -237,7 +237,7 @@ public class Game implements Runnable {
     }
 
     // Methods
-    public void init() {
+    public void init(int backgroundPos) {
         // Init Game Variables
         speedModifier = 1;
         isPaused = false;
@@ -262,7 +262,7 @@ public class Game implements Runnable {
 
 
         // Init Backgrounds
-        backgrounds.add(new Background(config, 0, 0));
+        backgrounds.add(new Background(config, backgroundPos, 0));
         while (backgrounds.get(backgrounds.size() - 1).getX() + backgrounds.get(backgrounds.size() - 1).getWidth() < config.getWidth())
             backgrounds.add(new Background(config, backgrounds.get(backgrounds.size() - 1).getX() + backgrounds.get(backgrounds.size() - 1).getWidth(), 0));
     }
@@ -298,7 +298,7 @@ public class Game implements Runnable {
         }
 
         // Reset Game
-        frame.getController().restart(debug, hasCheated(), score);
+        frame.getController().restart(debug, hasCheated(), sound, score);
     }
 
     // Getter
@@ -372,5 +372,9 @@ public class Game implements Runnable {
     public void toggleKonami() {
         cheatsActive = true;
         debug = !debug;
+    }
+
+    public void toggleSound() {
+        sound = !sound;
     }
 }
