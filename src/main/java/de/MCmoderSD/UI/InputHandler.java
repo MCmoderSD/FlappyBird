@@ -71,6 +71,9 @@ public class InputHandler implements KeyListener {
         if (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_Q) System.exit(0);
         if (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_F4) System.exit(0);
 
+        // Reverse Toggle
+        if (f3Pressed && e.getKeyCode() == KeyEvent.VK_R) controller.toggleReverse();
+
         // Asset Switch
         if (f3Pressed && e.getKeyCode() == KeyEvent.VK_C) controller.switchAsset();
 

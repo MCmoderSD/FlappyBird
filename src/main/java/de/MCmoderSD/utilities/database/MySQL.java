@@ -23,13 +23,13 @@ public class MySQL {
     private Connection connection;
 
     // Constructors
-    public MySQL(JsonNode config) {
+    public MySQL(JsonNode config, boolean isReverse) {
         host = config.get("host").asText();
         port = config.get("port").asInt();
         database = config.get("database").asText();
         username = config.get("username").asText();
         password = config.get("password").asText();
-        table = config.get("table").asText();
+        table = isReverse ? config.get("reversedTable").asText() : config.get("table").asText();
         connect();
     }
 

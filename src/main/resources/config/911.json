@@ -29,6 +29,8 @@
   "obstacleBottomColor": "#ffffff",
   "obstacleBottomHitboxColor": "#000000",
   "obstacleHitboxColor": "#ff0000",
+  "safeZoneColor": "#00ff00",
+  "safeZoneHitboxColor": "#00ff00",
   "backgroundColor": "#ffffff",
   "fontColor": "#000000",
   "scoreColor": "#ffff00",

@@ -10,6 +10,7 @@ import de.MCmoderSD.utilities.sound.AudioPlayer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class Config {
@@ -20,6 +21,7 @@ public class Config {
     // Constants
     private final String[] args;
     private final String configuration;
+    private final boolean validConfig;
     private final int width;
     private final int height;
     private final boolean smallScreenMode;
@@ -29,6 +31,7 @@ public class Config {
     private final String blockedTermsPath;
 
     // Game logic constants
+    private final boolean isReverse;
     private final int percentage;
     private final int gap;
     private final float jumpHeight;
@@ -108,10 +111,29 @@ public class Config {
         if (args.length == 0) language = "en";
         else language = args[0];
 
-        if (args.length == 2) configuration = args[1];
+        if (args.length > 1) configuration = args[1];
         else configuration = "lena";
 
-        JsonNode config = jsonUtility.load("/config/" + configuration + ".json");
+        if (args.length > 2) {
+            String arg = args[2].toLowerCase();
+            while (arg.startsWith(" ") || arg.startsWith("-") || arg.startsWith("/")) arg = arg.substring(1);
+            isReverse = arg.startsWith("r");
+        } else isReverse = false;
+
+        JsonNode config;
+
+        // Check for Valid Config
+        boolean validConfig = false;
+        for (int i = 0; i < Main.CONFIGURATIONS.length; i++)
+            if (Objects.equals(Main.CONFIGURATIONS[i], configuration)) {
+                validConfig = true;
+                break;
+            }
+        this.validConfig = validConfig;
+
+        // Load Config
+        if (validConfig) config = jsonUtility.load("/config/" + configuration + ".json");
+        else config = jsonUtility.load(configuration);
         database = jsonUtility.load("/config/Database.json");
 
         width = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).width;
@@ -214,10 +236,29 @@ public class Config {
         if (args.length == 0) language = "en";
         else language = args[0];
 
-        if (args.length == 2 && !args[1].endsWith(".json")) configuration = args[1];
+        if (args.length > 1) configuration = args[1];
         else configuration = "lena";
 
-        JsonNode config = jsonUtility.load("/config/" + configuration + ".json");
+        if (args.length > 2) {
+            String arg = args[2].toLowerCase();
+            while (arg.startsWith(" ") || arg.startsWith("-") || arg.startsWith("/")) arg = arg.substring(1);
+            isReverse = arg.startsWith("r");
+        } else isReverse = false;
+
+        JsonNode config;
+
+        // Check for Valid Config
+        boolean validConfig = false;
+        for (int i = 0; i < Main.CONFIGURATIONS.length; i++)
+            if (Objects.equals(Main.CONFIGURATIONS[i], configuration)) {
+                validConfig = true;
+                break;
+            }
+        this.validConfig = validConfig;
+
+        // Load Config
+        if (validConfig) config = jsonUtility.load("/config/" + configuration + ".json");
+        else config = jsonUtility.load(configuration);
         database = jsonUtility.load("/config/Database.json");
 
         width = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).width;
@@ -243,8 +284,8 @@ public class Config {
         icon = imageStreamer.read(config.get("icon").asText());
         backgroundImage = imageStreamer.read(config.get("backgroundImage").asText());
         playerImage = imageStreamer.read(config.get("playerImage").asText());
-        obstacleTopImage = imageStreamer.read(config.get("obstacleTop").asText());
-        obstacleBottomImage = imageStreamer.read(config.get("obstacleBottom").asText());
+        obstacleTopImage = imageStreamer.read(config.get("obstacleTopImage").asText());
+        obstacleBottomImage = imageStreamer.read(config.get("obstacleBottomImage").asText());
         gameOverImage = imageStreamer.read(config.get("gameOverImage").asText(), Math.min(width, height));
         pauseImage = imageStreamer.read(config.get("pauseImage").asText(), Math.min(width, height));
 
@@ -286,7 +327,7 @@ public class Config {
         audioPlayer.loadAudio(backgroundMusic = config.get("backgroundMusic").asText());
 
 
-        JsonNode messages = jsonUtility.load("/languages" + language + ".json");
+        JsonNode messages = jsonUtility.load("/languages/" + language + ".json");
 
         // Messages
         title = messages.get("title").asText();
@@ -324,6 +365,10 @@ public class Config {
         return configuration;
     }
 
+    public boolean isValidConfig() {
+        return validConfig;
+    }
+
     public int getWidth() {
         return width;
     }
@@ -350,6 +395,11 @@ public class Config {
 
     public String getBlockedTermsPath() {
         return blockedTermsPath;
+    }
+
+    // Game logic constants getter
+    public boolean isReverse() {
+        return isReverse;
     }
 
     public int getPercentage() {

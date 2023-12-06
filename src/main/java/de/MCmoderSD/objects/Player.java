@@ -32,11 +32,10 @@ public class Player {
         width = image.getWidth();
         height = image.getHeight();
 
-        jumpHeight = config.getJumpHeight();
-
         color = config.getPlayerColor();
         hitboxColor = config.getPlayerHitboxColor();
 
+        jumpHeight = config.getJumpHeight();
         gravity = config.getGravity();
 
 

@@ -37,7 +37,8 @@ public class Controller {
 
         Menu menu = frame.getMenu();
 
-        mySQL = new MySQL(config.getDatabase());
+        mySQL = new MySQL(config.getDatabase(), config.isReverse());
+        if (!config.isValidConfig() && mySQL.isConnected()) mySQL.disconnect();
 
         blockedTerms = new ArrayList<>();
 
@@ -63,7 +64,22 @@ public class Controller {
         scheduler.scheduleAtFixedRate(() -> menu.getScoreBoard().setHashMap(mySQL.pullFromMySQL()), 0, 100, TimeUnit.MILLISECONDS);
     }
 
-    // Check for Asset Switch
+    // Checks if the username is valid
+    private boolean isUsernameValid(String username) {
+        for (String word : username.toLowerCase().split("\\W+")) if (blockedTerms.contains(word)) return false;
+        return true;
+    }
+
+    // Toggles the reverse mode
+    public void toggleReverse() {
+        if (frame.getGameUI().isVisible()) return;
+        String[] arg = new String[]{config.getLanguage(), config.getConfiguration(), (config.isReverse() ? "" : "r")};
+        for (int i = 0; i < arg.length; i++) System.out.println(arg[i]);
+        Main.main(new String[]{config.getLanguage(), config.getConfiguration(), (config.isReverse() ? "" : "r")});
+        frame.dispose();
+    }
+
+    // Asset Switch
     public void switchAsset() {
         if (frame.getGameUI().isVisible()) return;
 
@@ -76,17 +92,10 @@ public class Controller {
         if (i + 1 == Main.CONFIGURATIONS.length) i = 0;
         else i++;
 
-
         if (config.getArgs().length == 3)
             Main.main(new String[]{config.getLanguage(), Main.CONFIGURATIONS[i], config.getArgs()[2]});
         else Main.main(new String[]{config.getLanguage(), Main.CONFIGURATIONS[i]});
         frame.dispose();
-    }
-
-    // Checks if the username is valid
-    private boolean isUsernameValid(String username) {
-        for (String word : username.toLowerCase().split("\\W+")) if (blockedTerms.contains(word)) return false;
-        return true;
     }
 
     // Starts the game

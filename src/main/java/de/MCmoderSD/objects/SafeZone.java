@@ -9,11 +9,14 @@ public class SafeZone {
     private final int height;
     private final Color color;
     private final Color hitboxColor;
+    private final float jumpHeight;
+    private final float gravity;
 
     // Variables
     private float x;
     private float y;
     private float speed;
+    private float fallSpeed;
 
     // Constructors
     public SafeZone(Config config, Obstacle top, Obstacle bottom) {
@@ -27,12 +30,23 @@ public class SafeZone {
         x = top.getX() + (float) top.getWidth() / 20;
         y = top.getY() + top.getHeight();
 
+        jumpHeight = config.getJumpHeight();
+        gravity = config.getGravity();
         speed = config.getObstacleSpeed();
     }
 
     // Methods
     public void move() {
         x -= speed;
+    }
+
+    public void jump() {
+        fallSpeed = -jumpHeight;
+    }
+
+    public void fall() {
+        fallSpeed += gravity;
+        y += fallSpeed;
     }
 
     // Getter

@@ -24,7 +24,7 @@ public class Game implements Runnable {
     private final double tickrate;
     private final int obstacleSpawnRate;
     private final int[] cloudSpawnChance;
-    private boolean isReversed;
+    private final boolean isReverse;
     private int frameRate;
     private boolean sound;
 
@@ -57,6 +57,7 @@ public class Game implements Runnable {
         this.inputHandler = inputHandler;
         this.config = config;
 
+        isReverse = config.isReverse();
         audioPlayer = config.getAudioPlayer();
         random = new Random();
 
@@ -72,6 +73,7 @@ public class Game implements Runnable {
     @Override
     public void run() {
         while (Main.IS_RUNNING) {
+
             // Timer
             double delta = 0;
             long current;
@@ -99,7 +101,7 @@ public class Game implements Runnable {
                     if (!isPaused()) {
 
                         // Check for Restart
-                        if (inputHandler.isJump() && gameOver) restart();
+                        if (gameOver && inputHandler.isJump()) restart();
 
                         // Temp lists for removal
                         ArrayList<Background> backgroundsToRemove = new ArrayList<>();
@@ -112,7 +114,7 @@ public class Game implements Runnable {
                             fall();
 
                         // Check for Collision
-                        if (!gameOver && !cheatsActive && !hasCollided) for (Obstacle obstacle : obstacles)
+                        if (!hasCollided && !gameOver && !cheatsActive) for (Obstacle obstacle : obstacles)
                             if (player.getHitbox().intersects(obstacle.getHitbox())) collision();
 
 
@@ -180,12 +182,30 @@ public class Game implements Runnable {
                         } else obstacleSpawnTimer++;
 
                         // Player Movement
-                        if (inputHandler.isJump() && player.getY() + player.getHeight() > 0 && !gameOver && !hasCollided) {
-                            player.jump();
+                        if (!gameOver && !hasCollided && inputHandler.isJump() && player.getY() + player.getHeight() > 0) {
                             if (sound) audioPlayer.instantPlay(config.getFlapSound());
+                            if (isReverse) {
+                                boolean toHigh = false;
+                                for (Obstacle obstacle : obstacles)
+                                    if (!obstacle.isTop() && obstacle.getY() + obstacle.getHeight() * 0.85 <= config.getHeight())
+                                        toHigh = true;
+                                if (!toHigh) {
+                                    obstacles.forEach(Obstacle::jump);
+                                    safeZones.forEach(SafeZone::jump);
+                                }
+                            } else player.jump();
                         }
 
-                        player.fall();
+                        if (!isReverse || hasCollided) player.fall();
+                        else {
+                            boolean toLow = false;
+                            for (Obstacle obstacle : obstacles)
+                                if (obstacle.isTop() && obstacle.getY() + 1 > 0) toLow = true;
+                            if (!toLow) {
+                                obstacles.forEach(Obstacle::fall);
+                                safeZones.forEach(SafeZone::fall);
+                            }
+                        }
 
                         if (!(gameOver || hasCollided)) {
 

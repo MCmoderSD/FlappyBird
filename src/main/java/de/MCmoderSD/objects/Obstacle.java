@@ -15,11 +15,14 @@ public class Obstacle {
     private final Color color;
     private final Color hitboxColor;
     private final boolean isTop;
+    private final float jumpHeight;
+    private final float gravity;
 
     // Variables
     private float x;
     private float y;
     private float speed;
+    private float fallSpeed;
 
     // Constructor
     public Obstacle(Config config, boolean isTop) {
@@ -33,12 +36,24 @@ public class Obstacle {
         width = image.getWidth();
         height = image.getHeight();
 
+
+        jumpHeight = config.getJumpHeight();
+        gravity = config.getGravity();
         speed = config.getObstacleSpeed();
     }
 
     // Methods
     public void move() {
         x -= speed;
+    }
+
+    public void jump() {
+        fallSpeed = -jumpHeight;
+    }
+
+    public void fall() {
+        fallSpeed += gravity;
+        y += fallSpeed;
     }
 
     // Setter
@@ -91,5 +106,9 @@ public class Obstacle {
 
     public Rectangle getHitbox() {
         return new Rectangle(Math.toIntExact(Math.round(x)), Math.toIntExact(Math.round(y)), width, height);
+    }
+
+    public boolean isTop() {
+        return isTop;
     }
 }
