@@ -261,6 +261,8 @@ public class Config {
         else config = jsonUtility.load(configuration);
         database = jsonUtility.load("/config/database.json");
 
+        System.out.println(database.get("host").asText());
+
         width = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).width;
         height = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).height;
         smallScreenMode = width != config.get("width").asInt() || height != config.get("height").asInt();
@@ -315,17 +317,22 @@ public class Config {
         scoreColor = config.get("scoreColor").asColor();
         fpsColor = config.get("fpsColor").asColor();
 
-
-        audioPlayer = new AudioPlayer();
-
         // Sounds
-        audioPlayer.loadAudio(dieSound = config.get("dieSound").asText());
-        audioPlayer.loadAudio(flapSound = config.get("flapSound").asText());
-        audioPlayer.loadAudio(hitSound = config.get("hitSound").asText());
-        audioPlayer.loadAudio(pointSound = config.get("pointSound").asText());
-        audioPlayer.loadAudio(rainbowSound = config.get("rainbowSound").asText());
-        audioPlayer.loadAudio(backgroundMusic = config.get("backgroundMusic").asText());
+        dieSound = config.get("dieSound").asText();
+        flapSound = config.get("flapSound").asText();
+        hitSound = config.get("hitSound").asText();
+        pointSound = config.get("pointSound").asText();
+        rainbowSound = config.get("rainbowSound").asText();
+        backgroundMusic = config.get("backgroundMusic").asText();
 
+        // Load Sounds
+        audioPlayer = new AudioPlayer();
+        audioPlayer.loadAudio(url + dieSound);
+        audioPlayer.loadAudio(url + flapSound);
+        audioPlayer.loadAudio(url + hitSound);
+        audioPlayer.loadAudio(url + pointSound);
+        audioPlayer.loadAudio(url + rainbowSound);
+        audioPlayer.loadAudio(url + backgroundMusic);
 
         JsonNode messages = jsonUtility.load("/languages/" + language + ".json");
 

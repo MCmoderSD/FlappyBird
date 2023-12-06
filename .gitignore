@@ -37,7 +37,6 @@ build/
 ### Mac OS ###
 .DS_Store
 
-src/main/resources/config/Database.json
 latency-log.txt
 storage/
 .idea/
