@@ -52,6 +52,7 @@ public class ScoreBoard extends JPanel {
         // Add table to the panel
         add(new JScrollPane(table), BorderLayout.CENTER);
 
+        setVisible(false);
         menu.add(this);
     }
 

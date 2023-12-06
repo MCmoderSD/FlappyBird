@@ -35,6 +35,8 @@ public class Controller {
         this.frame = frame;
         this.config = config;
 
+        Menu menu = frame.getMenu();
+
         mySQL = new MySQL(config.getDatabase());
 
         blockedTerms = new ArrayList<>();
@@ -53,9 +55,12 @@ public class Controller {
             System.err.println(e.getMessage());
         }
 
+        menu.setScoreBoard(mySQL.isConnected());
+        if (!mySQL.isConnected()) return;
+
         // Update Loop
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
-        scheduler.scheduleAtFixedRate(() -> frame.getMenu().getScoreBoard().setHashMap(mySQL.pullFromMySQL()), 0, 100, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(() -> menu.getScoreBoard().setHashMap(mySQL.pullFromMySQL()), 0, 100, TimeUnit.MILLISECONDS);
     }
 
     // Check for Asset Switch
@@ -104,7 +109,7 @@ public class Controller {
         this.score = score;
         menu.setSound(sound);
 
-        if (!debug && !cheats && score > 0) {
+        if (mySQL.isConnected() && !debug && !cheats && score > 0) {
             menu.setUsername(true);
             menu.setHeadline(config.getInstruction() + score);
         }

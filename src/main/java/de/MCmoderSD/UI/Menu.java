@@ -206,4 +206,8 @@ public class Menu extends JPanel {
     public void setSound(boolean sound) {
         soundCheckBox.setSelected(sound);
     }
+
+    public void setScoreBoard(boolean visible) {
+        scoreBoard.setVisible(visible);
+    }
 }
