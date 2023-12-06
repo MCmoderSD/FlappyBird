@@ -134,7 +134,7 @@ public class Config {
         // Load Config
         if (validConfig) config = jsonUtility.load("/config/" + configuration + ".json");
         else config = jsonUtility.load(configuration);
-        database = jsonUtility.load("/config/Database.json");
+        database = jsonUtility.load("/config/database.json");
 
         width = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).width;
         height = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).height;
@@ -259,7 +259,7 @@ public class Config {
         // Load Config
         if (validConfig) config = jsonUtility.load("/config/" + configuration + ".json");
         else config = jsonUtility.load(configuration);
-        database = jsonUtility.load("/config/Database.json");
+        database = jsonUtility.load("/config/database.json");
 
         width = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).width;
         height = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).height;
