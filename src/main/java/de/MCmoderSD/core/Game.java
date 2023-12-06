@@ -183,7 +183,7 @@ public class Game implements Runnable {
 
                         // Player Movement
                         if (!gameOver && !hasCollided && inputHandler.isJump() && player.getY() + player.getHeight() > 0) {
-                            if (sound) audioPlayer.instantPlay(config.getFlapSound());
+                            if (sound) audioPlayer.play(config.getFlapSound());
                             if (isReverse) {
                                 boolean toHigh = false;
                                 for (Obstacle obstacle : obstacles)
@@ -289,18 +289,18 @@ public class Game implements Runnable {
     }
 
     private void fall() {
-        if (sound) audioPlayer.playAudio(config.getDieSound());
+        if (sound) audioPlayer.play(config.getDieSound());
         gameOver = true;
     }
 
     private void point(double event) {
-        if (sound) audioPlayer.playAudio(config.getPointSound());
+        if (sound) audioPlayer.play(config.getPointSound());
         score++;
         keys.add(event);
     }
 
     private void collision() {
-        if (sound) audioPlayer.playAudio(config.getHitSound());
+        if (sound) audioPlayer.play(config.getHitSound());
         hasCollided = true;
     }
 

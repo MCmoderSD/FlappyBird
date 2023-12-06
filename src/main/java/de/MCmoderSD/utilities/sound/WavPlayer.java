@@ -6,112 +6,104 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Objects;
 
-@SuppressWarnings("unused")
 public class WavPlayer {
 
     // Attributes
+    private boolean loop;
     private Clip clip;
-    private boolean loop = false;
 
-    // Constructors
-    public WavPlayer(String audioPath) {
+    // Constructor
+    public WavPlayer(String audioPath, boolean loop) {
+        this.loop = loop;
         loadClip(audioPath);
     }
 
-    public WavPlayer(String audioPath, boolean isAbsolutePath) {
-        if (isAbsolutePath) loadClipFromAbsolutePath(audioPath);
-        else loadClip(audioPath);
-    }
-
-    public WavPlayer(String audioPath, boolean isAbsolutePath, boolean loop) {
-        this.loop = loop;
-        if (isAbsolutePath) loadClipFromAbsolutePath(audioPath);
-        else loadClip(audioPath);
-    }
-
-    // Methods
+    // Loader
     private void loadClip(String audioPath) {
-        new Thread(() -> {
-            try {
-                if (audioPath.startsWith("http://") || audioPath.startsWith("https://")) {
-                    URL url = new URL(audioPath);
-                    AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);
-                    AudioFormat format = new AudioFormat(44100, 16, 2, true, false);
-                    AudioInputStream convertedInputStream = AudioSystem.getAudioInputStream(format, audioInputStream);
-                    clip = AudioSystem.getClip();
-                    clip.open(convertedInputStream);
-                } else {
-                    InputStream resourceStream = getClass().getResourceAsStream(audioPath);
-                    if (resourceStream != null) {
-                        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(resourceStream));
-                        AudioFormat format = new AudioFormat(44100, 16, 2, true, false);
-                        AudioInputStream convertedInputStream = AudioSystem.getAudioInputStream(format, audioInputStream);
-                        clip = AudioSystem.getClip();
-                        clip.open(convertedInputStream);
-                    } else System.err.println("File not found: " + audioPath);
-                }
-            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-                System.err.println(e.getMessage());
-            }
-        }).start();
-    }
+        try {
+            InputStream audioSrc;
+            if (audioPath.startsWith("http") || new File(audioPath).isAbsolute())
+                audioSrc = new URL(audioPath).openStream();
+            else audioSrc = getClass().getResourceAsStream(audioPath); // Relative path
 
-    private void loadClipFromAbsolutePath(String absolutePath) {
-        new Thread(() -> {
-            try {
-                File file = new File(absolutePath);
-                if (file.exists()) {
-                    AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
-                    AudioFormat format = new AudioFormat(44100, 16, 2, true, false);
-                    AudioInputStream convertedInputStream = AudioSystem.getAudioInputStream(format, audioInputStream);
-                    clip = AudioSystem.getClip();
-                    clip.open(convertedInputStream);
-                } else System.err.println("File not found: " + absolutePath);
-            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-                System.err.println(e.getMessage());
-            }
-        }).start();
+            // Add buffer for mark/reset support
+            InputStream bufferedIn = new BufferedInputStream(Objects.requireNonNull(audioSrc));
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(bufferedIn);
 
-    }
+            AudioFormat baseFormat = audioStream.getFormat();
+            AudioFormat decodedFormat = new AudioFormat(
+                    AudioFormat.Encoding.PCM_SIGNED,
+                    baseFormat.getSampleRate(),
+                    16,
+                    baseFormat.getChannels(),
+                    baseFormat.getChannels() * 2,
+                    baseFormat.getSampleRate(),
+                    false
+            );
+            AudioInputStream decodedAudioStream = AudioSystem.getAudioInputStream(decodedFormat, audioStream);
 
-    public void play() {
-        new Thread(() -> {
-            if (clip != null) {
-                clip.setFramePosition(0);
-                clip.start();
-                if (loop) clip.loop(Clip.LOOP_CONTINUOUSLY);
-            }
-        }).start();
-    }
-
-    public void play(boolean loop) {
-        new Thread(() -> {
+            clip = AudioSystem.getClip();
+            clip.open(decodedAudioStream);
             if (loop) clip.loop(Clip.LOOP_CONTINUOUSLY);
-            else clip.start();
-        }).start();
-    }
-
-    public void pause() {
-        if (clip != null && clip.isRunning()) clip.stop();
-    }
-
-    public void resume() {
-        if (clip != null && !clip.isRunning()) clip.start();
-    }
-
-    public void stop() {
-        if (clip != null) {
-
-            clip.stop();
-            clip.close();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            System.err.println(e.getMessage());
         }
     }
 
-    public boolean isPlaying() {
-        return clip != null && clip.isRunning();
+    // Play clip
+    public void play() {
+        if (clip == null) return;
+        if (clip.isRunning()) {
+            clip.stop(); // Stop the clip before resetting it
+        }
+        clip.setFramePosition(0);
+        clip.start();
     }
 
+    // Pause clip
+    public void pause() {
+        if (clip == null) return;
+        clip.stop();
+    }
+
+    // Resume clip
+    public void resume() {
+        if (clip == null) return;
+        clip.start();
+    }
+
+    // Stop clip
+    public void stop() {
+        if (clip == null) return;
+        clip.stop();
+        clip.setFramePosition(0);
+    }
+
+    // Close clip
+    public void close() {
+        stop();
+        clip.close();
+    }
+
+    // Toggle loop
+    public void toggleLoop() {
+        loop = !loop;
+    }
+
+    // Check if clip is running
+    public boolean isPlaying() {
+        if (clip == null) return false;
+        return clip.isRunning();
+    }
+
+    // Check if clip is looping
+    public boolean isLoop() {
+        return loop;
+    }
+
+    // Set loop
     public void setLoop(boolean loop) {
         this.loop = loop;
     }

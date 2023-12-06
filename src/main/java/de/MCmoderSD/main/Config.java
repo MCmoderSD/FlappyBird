@@ -368,13 +368,13 @@ public class Config {
         backgroundMusic = config.get("backgroundMusic").asText();
 
         // Load Sounds
-        audioPlayer = new AudioPlayer();
-        audioPlayer.loadAudio(url + dieSound);
-        audioPlayer.loadAudio(url + flapSound);
-        audioPlayer.loadAudio(url + hitSound);
-        audioPlayer.loadAudio(url + pointSound);
-        audioPlayer.loadAudio(url + rainbowSound);
-        audioPlayer.loadAudio(url + backgroundMusic);
+        audioPlayer = new AudioPlayer(url);
+        audioPlayer.loadAudio(dieSound);
+        audioPlayer.loadAudio(flapSound);
+        audioPlayer.loadAudio(hitSound);
+        audioPlayer.loadAudio(pointSound);
+        audioPlayer.loadAudio(rainbowSound);
+        audioPlayer.loadAudio(backgroundMusic);
 
         JsonNode messages = jsonUtility.load("/languages/" + language + ".json");
 
