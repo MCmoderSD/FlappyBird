@@ -10,6 +10,14 @@ import de.MCmoderSD.utilities.sound.AudioPlayer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Objects;
 
 @SuppressWarnings("unused")
@@ -28,7 +36,7 @@ public class Config {
     private final boolean resizable;
     private final Dimension size;
     private final JsonNode database;
-    private final String blockedTermsPath;
+    private final ArrayList<String> blockedTerms;
 
     // Game logic constants
     private final boolean isReverse;
@@ -141,7 +149,25 @@ public class Config {
         smallScreenMode = width != config.get("width").asInt() || height != config.get("height").asInt();
         resizable = config.get("resizable").asBoolean();
         size = new Dimension(width, height);
-        blockedTermsPath = config.get("blockedTermsPath").asText();
+
+
+        // Blocked Terms
+        blockedTerms = new ArrayList<>();
+
+        try {
+            String blockedTermsPath = config.get("blockedTermsPath").asText();
+            InputStream inputStream;
+            if (blockedTermsPath.startsWith("/"))
+                inputStream = getClass().getResourceAsStream(blockedTermsPath); // Relative path
+            else inputStream = Files.newInputStream(Paths.get(blockedTermsPath)); // Absolute path
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
+
+            String line;
+            while ((line = reader.readLine()) != null) blockedTerms.add(line);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
 
         percentage = config.get("percentage").asInt();
         gap = config.get("gap").asInt();
@@ -261,14 +287,30 @@ public class Config {
         else config = jsonUtility.load(configuration);
         database = jsonUtility.load("/config/database.json");
 
-        System.out.println(database.get("host").asText());
-
         width = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).width;
         height = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).height;
         smallScreenMode = width != config.get("width").asInt() || height != config.get("height").asInt();
         resizable = config.get("resizable").asBoolean();
         size = new Dimension(width, height);
-        blockedTermsPath = config.get("blockedTermsPath").asText();
+
+
+        // Blocked Terms
+        blockedTerms = new ArrayList<>();
+
+        try {
+            String blockedTermsPath = config.get("blockedTermsPath").asText();
+            BufferedReader reader;
+            if (blockedTermsPath.startsWith("/"))
+                reader = new BufferedReader(new InputStreamReader(new URL(url + blockedTermsPath).openStream())); // Relative path url
+            else
+                reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(Files.newInputStream(Paths.get(blockedTermsPath))))); // Absolute path
+
+
+            String line;
+            while ((line = reader.readLine()) != null) blockedTerms.add(line);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
 
         percentage = config.get("percentage").asInt();
         gap = config.get("gap").asInt();
@@ -400,8 +442,8 @@ public class Config {
         return database;
     }
 
-    public String getBlockedTermsPath() {
-        return blockedTermsPath;
+    public ArrayList<String> getBlockedTerms() {
+        return blockedTerms;
     }
 
     // Game logic constants getter

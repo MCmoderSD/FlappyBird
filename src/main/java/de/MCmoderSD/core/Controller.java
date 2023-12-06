@@ -6,13 +6,6 @@ import de.MCmoderSD.main.Config;
 import de.MCmoderSD.main.Main;
 import de.MCmoderSD.utilities.database.MySQL;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -27,7 +20,6 @@ public class Controller {
     private final MySQL mySQL;
 
     // Attributes
-    private final ArrayList<String> blockedTerms;
     private int score;
 
     public Controller(Frame frame, Config config) {
@@ -40,22 +32,6 @@ public class Controller {
         mySQL = new MySQL(config.getDatabase(), config.isReverse());
         if (!config.isValidConfig() && mySQL.isConnected()) mySQL.disconnect();
 
-        blockedTerms = new ArrayList<>();
-
-        try {
-            InputStream inputStream;
-            if (config.getBlockedTermsPath().startsWith("/"))
-                inputStream = getClass().getResourceAsStream(config.getBlockedTermsPath()); // Relative path
-            else inputStream = Files.newInputStream(Paths.get(config.getBlockedTermsPath())); // Absolute path
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
-
-            String line;
-            while ((line = reader.readLine()) != null) blockedTerms.add(line);
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
-
         menu.setScoreBoard(mySQL.isConnected());
         if (!mySQL.isConnected()) return;
 
@@ -66,7 +42,8 @@ public class Controller {
 
     // Checks if the username is valid
     private boolean isUsernameValid(String username) {
-        for (String word : username.toLowerCase().split("\\W+")) if (blockedTerms.contains(word)) return false;
+        for (String word : username.toLowerCase().split("\\W+"))
+            if (config.getBlockedTerms().contains(word)) return false;
         return true;
     }
 
