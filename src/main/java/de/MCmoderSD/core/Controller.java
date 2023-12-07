@@ -50,8 +50,6 @@ public class Controller {
     // Toggles the reverse mode
     public void toggleReverse() {
         if (frame.getGameUI().isVisible()) return;
-        String[] arg = new String[]{config.getLanguage(), config.getConfiguration(), (config.isReverse() ? "" : "r")};
-        for (int i = 0; i < arg.length; i++) System.out.println(arg[i]);
         Main.main(new String[]{config.getLanguage(), config.getConfiguration(), (config.isReverse() ? "" : "r")});
         frame.dispose();
     }

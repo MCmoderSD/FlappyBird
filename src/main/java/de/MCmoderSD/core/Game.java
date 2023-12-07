@@ -1,7 +1,6 @@
 package de.MCmoderSD.core;
 
 import de.MCmoderSD.UI.Frame;
-import de.MCmoderSD.UI.InputHandler;
 import de.MCmoderSD.main.Config;
 import de.MCmoderSD.main.Main;
 import de.MCmoderSD.objects.*;
@@ -15,7 +14,6 @@ public class Game implements Runnable {
 
     // Associations
     private final Frame frame;
-    private final InputHandler inputHandler;
     private final Config config;
     private final AudioPlayer audioPlayer;
     private final Random random;
@@ -46,15 +44,16 @@ public class Game implements Runnable {
     private boolean debug;
     private boolean cheatsActive;
     private boolean gameStarted;
+    private boolean tooHigh;
+    private boolean isJump;
     private double speedModifier;
     private int score;
     private int fps;
     private int obstacleSpawnTimer;
 
     // Constructor
-    public Game(Frame frame, InputHandler inputHandler, Config config) {
+    public Game(Frame frame, Config config) {
         this.frame = frame;
-        this.inputHandler = inputHandler;
         this.config = config;
 
         isReverse = config.isReverse();
@@ -81,7 +80,7 @@ public class Game implements Runnable {
             long now = System.nanoTime();
             int renderedFrames = 0;
 
-            if (inputHandler.isJump() && frame.getGameUI().isVisible()) gameStarted = true;
+            if (isJump && frame.getGameUI().isVisible()) gameStarted = true;
 
             // Game Loop
             while (gameStarted) {
@@ -101,7 +100,7 @@ public class Game implements Runnable {
                     if (!isPaused()) {
 
                         // Check for Restart
-                        if (gameOver && inputHandler.isJump()) restart();
+                        if (gameOver && isJump && frame.getGameUI().isVisible()) restart();
 
                         // Temp lists for removal
                         ArrayList<Background> backgroundsToRemove = new ArrayList<>();
@@ -182,14 +181,13 @@ public class Game implements Runnable {
                         } else obstacleSpawnTimer++;
 
                         // Player Movement
-                        if (!gameOver && !hasCollided && inputHandler.isJump() && player.getY() + player.getHeight() > 0) {
-                            if (sound) audioPlayer.play(config.getFlapSound());
+                        if (!gameOver && !hasCollided && isJump && player.getY() + player.getHeight() > 0) {
                             if (isReverse) {
-                                boolean toHigh = false;
+                                tooHigh = false;
                                 for (Obstacle obstacle : obstacles)
                                     if (!obstacle.isTop() && obstacle.getY() + obstacle.getHeight() * 0.85 <= config.getHeight())
-                                        toHigh = true;
-                                if (!toHigh) {
+                                        tooHigh = true;
+                                if (!tooHigh) {
                                     obstacles.forEach(Obstacle::jump);
                                     safeZones.forEach(SafeZone::jump);
                                 }
@@ -222,6 +220,8 @@ public class Game implements Runnable {
                             for (SafeZone safeZone : safeZones) safeZone.move();
                         }
                     }
+
+                    isJump = false;
 
                     // Update Frame
                     boolean update = renderedFrames < config.getMaxFPS();
@@ -286,6 +286,14 @@ public class Game implements Runnable {
         backgrounds.add(new Background(config, backgroundPos, 0));
         while (backgrounds.get(backgrounds.size() - 1).getX() + backgrounds.get(backgrounds.size() - 1).getWidth() < config.getWidth())
             backgrounds.add(new Background(config, backgrounds.get(backgrounds.size() - 1).getX() + backgrounds.get(backgrounds.size() - 1).getWidth(), 0));
+    }
+
+    public void jump() {
+        isJump = true;
+        if (!isReverse && sound && !gameOver && !hasCollided && !isPaused && player.getY() + player.getHeight() > 0)
+            audioPlayer.play(config.getFlapSound());
+        else if (isReverse && sound && !gameOver && !hasCollided && !isPaused && !tooHigh)
+            audioPlayer.play(config.getFlapSound());
     }
 
     private void fall() {

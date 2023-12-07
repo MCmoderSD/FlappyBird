@@ -25,7 +25,7 @@ public class Frame extends JFrame {
         setIconImage(config.getIcon());
 
         // Add InputHandler
-        InputHandler inputHandler = new InputHandler(this);
+        new InputHandler(this);
 
         // Create Menu
         menu = new Menu(this, config);
@@ -34,7 +34,7 @@ public class Frame extends JFrame {
         gameUI = new GameUI(this, config);
 
         // Create Game
-        game = new Game(this, inputHandler, config);
+        game = new Game(this, config);
 
         // Create Controller
         controller = new Controller(this, config);

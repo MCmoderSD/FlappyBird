@@ -182,8 +182,11 @@ public class Config {
         ImageReader imageReader = new ImageReader();
 
         // Assets
+        BufferedImage background = imageReader.read(config.get("backgroundImage").asText());
+        int backgroundWidth = (int) (((double) background.getWidth() / background.getHeight()) * height);
+
         icon = imageReader.read(config.get("icon").asText());
-        backgroundImage = imageReader.read(config.get("backgroundImage").asText());
+        backgroundImage = imageReader.scaleImage(background, (backgroundWidth), height);
         playerImage = imageReader.read(config.get("playerImage").asText());
         obstacleTopImage = imageReader.read(config.get("obstacleTopImage").asText());
         obstacleBottomImage = imageReader.read(config.get("obstacleBottomImage").asText());
@@ -325,8 +328,11 @@ public class Config {
         ImageStreamer imageStreamer = new ImageStreamer(url);
 
         // Assets
+        BufferedImage background = imageStreamer.read(config.get("backgroundImage").asText());
+        int backgroundWidth = (int) (((double) background.getWidth() / background.getHeight()) * height);
+
         icon = imageStreamer.read(config.get("icon").asText());
-        backgroundImage = imageStreamer.read(config.get("backgroundImage").asText());
+        backgroundImage = imageStreamer.scaleImage(background, (backgroundWidth), height);
         playerImage = imageStreamer.read(config.get("playerImage").asText());
         obstacleTopImage = imageStreamer.read(config.get("obstacleTopImage").asText());
         obstacleBottomImage = imageStreamer.read(config.get("obstacleBottomImage").asText());
