@@ -10,6 +10,8 @@
   "backgroundSpeed": 0.15,
   "obstacleSpeed": 0.25,
   "cloudSpeed": 0.1,
+  "rainbowSpawnChance": 0.3,
+  "rainbowDuration": 7000,
   "maxFPS": 360,
   "icon": "/Images/Icon.png",
   "backgroundImage": "/Images/Background.png",

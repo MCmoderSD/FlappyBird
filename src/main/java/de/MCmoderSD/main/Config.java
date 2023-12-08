@@ -47,6 +47,8 @@ public class Config {
     private final float backgroundSpeed;
     private final float obstacleSpeed;
     private final float cloudSpeed;
+    private final float rainbowSpawnChance;
+    private final int rainbowDuration;
     private final int maxFPS;
 
     // Assets
@@ -176,6 +178,8 @@ public class Config {
         backgroundSpeed = config.get("backgroundSpeed").asFloat();
         obstacleSpeed = config.get("obstacleSpeed").asFloat();
         cloudSpeed = config.get("cloudSpeed").asFloat();
+        rainbowSpawnChance = config.get("rainbowSpawnChance").asFloat();
+        rainbowDuration = config.get("rainbowDuration").asInt();
         maxFPS = config.get("maxFPS").asInt();
 
 
@@ -322,6 +326,8 @@ public class Config {
         backgroundSpeed = config.get("backgroundSpeed").asFloat();
         obstacleSpeed = config.get("obstacleSpeed").asFloat();
         cloudSpeed = config.get("cloudSpeed").asFloat();
+        rainbowSpawnChance = config.get("rainbowSpawnChance").asFloat();
+        rainbowDuration = config.get("rainbowDuration").asInt();
         maxFPS = config.get("maxFPS").asInt();
 
 
@@ -483,6 +489,14 @@ public class Config {
 
     public float getCloudSpeed() {
         return cloudSpeed;
+    }
+
+    public float getRainbowSpawnChance() {
+        return rainbowSpawnChance;
+    }
+
+    public int getRainbowDuration() {
+        return rainbowDuration;
     }
 
     public int getMaxFPS() {

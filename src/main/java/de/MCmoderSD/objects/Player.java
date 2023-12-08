@@ -20,7 +20,7 @@ public class Player {
     private final float gravity;
 
     // Variables
-    private float x;
+    private final float x;
     private float y;
     private float fallSpeed;
 

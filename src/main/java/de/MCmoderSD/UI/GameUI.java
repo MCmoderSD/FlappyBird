@@ -82,7 +82,8 @@ public class GameUI extends JPanel {
         // Draw Player
         g.setColor(player.getColor());
         //g.fill(player.getHitbox());
-        g.drawImage(player.getImage(), player.getX(), player.getY(), null);
+        if (game.isRainbow()) g.drawImage(player.getAnimation().getImage(), player.getX(), player.getY(), null);
+        else g.drawImage(player.getImage(), player.getX(), player.getY(), null);
 
         // Draw Obstacles
         for (Obstacle obstacle : obstacles) {

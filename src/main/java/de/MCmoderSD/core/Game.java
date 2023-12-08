@@ -46,6 +46,7 @@ public class Game implements Runnable {
     private boolean gameStarted;
     private boolean tooHigh;
     private boolean isJump;
+    private boolean isRainbow;
     private double speedModifier;
     private int score;
     private int fps;
@@ -94,7 +95,7 @@ public class Game implements Runnable {
                     // Game Loop Start:
 
                     // Anti Cheat Generate Events
-                    double event = random.nextDouble();
+                    double event = random.nextDouble() * System.nanoTime();
 
 
                     if (!isPaused()) {
@@ -113,7 +114,7 @@ public class Game implements Runnable {
                             fall();
 
                         // Check for Collision
-                        if (!hasCollided && !gameOver && !cheatsActive) for (Obstacle obstacle : obstacles)
+                        if (!hasCollided && !gameOver && !isRainbow && !cheatsActive) for (Obstacle obstacle : obstacles)
                             if (player.getHitbox().intersects(obstacle.getHitbox())) collision();
 
 
@@ -257,19 +258,26 @@ public class Game implements Runnable {
         }
     }
 
-    // Methods
+    // Init Game Variables
     public void init(int backgroundPos) {
-        // Init Game Variables
-        speedModifier = 1;
+
+        // Init Booleans
         isPaused = false;
         hasCollided = false;
         gameOver = false;
-        gameStarted = false;
         showFps = false;
         hitboxes = false;
         debug = false;
         cheatsActive = false;
+        gameStarted = false;
+        tooHigh = false;
+        isJump = false;
+        isRainbow = false;
+
+        // Init Variables
+        speedModifier = 1;
         score = 0;
+        fps = 0;
         obstacleSpawnTimer = obstacleSpawnRate;
 
         // Init Game Objects
@@ -280,7 +288,6 @@ public class Game implements Runnable {
         clouds = new ArrayList<>();
         keys = new ArrayList<>();
         events = new ArrayList<>();
-
 
         // Init Backgrounds
         backgrounds.add(new Background(config, backgroundPos, 0));
@@ -304,12 +311,25 @@ public class Game implements Runnable {
     private void point(double event) {
         if (sound) audioPlayer.play(config.getPointSound());
         score++;
+        if (score % 5 == 0 && Calculate.randomChance(config.getRainbowSpawnChance())) rainbowUlt();
         keys.add(event);
     }
 
     private void collision() {
         if (sound) audioPlayer.play(config.getHitSound());
         hasCollided = true;
+    }
+
+    private void rainbowUlt() {
+        new Thread(() -> {
+            try {
+                isRainbow = true;
+                Thread.sleep(config.getRainbowDuration());
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            isRainbow = false;
+        }).start();
     }
 
     private boolean hasCheated() {
@@ -327,7 +347,7 @@ public class Game implements Runnable {
         }
 
         // Reset Game
-        frame.getController().restart(debug, hasCheated(), sound, score);
+        frame.getController().restart(debug, cheatsActive || hasCheated(), sound, score);
     }
 
     // Getter
@@ -349,6 +369,10 @@ public class Game implements Runnable {
 
     public ArrayList<Cloud> getClouds() {
         return clouds;
+    }
+
+    public boolean isRainbow() {
+        return isRainbow;
     }
 
     public boolean isPaused() {
@@ -387,7 +411,11 @@ public class Game implements Runnable {
     }
 
     public void togglePause() {
-        if (!gameOver) isPaused = !isPaused;
+        if (!gameOver) {
+            isPaused = !isPaused;
+            if (isPaused) audioPlayer.pauseAll();
+            else audioPlayer.resumeAll();
+        }
     }
 
     public void toggleFps() {

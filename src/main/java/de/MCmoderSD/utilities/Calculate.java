@@ -112,6 +112,11 @@ public class Calculate {
         else return Color.WHITE;
     }
 
+    // Calculates a random Chance ToDo better implementation
+    public static boolean randomChance(float rainbowSpawnChance) {
+        return Math.random() < rainbowSpawnChance;
+    }
+
     // Calculates the average color in a rectangle
     public Color averageColorInRectangle(Rectangle rectangle, JPanel panel) {
         BufferedImage image = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_RGB);
