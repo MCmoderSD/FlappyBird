@@ -7,6 +7,7 @@ import de.MCmoderSD.objects.*;
 import de.MCmoderSD.utilities.Calculate;
 import de.MCmoderSD.utilities.sound.AudioPlayer;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -23,6 +24,7 @@ public class Game implements Runnable {
     private final int obstacleSpawnRate;
     private final int[] cloudSpawnChance;
     private final boolean isReverse;
+    private final boolean isLinux;
     private int frameRate;
     private boolean sound;
 
@@ -63,6 +65,7 @@ public class Game implements Runnable {
 
         // Constants
         tickrate = 2777778;
+        isLinux = System.getProperty("os.name").equals("Linux");
         obstacleSpawnRate = (int) (200 / config.getObstacleSpeed());
         cloudSpawnChance = new int[]{1, 5000};
         init(0);
@@ -92,6 +95,9 @@ public class Game implements Runnable {
 
                 // Tick
                 if (delta >= 1) {
+                    if (isLinux) Toolkit.getDefaultToolkit().sync();
+
+
                     // Game Loop Start:
 
                     // Anti Cheat Generate Events
@@ -229,6 +235,7 @@ public class Game implements Runnable {
                     int modulo = renderedFrames % frameRate;
                     if (modulo != 0 && update) renderedFrames++;
                     if (modulo == 0 && update) {
+                        if (isLinux) Toolkit.getDefaultToolkit().sync();
                         frame.repaint();
                         renderedFrames++;
                     }
@@ -245,6 +252,8 @@ public class Game implements Runnable {
                     events.add(event);
 
                     // Game Loop End:
+
+                    if (isLinux) Toolkit.getDefaultToolkit().sync();
                     delta--;
                 }
             }
