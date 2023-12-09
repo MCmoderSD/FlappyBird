@@ -193,6 +193,10 @@ public class Game implements Runnable {
             obstacles.removeAll(obstaclesToRemove);
             safeZones.removeAll(safeZonesToRemove);
 
+            // Background Music
+            if (!config.getBackgroundMusic().endsWith("/error/empty.wav") && sound && !audioPlayer.isPlaying(config.getBackgroundMusic()) && !gameOver && !isPaused)
+                audioPlayer.play(config.getBackgroundMusic(), true);
+
             // Background Spawn
             Background lastBackground = backgrounds.get(backgrounds.size() - 1);
             if (lastBackground.getX() + lastBackground.getWidth() <= config.getWidth())
@@ -363,6 +367,9 @@ public class Game implements Runnable {
             frame.showMessage(config.getCheatsDetected(), config.getCheatsDetectedTitle());
             Calculate.systemShutdown(5);
         }
+
+        // Stop Background Music
+        if (audioPlayer.isPlaying(config.getBackgroundMusic())) audioPlayer.stop(config.getBackgroundMusic());
 
         // Reset Game
         frame.getController().restart(debug, cheatsActive || hasCheated, sound, score);

@@ -49,6 +49,7 @@ public class Menu extends JPanel {
         headline.setSize(config.getWidth(), Math.toIntExact(Math.round(config.getHeight() * 0.1)));
         headline.setLocation((config.getWidth() - headline.getWidth()) / 2, 0);
         headline.setHorizontalAlignment(SwingConstants.CENTER);
+        headline.setForeground(config.getFontColor());
         headline.setFont(headerFont);
         headline.setVisible(true);
         add(headline);
@@ -58,6 +59,7 @@ public class Menu extends JPanel {
         fpsSpinner.setSize(Math.toIntExact(Math.round(config.getWidth() * 0.075)), Math.toIntExact(Math.round(config.getHeight() * 0.05)));
         fpsSpinner.setLocation(Math.toIntExact(Math.round(config.getWidth() * 0.3)) - fpsSpinner.getWidth() / 2, Math.toIntExact(Math.round(config.getHeight() * 0.9)) - fpsSpinner.getHeight() / 2);
         fpsSpinner.setToolTipText(config.getFpsToolTip());
+        fpsSpinner.setForeground(config.getFontColor());
         fpsSpinner.setOpaque(false);
         fpsSpinner.setFont(font);
         fpsSpinner.setVisible(true);
@@ -78,6 +80,7 @@ public class Menu extends JPanel {
         soundCheckBox.setSize(Math.toIntExact(Math.round(config.getWidth() * 0.125)), Math.toIntExact(Math.round(config.getHeight() * 0.05)));
         soundCheckBox.setLocation(Math.toIntExact(Math.round(config.getWidth() * 0.7)) - soundCheckBox.getWidth() / 2, Math.toIntExact(Math.round(config.getHeight() * 0.9) - soundCheckBox.getHeight() / 2));
         soundCheckBox.setToolTipText(config.getSoundToolTip());
+        soundCheckBox.setForeground(config.getFontColor());
         soundCheckBox.setFont(font);
         soundCheckBox.setOpaque(false);
         soundCheckBox.setSelected(true);
@@ -91,6 +94,7 @@ public class Menu extends JPanel {
         usernameField.setBorder(new BorderUIResource.BevelBorderUIResource(0, config.getFontColor(), config.getFontColor(), config.getFontColor(), config.getFontColor()));
         usernameField.setHorizontalAlignment(SwingConstants.CENTER);
         usernameField.setToolTipText(config.getUsernameToolTip());
+        usernameField.setForeground(config.getFontColor());
         usernameField.setText(config.getUsername());
         usernameField.setOpaque(false);
         usernameField.setFont(font);

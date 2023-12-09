@@ -37,6 +37,4 @@ build/
 ### Mac OS ###
 .DS_Store
 
-latency-log.txt
-storage/
-.idea/
+docs/

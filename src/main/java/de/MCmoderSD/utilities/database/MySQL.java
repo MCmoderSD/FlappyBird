@@ -40,7 +40,6 @@ public class MySQL {
         try {
             if (isConnected()) return; // already connected
             connection = java.sql.DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, username, password); // connect
-            System.out.println("MySQL connected!");
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }
@@ -51,7 +50,6 @@ public class MySQL {
         try {
             if (!isConnected()) return; // already disconnected
             connection.close(); // disconnect
-            System.out.println("MySQL disconnected!");
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }

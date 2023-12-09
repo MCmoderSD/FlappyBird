@@ -1,0 +1,21 @@
+{
+  "title": "Flatter Vogel",
+  "score": "Punkte",
+  "username": "Benutzername",
+  "usernameToolTip": "Fülle deinen Benutzernamen ein",
+  "rank": "Rang",
+  "scorePrefix": "Punkte: ",
+  "fpsPrefix": "FPS: ",
+  "start": "Starten",
+  "startToolTip": "Starte das Spiel",
+  "sound": "Ton",
+  "soundToolTip": "Schalte den Ton ein oder aus",
+  "fpsToolTip": "Setze die FPS",
+  "cheatsDetected": "Mein Anti-Cheat hat festgestellt, dass Sie den Speicher des Spiels geändert haben.",
+  "cheatsDetectedTitle": "Cheats erkannt!",
+  "instruction": "Gib deinen Namen ein und drücker auf Bestätigen. Deine Punkte: ",
+  "confirm": "Bestätigen",
+  "confirmToolTip": "Bestätige deinen Benutzernamen",
+  "invalidUsername": "Dein Benutzername ist ungültig. Bitte verwende nur Buchstaben und Zahlen.",
+  "invalidUsernameTitle": "Ungültiger Benutzername"
+}

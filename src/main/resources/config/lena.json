@@ -42,5 +42,5 @@
   "hitSound": "/Sounds/mono/hit.wav",
   "pointSound": "/Sounds/mono/point.wav",
   "rainbowSound": "/Sounds/mono/rainbow.wav",
-  "backgroundMusic": ""
+  "backgroundMusic": "/error/empty.wav"
 }
