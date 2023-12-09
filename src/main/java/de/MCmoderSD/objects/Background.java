@@ -13,11 +13,14 @@ public class Background {
     private final Color color;
     private final int width;
     private final int height;
+    private final float speed;
 
     // Variables
     private float x;
     private float y;
-    private float speed;
+
+    // Modifiers
+    private float speedModifier;
 
     // Constructors
     public Background(Config config, int x, int y) {
@@ -31,6 +34,8 @@ public class Background {
 
         this.x = x;
         this.y = y;
+
+        speedModifier = 1;
     }
 
     public Background(Config config, Point location) {
@@ -44,6 +49,8 @@ public class Background {
 
         x = location.x;
         y = location.y;
+
+        speedModifier = 1;
     }
 
     // Methods
@@ -52,14 +59,6 @@ public class Background {
     }
 
     // Getter
-    public BufferedImage getImage() {
-        return image;
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
     public int getWidth() {
         return width;
     }
@@ -68,8 +67,24 @@ public class Background {
         return height;
     }
 
+    public Dimension getSize() {
+        return new Dimension(width, height);
+    }
+
+    public BufferedImage getImage() {
+        return image;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
     public Point getLocation() {
         return new Point(Math.toIntExact(Math.round(x)), 0);
+    }
+
+    public Rectangle getHitbox() {
+        return new Rectangle(Math.toIntExact(Math.round(x)), Math.toIntExact(Math.round(y)), width, height);
     }
 
     public int getX() {
@@ -80,11 +95,34 @@ public class Background {
         return Math.toIntExact(Math.round(y));
     }
 
-    public Dimension getDimension() {
-        return new Dimension(width, height);
+    public float getSpeed() {
+        return speed;
     }
 
-    public Rectangle getHitbox() {
-        return new Rectangle(Math.toIntExact(Math.round(x)), Math.toIntExact(Math.round(y)), width, height);
+    public float getSpeedModifier() {
+        return speedModifier;
+    }
+
+    // Setter
+    public void setLocation(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void setLocation(Point location) {
+        this.x = location.x;
+        this.y = location.y;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public void setSpeedModifier(float speedModifier) {
+        this.speedModifier = speedModifier;
     }
 }

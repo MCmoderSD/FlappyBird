@@ -4,14 +4,13 @@ import de.MCmoderSD.main.Main;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-@SuppressWarnings("unused")
 public class Calculate {
 
     // Center JFrame
@@ -32,61 +31,10 @@ public class Calculate {
         return new Point(x, y);
     }
 
-    // Calculate average color in rectangle
-    public static Color getAverageColorInRectangle(Rectangle rectangle, JPanel panel) {
-        BufferedImage image = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_RGB);
-        panel.paint(image.getGraphics());
-
-        int startX = rectangle.x;
-        int startY = rectangle.y;
-        int endX = rectangle.x + rectangle.width;
-        int endY = rectangle.y + rectangle.height;
-
-        int totalRed = 0;
-        int totalGreen = 0;
-        int totalBlue = 0;
-        int pixelCount = 0;
-
-        for (int x = startX; x < endX; x++) {
-            for (int y = startY; y < endY; y++) {
-                int pixel = image.getRGB(x, y);
-                int red = (pixel >> 16) & 0xFF;
-                int green = (pixel >> 8) & 0xFF;
-                int blue = pixel & 0xFF;
-
-                totalRed += red;
-                totalGreen += green;
-                totalBlue += blue;
-                pixelCount++;
-            }
-        }
-
-        int averageRed = totalRed / pixelCount;
-        int averageGreen = totalGreen / pixelCount;
-        int averageBlue = totalBlue / pixelCount;
-
-        return new Color(averageRed, averageGreen, averageBlue);
-    }
-
-    // Calculate foreground color
-    public static Color calculateForegroundColor(Color color) {
-        int r = color.getRed();
-        int g = color.getGreen();
-        int b = color.getBlue();
-
-        if (r + g + b > 382) return Color.BLACK;
-        else return Color.WHITE;
-    }
-
     // File Checker
     public static boolean doesFileExist(String resourcePath) {
         InputStream inputStream = Main.class.getResourceAsStream(resourcePath);
         return inputStream != null;
-    }
-
-    // String to Color
-    public static Color hexToColor(String hex) {
-        return new Color(Integer.parseInt(hex.substring(1), 16));
     }
 
     // System Shutdown
@@ -102,55 +50,9 @@ public class Calculate {
         }
     }
 
-    // Calculates the color of the text
-    public static Color foregroundColor(Color color) {
-        int r = color.getRed();
-        int g = color.getGreen();
-        int b = color.getBlue();
-
-        if (r + g + b > 382) return Color.BLACK;
-        else return Color.WHITE;
-    }
-
-    // Calculates a random Chance ToDo better implementation
-    public static boolean randomChance(float rainbowSpawnChance) {
-        return Math.random() < rainbowSpawnChance;
-    }
-
-    // Calculates the average color in a rectangle
-    public Color averageColorInRectangle(Rectangle rectangle, JPanel panel) {
-        BufferedImage image = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_RGB);
-        panel.paint(image.getGraphics());
-
-        int startX = rectangle.x;
-        int startY = rectangle.y;
-        int endX = rectangle.x + rectangle.width;
-        int endY = rectangle.y + rectangle.height;
-
-        int totalRed = 0;
-        int totalGreen = 0;
-        int totalBlue = 0;
-        int pixelCount = 0;
-
-        for (int x = startX; x < endX; x++) {
-            for (int y = startY; y < endY; y++) {
-                int pixel = image.getRGB(x, y);
-                int red = (pixel >> 16) & 0xFF;
-                int green = (pixel >> 8) & 0xFF;
-                int blue = pixel & 0xFF;
-
-                totalRed += red;
-                totalGreen += green;
-                totalBlue += blue;
-                pixelCount++;
-            }
-        }
-
-        int averageRed = totalRed / pixelCount;
-        int averageGreen = totalGreen / pixelCount;
-        int averageBlue = totalBlue / pixelCount;
-
-        return new Color(averageRed, averageGreen, averageBlue);
+    // Calculates a random Chance
+    public static boolean randomChance(float percentage) {
+        return Math.random() < percentage;
     }
 
     // Checks if Two HashMaps are equal
@@ -161,6 +63,7 @@ public class Calculate {
         return true;
     }
 
+    // Calculates the max Dimension
     public static Dimension calculateMaxDimension(int width, int height) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Screen Size
 
@@ -171,5 +74,12 @@ public class Calculate {
         if (height > screenSize.height * 0.9) finalHeight = Math.toIntExact(Math.round(screenSize.height * 0.9));
 
         return new Dimension(finalWidth, finalHeight);
+    }
+
+    // Checks if the Player has cheated
+    public static boolean hasCheated(ArrayList<Double> events, ArrayList<Double> keys) {
+        if (events.size() <= keys.size()) return true;
+        for (double key : keys) if (!events.contains(key)) return true;
+        return false;
     }
 }

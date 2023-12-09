@@ -73,6 +73,7 @@ public class Game implements Runnable {
         new Thread(this).start();
     }
 
+    // Game Loop
     @Override
     public void run() {
         while (Main.IS_RUNNING) {
@@ -120,8 +121,9 @@ public class Game implements Runnable {
                             fall();
 
                         // Check for Collision
-                        if (!hasCollided && !gameOver && !isRainbow && !cheatsActive) for (Obstacle obstacle : obstacles)
-                            if (player.getHitbox().intersects(obstacle.getHitbox())) collision();
+                        if (!hasCollided && !gameOver && !isRainbow && !cheatsActive)
+                            for (Obstacle obstacle : obstacles)
+                                if (player.getHitbox().intersects(obstacle.getHitbox())) collision();
 
 
                         // Check for Safe Zone
@@ -304,6 +306,8 @@ public class Game implements Runnable {
             backgrounds.add(new Background(config, backgrounds.get(backgrounds.size() - 1).getX() + backgrounds.get(backgrounds.size() - 1).getWidth(), 0));
     }
 
+    // Methods
+
     public void jump() {
         isJump = true;
         if (!isReverse && sound && !gameOver && !hasCollided && !isPaused && player.getY() + player.getHeight() > 0)
@@ -333,6 +337,7 @@ public class Game implements Runnable {
         new Thread(() -> {
             try {
                 isRainbow = true;
+                if (sound) audioPlayer.play(config.getRainbowSound());
                 Thread.sleep(config.getRainbowDuration());
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
@@ -341,22 +346,17 @@ public class Game implements Runnable {
         }).start();
     }
 
-    private boolean hasCheated() {
-        if (events.size() <= keys.size()) return true;
-        for (double key : keys) if (!events.contains(key)) return true;
-        return false;
-    }
-
     private void restart() {
+        boolean hasCheated = Calculate.hasCheated(events, keys);
 
         // Cheats Detected
-        if (hasCheated()) {
+        if (hasCheated) {
             frame.showMessage(config.getCheatsDetected(), config.getCheatsDetectedTitle());
             Calculate.systemShutdown(5);
         }
 
         // Reset Game
-        frame.getController().restart(debug, cheatsActive || hasCheated(), sound, score);
+        frame.getController().restart(debug, cheatsActive || hasCheated, sound, score);
     }
 
     // Getter
@@ -413,7 +413,6 @@ public class Game implements Runnable {
     }
 
     // Setter
-
     public void initGameConstants(boolean sound, int fps) {
         this.sound = sound;
         frameRate = config.getMaxFPS() / fps;
@@ -427,17 +426,17 @@ public class Game implements Runnable {
         }
     }
 
+    public void toggleKonami() {
+        cheatsActive = true;
+        debug = !debug;
+    }
+
     public void toggleFps() {
         showFps = !showFps;
     }
 
     public void toggleHitboxes() {
         hitboxes = !hitboxes;
-    }
-
-    public void toggleKonami() {
-        cheatsActive = true;
-        debug = !debug;
     }
 
     public void toggleSound() {

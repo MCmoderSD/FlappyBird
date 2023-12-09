@@ -15,14 +15,20 @@ public class Obstacle {
     private final Color color;
     private final Color hitboxColor;
     private final boolean isTop;
-    private final float jumpHeight;
     private final float gravity;
+    private final float speed;
+    private final float jumpHeight;
 
     // Variables
     private float x;
     private float y;
-    private float speed;
     private float fallSpeed;
+
+    // Modifiers
+    private float jumpHeightModifier;
+    private float speedModifier;
+    private float fallSpeedModifier;
+    private float gravityModifier;
 
     // Constructor
     public Obstacle(Config config, boolean isTop) {
@@ -40,26 +46,25 @@ public class Obstacle {
         jumpHeight = config.getJumpHeight();
         gravity = config.getGravity();
         speed = config.getObstacleSpeed();
+
+        jumpHeightModifier = 1;
+        speedModifier = 1;
+        fallSpeedModifier = 1;
+        gravityModifier = 1;
     }
 
     // Methods
     public void move() {
-        x -= speed;
+        x -= speed * speedModifier;
     }
 
     public void jump() {
-        fallSpeed = -jumpHeight;
+        fallSpeed = -(jumpHeight * jumpHeightModifier);
     }
 
     public void fall() {
-        fallSpeed += gravity;
-        y += fallSpeed;
-    }
-
-    // Setter
-    public void setLocation(int x, int y) {
-        this.x = x;
-        this.y = y;
+        fallSpeed += gravity * gravityModifier;
+        y += fallSpeed * fallSpeedModifier;
     }
 
     // Getter
@@ -69,6 +74,10 @@ public class Obstacle {
 
     public int getHeight() {
         return height;
+    }
+
+    public Dimension getSize() {
+        return new Dimension(width, height);
     }
 
     public BufferedImage getImage() {
@@ -83,8 +92,12 @@ public class Obstacle {
         return hitboxColor;
     }
 
-    public Dimension getDimension() {
-        return new Dimension(width, height);
+    public Point getLocation() {
+        return new Point(Math.toIntExact(Math.round(x)), Math.toIntExact(Math.round(y)));
+    }
+
+    public Rectangle getHitbox() {
+        return new Rectangle(Math.toIntExact(Math.round(x)), Math.toIntExact(Math.round(y)), width, height);
     }
 
     public int getX() {
@@ -95,8 +108,46 @@ public class Obstacle {
         return Math.toIntExact(Math.round(y));
     }
 
-    public Point getLocation() {
-        return new Point(Math.toIntExact(Math.round(x)), Math.toIntExact(Math.round(y)));
+    public float getJumpHeight() {
+        return jumpHeight;
+    }
+
+    public float getGravity() {
+        return gravity;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public float getFallSpeed() {
+        return fallSpeed;
+    }
+
+    public float getSpeedModifier() {
+        return speedModifier;
+    }
+
+    public float getJumpHeightModifier() {
+        return jumpHeightModifier;
+    }
+
+    public float getFallSpeedModifier() {
+        return fallSpeedModifier;
+    }
+
+    public float getGravityModifier() {
+        return gravityModifier;
+    }
+
+    public boolean isTop() {
+        return isTop;
+    }
+
+    // Setter
+    public void setLocation(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
     public void setLocation(Point location) {
@@ -104,11 +155,31 @@ public class Obstacle {
         this.y = location.y;
     }
 
-    public Rectangle getHitbox() {
-        return new Rectangle(Math.toIntExact(Math.round(x)), Math.toIntExact(Math.round(y)), width, height);
+    public void setX(float x) {
+        this.x = x;
     }
 
-    public boolean isTop() {
-        return isTop;
+    public void setY(float y) {
+        this.y = y;
+    }
+
+    public void setSpeedModifier(float speedModifier) {
+        this.speedModifier = speedModifier;
+    }
+
+    public void setJumpHeightModifier(float jumpHeightModifier) {
+        this.jumpHeightModifier = jumpHeightModifier;
+    }
+
+    public void setFallSpeed(float fallSpeed) {
+        this.fallSpeed = fallSpeed;
+    }
+
+    public void setFallSpeedModifier(float fallSpeedModifier) {
+        this.fallSpeedModifier = fallSpeedModifier;
+    }
+
+    public void setGravityModifier(float gravityModifier) {
+        this.gravityModifier = gravityModifier;
     }
 }

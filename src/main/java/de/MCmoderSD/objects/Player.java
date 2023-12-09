@@ -16,13 +16,18 @@ public class Player {
     private final ImageIcon animation;
     private final Color color;
     private final Color hitboxColor;
-    private final float jumpHeight;
     private final float gravity;
+    private final float jumpHeight;
 
     // Variables
-    private final float x;
+    private float x;
     private float y;
     private float fallSpeed;
+
+    // Modifiers
+    private float jumpHeightModifier;
+    private float fallSpeedModifier;
+    private float gravityModifier;
 
     // Constructor
     public Player(Config config) {
@@ -39,18 +44,22 @@ public class Player {
         gravity = config.getGravity();
 
 
-        x = (float) config.getWidth() / 4 - (float) width / 2;
+        x = (float) (config.getWidth() / 4 - width / 2);
         y = (float) (config.getHeight() - height) / 2;
+
+        jumpHeightModifier = 1;
+        fallSpeedModifier = 1;
+        gravityModifier = 1;
     }
 
     // Methods
     public void jump() {
-        fallSpeed = -jumpHeight;
+        fallSpeed = -(jumpHeight * jumpHeightModifier);
     }
 
     public void fall() {
-        fallSpeed += gravity;
-        y += fallSpeed;
+        fallSpeed += gravity * gravityModifier;
+        y += fallSpeed * fallSpeedModifier;
     }
 
     // Getter
@@ -60,6 +69,10 @@ public class Player {
 
     public int getHeight() {
         return height;
+    }
+
+    public Dimension getSize() {
+        return new Dimension(width, height);
     }
 
     public BufferedImage getImage() {
@@ -78,10 +91,6 @@ public class Player {
         return hitboxColor;
     }
 
-    public Dimension getDimension() {
-        return new Dimension(width, height);
-    }
-
     public Point getLocation() {
         return new Point(Math.toIntExact(Math.round(x)), Math.toIntExact(Math.round(y)));
     }
@@ -98,8 +107,62 @@ public class Player {
         return Math.toIntExact(Math.round(y));
     }
 
+    public float getJumpHeight() {
+        return jumpHeight;
+    }
+
+    public float getGravity() {
+        return gravity;
+    }
+
+    public float getFallSpeed() {
+        return fallSpeed;
+    }
+
+    public float getJumpHeightModifier() {
+        return jumpHeightModifier;
+    }
+
+    public float getFallSpeedModifier() {
+        return fallSpeedModifier;
+    }
+
+    public float getGravityModifier() {
+        return gravityModifier;
+    }
+
     // Setter
-    public void setY(int y) {
+    public void setLocation(int x, int y) {
+        this.x = x;
         this.y = y;
+    }
+
+    public void setLocation(Point location) {
+        this.x = location.x;
+        this.y = location.y;
+    }
+
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
+
+    public void setFallSpeed(float fallSpeed) {
+        this.fallSpeed = fallSpeed;
+    }
+
+    public void setJumpHeightModifier(float jumpHeightModifier) {
+        this.jumpHeightModifier = jumpHeightModifier;
+    }
+
+    public void setFallSpeedModifier(float fallSpeedModifier) {
+        this.fallSpeedModifier = fallSpeedModifier;
+    }
+
+    public void setGravityModifier(float gravityModifier) {
+        this.gravityModifier = gravityModifier;
     }
 }

@@ -132,6 +132,7 @@ public class Menu extends JPanel {
         });
     }
 
+    // Draw Backgrounds
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
 
@@ -143,31 +144,8 @@ public class Menu extends JPanel {
             g.fill(background.getHitbox());
             g.drawImage(background.getImage(), background.getX(), background.getY(), null);
         }
-    }
 
-    // Getter
-    public ScoreBoard getScoreBoard() {
-        return scoreBoard;
-    }
-
-    public String getUsername() {
-        return usernameField.getText();
-    }
-
-    public int getFps() {
-        return (int) fpsSpinner.getValue();
-    }
-
-    public int getBackgroundPos() {
-        return backgrounds.get(0).getX();
-    }
-
-    public boolean isSound() {
-        return soundCheckBox.isSelected();
-    }
-
-    public boolean canFocus() {
-        return canFocus;
+        paintComponents(g);
     }
 
     // Setter
@@ -209,5 +187,30 @@ public class Menu extends JPanel {
 
     public void setScoreBoard(boolean visible) {
         scoreBoard.setVisible(visible);
+    }
+
+    // Getter
+    public ScoreBoard getScoreBoard() {
+        return scoreBoard;
+    }
+
+    public String getUsername() {
+        return usernameField.getText();
+    }
+
+    public int getFps() {
+        return (int) fpsSpinner.getValue();
+    }
+
+    public int getBackgroundPos() {
+        return backgrounds.get(0).getX();
+    }
+
+    public boolean isSound() {
+        return soundCheckBox.isSelected();
+    }
+
+    public boolean canFocus() {
+        return canFocus;
     }
 }

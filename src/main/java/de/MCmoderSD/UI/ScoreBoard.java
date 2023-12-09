@@ -21,6 +21,7 @@ public class ScoreBoard extends JPanel {
     private final JTable table;
     private final DefaultTableModel tableModel;
 
+    // Constructor
     public ScoreBoard(Menu menu, Config config) {
         super();
         setLayout(new BorderLayout());
@@ -56,6 +57,7 @@ public class ScoreBoard extends JPanel {
         menu.add(this);
     }
 
+    // Update table
     private void updateTable() {
         // Clear table
         tableModel.setRowCount(0);

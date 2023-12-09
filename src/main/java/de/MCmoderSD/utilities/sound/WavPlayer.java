@@ -70,7 +70,7 @@ public class WavPlayer {
 
     // Resume clip
     public void resume() {
-        if (clip == null) return;
+        if (clip == null || clip.getFramePosition() == 0 || clip.getFramePosition() == clip.getFrameLength()) return;
         clip.start();
     }
 
