@@ -77,8 +77,8 @@ public class Menu extends JPanel {
 
         // Init soundButton
         soundCheckBox = new JCheckBox(config.getSound());
-        soundCheckBox.setSize(Math.toIntExact(Math.round(config.getWidth() * 0.125)), Math.toIntExact(Math.round(config.getHeight() * 0.05)));
-        soundCheckBox.setLocation(Math.toIntExact(Math.round(config.getWidth() * 0.7)) - soundCheckBox.getWidth() / 2, Math.toIntExact(Math.round(config.getHeight() * 0.9) - soundCheckBox.getHeight() / 2));
+        soundCheckBox.setSize(Math.toIntExact(Math.round(config.getWidth() * 0.15)), Math.toIntExact(Math.round(config.getHeight() * 0.05)));
+        soundCheckBox.setLocation(Math.toIntExact(Math.round(config.getWidth() * 0.725)) - soundCheckBox.getWidth() / 2, Math.toIntExact(Math.round(config.getHeight() * 0.9) - soundCheckBox.getHeight() / 2));
         soundCheckBox.setToolTipText(config.getSoundToolTip());
         soundCheckBox.setForeground(config.getFontColor());
         soundCheckBox.setFont(font);

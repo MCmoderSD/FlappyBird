@@ -369,7 +369,8 @@ public class Game implements Runnable {
         }
 
         // Stop Background Music
-        if (audioPlayer.isPlaying(config.getBackgroundMusic())) audioPlayer.stop(config.getBackgroundMusic());
+        if (!config.getBackgroundMusic().endsWith("empty.wav") && audioPlayer.isPlaying(config.getBackgroundMusic()))
+            audioPlayer.stop(config.getBackgroundMusic());
 
         // Reset Game
         frame.getController().restart(debug, cheatsActive || hasCheated, sound, score);

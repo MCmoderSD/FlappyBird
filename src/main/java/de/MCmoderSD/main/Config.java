@@ -119,11 +119,22 @@ public class Config {
 
         // Language
         if (args.length == 0) language = "en";
-        else language = args[0];
+        else {
+            String arg = args[0].toLowerCase();
+            while (arg.startsWith(" ") || arg.startsWith("-") || arg.startsWith("/")) arg = arg.substring(1);
+            while (arg.endsWith(" ") || arg.endsWith("-") || arg.endsWith("/"))
+                arg = arg.substring(0, arg.length() - 1);
+            language = args[0];
+        }
 
         if (Calculate.checkDate(11, 9) || Calculate.checkDate(9, 11)) configuration = "911";
-        else if (args.length > 1) configuration = args[1];
-        else configuration = "lena";
+        else if (args.length > 1) {
+            String arg = args[1];
+            while (arg.startsWith(" ") || arg.startsWith("-") || arg.startsWith("/")) arg = arg.substring(1);
+            while (arg.endsWith(" ") || arg.endsWith("-") || arg.endsWith("/"))
+                arg = arg.substring(0, arg.length() - 1);
+            configuration = args[1];
+        } else configuration = "lena";
 
         if (args.length > 2) {
             String arg = args[2].toLowerCase();
