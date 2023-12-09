@@ -73,22 +73,24 @@ public class Game implements Runnable {
         new Thread(this).start();
     }
 
-    // Game Loop
     @Override
     public void run() {
         while (Main.IS_RUNNING) {
 
-            // Timer
+            // Timer Variables
             double delta = 0;
             long current;
             long timer = 0;
             long now = System.nanoTime();
             int renderedFrames = 0;
 
+            // Wait for start
             if (isJump && frame.getGameUI().isVisible()) gameStarted = true;
 
             // Game Loop
             while (gameStarted) {
+
+                // Timer
                 current = System.nanoTime();
                 delta += (current - now) / (tickrate / speedModifier);
                 timer += current - now;
@@ -99,138 +101,10 @@ public class Game implements Runnable {
                     if (isLinux) Toolkit.getDefaultToolkit().sync();
 
 
-                    // Game Loop Start:
+                    /* <-- Game Loop Start --> */
 
-                    // Anti Cheat Generate Events
-                    double event = random.nextDouble() * System.nanoTime();
-
-
-                    if (!isPaused()) {
-
-                        // Check for Restart
-                        if (gameOver && isJump && frame.getGameUI().isVisible()) restart();
-
-                        // Temp lists for removal
-                        ArrayList<Background> backgroundsToRemove = new ArrayList<>();
-                        ArrayList<Obstacle> obstaclesToRemove = new ArrayList<>();
-                        ArrayList<SafeZone> safeZonesToRemove = new ArrayList<>();
-                        ArrayList<Cloud> cloudsToRemove = new ArrayList<>();
-
-                        // Check for fall
-                        if (!gameOver && !cheatsActive && player.getY() - player.getHeight() >= config.getHeight())
-                            fall();
-
-                        // Check for Collision
-                        if (!hasCollided && !gameOver && !isRainbow && !cheatsActive)
-                            for (Obstacle obstacle : obstacles)
-                                if (player.getHitbox().intersects(obstacle.getHitbox())) collision();
-
-
-                        // Check for Safe Zone
-                        if (!gameOver) for (SafeZone safeZone : safeZones)
-                            if (player.getHitbox().intersects(safeZone.getHitbox())) {
-                                safeZonesToRemove.add(safeZone);
-                                point(event);
-                            }
-
-
-                        // Remove elements that are out of bounds
-                        for (Background background : backgrounds)
-                            if (background.getX() + background.getWidth() < 0) backgroundsToRemove.add(background);
-                        for (Cloud cloud : clouds) if (cloud.getX() + cloud.getWidth() < 0) cloudsToRemove.add(cloud);
-                        for (Obstacle obstacle : obstacles)
-                            if (obstacle.getX() + obstacle.getWidth() < 0) obstaclesToRemove.add(obstacle);
-                        for (SafeZone safeZone : safeZones)
-                            if (safeZone.getX() + safeZone.getWidth() < 0) safeZonesToRemove.add(safeZone);
-
-                        // Remove elements from original lists
-                        backgrounds.removeAll(backgroundsToRemove);
-                        clouds.removeAll(cloudsToRemove);
-                        obstacles.removeAll(obstaclesToRemove);
-                        safeZones.removeAll(safeZonesToRemove);
-
-                        // Background Spawn
-                        Background lastBackground = backgrounds.get(backgrounds.size() - 1);
-                        if (lastBackground.getX() + lastBackground.getWidth() <= config.getWidth())
-                            backgrounds.add(new Background(config, config.getWidth(), 0));
-
-                        // Cloud Spawn
-                        if (random.nextInt(cloudSpawnChance[1]) < cloudSpawnChance[0]) {
-                            Cloud cloud = new Cloud(config, config.getWidth(), (int) (Math.random() * config.getHeight() / 2));
-                            clouds.add(cloud);
-                        }
-
-                        // Obstacle Spawn
-                        if (obstacleSpawnTimer >= obstacleSpawnRate) {
-                            Obstacle obstacleTop = new Obstacle(config, true);
-                            Obstacle obstacleBottom = new Obstacle(config, false);
-
-                            // Calculate the minimum and maximum Y value
-                            int minY = ((config.getHeight() * config.getPercentage()) / 100);
-                            int maxY = config.getHeight() - ((config.getHeight() * config.getPercentage()) / 100);
-
-                            // Calculate the Y value of the obstacles
-                            int yTop = (int) (Math.random() * (maxY - minY + 1) + minY) - obstacleTop.getHeight();
-                            int yBottom = yTop + config.getGap() + obstacleBottom.getHeight();
-
-                            // Set the location of the obstacles
-                            obstacleTop.setLocation(config.getWidth(), yTop);
-                            obstacleBottom.setLocation(config.getWidth(), yBottom);
-
-                            // Generate Safe Zone
-                            SafeZone safeZone = new SafeZone(config, obstacleTop, obstacleBottom);
-
-                            // Add the obstacles and the safe zone to the lists
-                            obstacles.add(obstacleTop);
-                            obstacles.add(obstacleBottom);
-                            safeZones.add(safeZone);
-
-                            // Reset the timer
-                            obstacleSpawnTimer = 0;
-                        } else obstacleSpawnTimer++;
-
-                        // Player Movement
-                        if (!gameOver && !hasCollided && isJump && player.getY() + player.getHeight() > 0) {
-                            if (isReverse) {
-                                tooHigh = false;
-                                for (Obstacle obstacle : obstacles)
-                                    if (!obstacle.isTop() && obstacle.getY() + obstacle.getHeight() * 0.85 <= config.getHeight())
-                                        tooHigh = true;
-                                if (!tooHigh) {
-                                    obstacles.forEach(Obstacle::jump);
-                                    safeZones.forEach(SafeZone::jump);
-                                }
-                            } else player.jump();
-                        }
-
-                        if (!isReverse || hasCollided) player.fall();
-                        else {
-                            boolean toLow = false;
-                            for (Obstacle obstacle : obstacles)
-                                if (obstacle.isTop() && obstacle.getY() + 1 > 0) toLow = true;
-                            if (!toLow) {
-                                obstacles.forEach(Obstacle::fall);
-                                safeZones.forEach(SafeZone::fall);
-                            }
-                        }
-
-                        if (!(gameOver || hasCollided)) {
-
-                            // Move Clouds
-                            for (Cloud cloud : clouds) cloud.move();
-
-                            // Move Backgrounds
-                            for (Background background : backgrounds) background.move();
-
-                            // Move Obstacles
-                            for (Obstacle obstacle : obstacles) obstacle.move();
-
-                            // Move Safe Zones
-                            for (SafeZone safeZone : safeZones) safeZone.move();
-                        }
-                    }
-
-                    isJump = false;
+                    // Game Tick Event
+                    double event = gameTick();
 
                     // Update Frame
                     boolean update = renderedFrames < config.getMaxFPS();
@@ -242,7 +116,6 @@ public class Game implements Runnable {
                         renderedFrames++;
                     }
 
-
                     // FPS Counter
                     if (timer >= 1000000000) {
                         timer = 0;
@@ -253,20 +126,156 @@ public class Game implements Runnable {
                     // Anti Cheat
                     events.add(event);
 
-                    // Game Loop End:
+                    /* <-- Game Loop End --> */
+
 
                     if (isLinux) Toolkit.getDefaultToolkit().sync();
                     delta--;
                 }
             }
 
-            // Delay to prevent 100% CPU Usage
+            // Delay to prevent 100% CPU usage
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    // Game Tick
+    private double gameTick() {
+
+        // Generate Event
+        double event = random.nextDouble() * System.nanoTime();
+
+        if (!isPaused()) {
+
+            // Check for Restart
+            if (gameOver && isJump && frame.getGameUI().isVisible()) restart();
+
+            // Temp lists for removal
+            ArrayList<Background> backgroundsToRemove = new ArrayList<>();
+            ArrayList<Obstacle> obstaclesToRemove = new ArrayList<>();
+            ArrayList<SafeZone> safeZonesToRemove = new ArrayList<>();
+            ArrayList<Cloud> cloudsToRemove = new ArrayList<>();
+
+            // Check for fall
+            if (!gameOver && !cheatsActive && player.getY() - player.getHeight() >= config.getHeight())
+                fall();
+
+            // Check for Collision
+            if (!hasCollided && !gameOver && !isRainbow && !cheatsActive)
+                for (Obstacle obstacle : obstacles)
+                    if (player.getHitbox().intersects(obstacle.getHitbox())) collision();
+
+
+            // Check for Safe Zone
+            if (!gameOver) for (SafeZone safeZone : safeZones)
+                if (player.getHitbox().intersects(safeZone.getHitbox())) {
+                    safeZonesToRemove.add(safeZone);
+                    point(event);
+                }
+
+
+            // Remove elements that are out of bounds
+            for (Background background : backgrounds)
+                if (background.getX() + background.getWidth() < 0) backgroundsToRemove.add(background);
+            for (Cloud cloud : clouds) if (cloud.getX() + cloud.getWidth() < 0) cloudsToRemove.add(cloud);
+            for (Obstacle obstacle : obstacles)
+                if (obstacle.getX() + obstacle.getWidth() < 0) obstaclesToRemove.add(obstacle);
+            for (SafeZone safeZone : safeZones)
+                if (safeZone.getX() + safeZone.getWidth() < 0) safeZonesToRemove.add(safeZone);
+
+            // Remove elements from original lists
+            backgrounds.removeAll(backgroundsToRemove);
+            clouds.removeAll(cloudsToRemove);
+            obstacles.removeAll(obstaclesToRemove);
+            safeZones.removeAll(safeZonesToRemove);
+
+            // Background Spawn
+            Background lastBackground = backgrounds.get(backgrounds.size() - 1);
+            if (lastBackground.getX() + lastBackground.getWidth() <= config.getWidth())
+                backgrounds.add(new Background(config, config.getWidth(), 0));
+
+            // Cloud Spawn
+            if (random.nextInt(cloudSpawnChance[1]) < cloudSpawnChance[0]) {
+                Cloud cloud = new Cloud(config, config.getWidth(), (int) (Math.random() * config.getHeight() / 2));
+                clouds.add(cloud);
+            }
+
+            // Obstacle Spawn
+            if (obstacleSpawnTimer >= obstacleSpawnRate) {
+                Obstacle obstacleTop = new Obstacle(config, true);
+                Obstacle obstacleBottom = new Obstacle(config, false);
+
+                // Calculate the minimum and maximum Y value
+                int minY = ((config.getHeight() * config.getPercentage()) / 100);
+                int maxY = config.getHeight() - ((config.getHeight() * config.getPercentage()) / 100);
+
+                // Calculate the Y value of the obstacles
+                int yTop = (int) (Math.random() * (maxY - minY + 1) + minY) - obstacleTop.getHeight();
+                int yBottom = yTop + config.getGap() + obstacleBottom.getHeight();
+
+                // Set the location of the obstacles
+                obstacleTop.setLocation(config.getWidth(), yTop);
+                obstacleBottom.setLocation(config.getWidth(), yBottom);
+
+                // Generate Safe Zone
+                SafeZone safeZone = new SafeZone(config, obstacleTop, obstacleBottom);
+
+                // Add the obstacles and the safe zone to the lists
+                obstacles.add(obstacleTop);
+                obstacles.add(obstacleBottom);
+                safeZones.add(safeZone);
+
+                // Reset the timer
+                obstacleSpawnTimer = 0;
+            } else obstacleSpawnTimer++;
+
+            // Player Movement
+            if (!gameOver && !hasCollided && isJump && player.getY() + player.getHeight() > 0) {
+                if (isReverse) {
+                    tooHigh = false;
+                    for (Obstacle obstacle : obstacles)
+                        if (!obstacle.isTop() && obstacle.getY() + obstacle.getHeight() * 0.85 <= config.getHeight())
+                            tooHigh = true;
+                    if (!tooHigh) {
+                        obstacles.forEach(Obstacle::jump);
+                        safeZones.forEach(SafeZone::jump);
+                    }
+                } else player.jump();
+            }
+
+            if (!isReverse || hasCollided) player.fall();
+            else {
+                boolean toLow = false;
+                for (Obstacle obstacle : obstacles)
+                    if (obstacle.isTop() && obstacle.getY() + 1 > 0) toLow = true;
+                if (!toLow) {
+                    obstacles.forEach(Obstacle::fall);
+                    safeZones.forEach(SafeZone::fall);
+                }
+            }
+
+            if (!(gameOver || hasCollided)) {
+
+                // Move Clouds
+                for (Cloud cloud : clouds) cloud.move();
+
+                // Move Backgrounds
+                for (Background background : backgrounds) background.move();
+
+                // Move Obstacles
+                for (Obstacle obstacle : obstacles) obstacle.move();
+
+                // Move Safe Zones
+                for (SafeZone safeZone : safeZones) safeZone.move();
+            }
+        }
+
+        isJump = false;
+        return event;
     }
 
     // Init Game Variables

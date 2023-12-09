@@ -144,8 +144,6 @@ public class Menu extends JPanel {
             g.fill(background.getHitbox());
             g.drawImage(background.getImage(), background.getX(), background.getY(), null);
         }
-
-        paintComponents(g);
     }
 
     // Setter
