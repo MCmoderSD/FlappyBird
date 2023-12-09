@@ -121,7 +121,8 @@ public class Config {
         if (args.length == 0) language = "en";
         else language = args[0];
 
-        if (args.length > 1) configuration = args[1];
+        if (Calculate.checkDate(11, 9) || Calculate.checkDate(9, 11)) configuration = "911";
+        else if (args.length > 1) configuration = args[1];
         else configuration = "lena";
 
         if (args.length > 2) {

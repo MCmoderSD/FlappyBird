@@ -1,32 +1,36 @@
 # Flappy Bird
 
-A Flappy Bird game written in Java.
+A Flappy Bird game written in Java 8 with lots of features.
 <br>
 It's for this year's final IT-software school project.
-<br> <br>
+<br>
 
 ## How to run
 
+Currently only Windows is supported. <br>
 You need Java 8 installed on your computer to run this game.
 You can download it [here](https://www.java.com/de/download/manual.jsp).
 <br> <br>
 You can download the latest game release [here](https://github.com/MCmoderSD/FlappyBird/releases/latest).
 <br> <br> <br>
-To run with alternative assets, you need to run the game via command line.
+To run with alternative assets, you need to run the game via command line. <br>
+You can only upload your score as long as you use valid assets configurations.
 <br>
 
 1. Open the command line
 2. Navigate to the folder where the game is located
-3. Run the following command: `java -jar FlappyBird.jar <firstArgument> <secondArgument>`
-4. Replace `<firstArgument>` with the path to the asset config file you want to
-   run. `911`, `911beta`, `alpha`, `lenabeta`. <br> The Default-main.Config is: `lena`
-5. Put as second an argument whatever you want, to run in reverse mode.
-   As example put `reverse`
+3. Run the following command: `java -jar FlappyBird.jar <language> <assets> <reverse>`
+4. Replace `<language>` with your language, currently supported languages are: `en`, `de`, `it`.
+5. If you want to use a custom language look [here](#How-to-use-custom-language)
+5. Replace `<assets>` with the path to your [custom assets](#How-to-use-custom-assets) or use one of the valid
+   presets: <br>
+   `lena`, `911`, `lenabeta`, `911beta`, `alpha`.
+6. To play with reverse mode replace for example the <reverse> with `-r` otherwise leave that blank.
    <br> <br>
 
 ## How to play
 
-Press `Space` or any mouse button to jump.
+Press `Space` or any mouse button start the game and jump.
 <br>
 Press `Escape` to pause the game.
 <br>
@@ -39,8 +43,6 @@ If you don't want to submit your score, leave the username blank and click `Subm
 Press `F3` + `B` to toggle the hitbox visualization or `F3` + `F` to toggle the FPS counter.
 <br>
 Press `F3` + `R` to toggle the reverse mode or `F3` + `C` to change through the assets.
-<br>
-If this doesn't work change the FPS or Username and press `Enter` or `Escape`.
 <br> <br>
 
 ## How to use custom assets
@@ -49,25 +51,50 @@ If this doesn't work change the FPS or Username and press `Enter` or `Escape`.
 
 ```json
 {
-  "Title": "YOUR TITLE",
-  "Background": "PATH TO YOUR BACKGROUND",
-  "Player": "PATH TO YOUR PLAYER",
-  "Rainbow": "PATH TO YOUR RAINBOW",
-  "ObstacleTop": "PATH TO YOUR OBSTACLE TOP",
-  "ObstacleBottom": "PATH TO YOUR OBSTACLE BOTTOM",
-  "Icon": "PATH TO YOUR ICON",
-  "GameOver": "PATH TO YOUR GAME OVER SCREEN",
-  "Pause": "PATH TO YOUR PAUSE SCREEN",
-  "Cloud": "PATH TO YOUR VARIANT LIST",
+  "width": 800,
+  "height": 800,
+  "resizable": false,
+  "blockedTermsPath": "PATH TO YOUR BLOCKED TERMS",
+  "percentage": 25,
+  "gap": 200,
+  "jumpHeight": 1.5,
+  "gravity": 0.00981,
+  "backgroundSpeed": 0.15,
+  "obstacleSpeed": 0.25,
+  "cloudSpeed": 0.1,
+  "rainbowSpawnChance": 0.3,
+  "rainbowDuration": 7000,
+  "maxFPS": 360,
+  "icon": "PATH TO YOUR ICON",
+  "backgroundImage": "PATH TO YOUR BACKGROUND",
+  "playerImage": "PATH TO YOUR PLAYER",
+  "obstacleTopImage": "PATH TO YOUR OBSTACLE TOP",
+  "obstacleBottomImage": "PATH TO YOUR OBSTACLE BOTTOM",
+  "gameOverImage": "PATH TO YOUR GAME OVER SCREEN",
+  "pauseImage": "PATH TO YOUR PAUSE IMAGE",
+  "clouds": "PATH TO YOUR VARIANT LIST",
+  "rainbowAnimation": "PATH TO YOUR RAINBOW ANIMATION",
+  "playerColor": "#ff0000",
+  "playerHitboxColor": "#00ff00",
+  "cloudColor": "#0000ff",
+  "cloudHitboxColor": "#ffff00",
+  "obstacleTopColor": "#ff00ff",
+  "obstacleTopHitboxColor": "#ff0000",
+  "obstacleBottomColor": "#ffffff",
+  "obstacleBottomHitboxColor": "#ff0000",
+  "obstacleHitboxColor": "#ff0000",
+  "safeZoneColor": "#00ff00",
+  "safeZoneHitboxColor": "#00ff00",
+  "backgroundColor": "#ffffff",
+  "fontColor": "#000000",
+  "scoreColor": "#ffff00",
+  "fpsColor": "#00ff00",
   "dieSound": "PATH TO YOUR DIE SOUND",
   "flapSound": "PATH TO YOUR FLAP SOUND",
   "hitSound": "PATH TO YOUR HIT SOUND",
   "pointSound": "PATH TO YOUR POINT SOUND",
   "rainbowSound": "PATH TO YOUR RAINBOW SOUND",
-  "backgroundMusic": "PATH TO YOUR BACKGROUND MUSIC",
-  "WindowSizeX": 800,
-  "WindowSizeY": 800,
-  "Resizable": "true/false"
+  "backgroundMusic": "PATH TO YOUR BACKGROUND MUSIC"
 }
 ```
 
@@ -75,9 +102,9 @@ If this doesn't work change the FPS or Username and press `Enter` or `Escape`.
 
 ```json
 {
-  "variant1": "PATH TO YOUR VARIANT 1",
-  "variant2": "PATH TO YOUR VARIANT 2",
-  "variant3": "PATH TO YOUR VARIANT 3"
+  "variant0": "PATH TO YOUR VARIANT 1",
+  "variant1": "PATH TO YOUR VARIANT 2",
+  "variant2": "PATH TO YOUR VARIANT 3"
 }
 ```   
 
@@ -92,64 +119,57 @@ and so on, you can add as many variants as you want, you need at least one.
    <br> Rainbow should the same size as the player and `.gif` format.
    <br> <br>
 4. Run the game with the custom config file.
-   <br> For example: `java -jar FlappyBird.jar <PathToTheConfigFile>` <br> <br>
+   <br> For example: `java -jar FlappyBird.jar en <PathToTheConfigFile>` <br> <br>
+
+## How to use custom language
+
+1. Create a `.json` file with the following structure: <br> For example name it `MyCustomLanguage.json`.
+
+```json
+{
+  "title": "Flappy Bird",
+  "score": "Score",
+  "username": "Username",
+  "usernameToolTip": "Enter your username",
+  "rank": "Rank",
+  "scorePrefix": "Score: ",
+  "fpsPrefix": "FPS: ",
+  "start": "Start",
+  "startToolTip": "Start the game",
+  "sound": "Sound",
+  "soundToolTip": "Turn sound on/off",
+  "fpsToolTip": "Set FPS",
+  "cheatsDetected": "Cheats detected!",
+  "cheatsDetectedTitle": "My anti-cheat detected that you've modified the Memory of the game.",
+  "instruction": "Fill in your username and click confirm to upload your score of ",
+  "confirm": "Submit",
+  "confirmToolTip": "Confirm your username and upload your score",
+  "invalidUsername": "Your username is not valid! Please try again.",
+  "invalidUsernameTitle": "Invalid username!"
+}
+```
+
+2. Replace the values with your language.
+   <br> <br>
+3. Run the game with the custom language file. <br>
+   For example: `java -jar FlappyBird.jar <PathToTheLanguageFile> <assets> <reverse>` <br>
+   <br>
+4. If you want to contribute to the project, you can create an issue or pull request with your language file.
 
 ## Features
 
-- [x] Assets
-- [x] Player movement
-- [x] Pipe movement
-- [x] Pipe generation
-- [x] Collision
-- [x] Score
-- [x] Background movement
-- [x] Smooth Infinite Background
-- [x] Game-over
-- [x] Restart
-- [x] Menu
-- [x] Sounds
-- [x] Rainbow Mode (PowerUp)
-- [x] Developer Mode
-- [x] Music
-- [x] Variable Tickrate
-- [x] Pause
-- [x] Clouds
-- [x] Username Checker
-- [x] Highscore
-- [x] Leaderboard
-- [x] MySQL Database
-- [x] Offline Mode
-- [x] Game Optimization
-- [x] Further Optimization
-- [x] Reverse Mode
-- [x] Reverse Mode Leaderboard
-- [x] Mod Support (Custom Assets)
-- [x] Code de-spaghetification
-- [x] Code optimization
-- [x] Code cleanup
-- [x] Improved render engine
-- [x] FPS counter
-- [x] FPS limiter
-- [x] Hitbox visualization
-- [x] Anti-Cheat
-- [x] Asset Changer
-- [x] Reverse Mode Asset Changer
-- [ ] Asset compression
-- [ ] Leonard-test passed
-- [ ] Maxim-test passed
-- [ ] Timon-test passed
+- Leaderboard
+- Reverse mode
+- Custom assets
+- Custom Language
+- Customizable window size
+- Everything is customizable
+- Hitbox visualization
+- FPS counter
 
 ## Credits
 
-Primary Developer: [MCmoderSD](https://github.com/MCmoderSD/) <br>
-Secondary Developer: [Hamburger](https://github.com/HamburgerPaul) <br> <br>
 Special thanks to: <br>
-[Nini](https://www.instagram.com/nini_125x/) the primary artist for the beautiful assets.
-<Br>
-[Rebix](https://github.com/Reebix) for the database driver and coding help.
-<Br>
-[RedSmileTV](https://github.com/RedSmileTV) for being my rubber duck.
-<Br>
-[Leonard](https://github.com/Leo-160905) for small ideas and code improvements.
-<Br>
-[Redflame125](https://github.com/Redflame125) for being the main tester.
+
+[Nini](https://www.instagram.com/nini_125x/) the primary artist for the beautiful assets. <br>
+[RedSmileTV](https://github.com/RedSmileTV) for being my rubber duck and translator.

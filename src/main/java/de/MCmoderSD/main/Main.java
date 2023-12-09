@@ -6,7 +6,7 @@ import de.MCmoderSD.utilities.Calculate;
 public class Main {
 
     // Constants
-    public static String[] CONFIGURATIONS = {"lena", "911", "lenabeta", "911beta", "alpha"};
+    public static final String[] CONFIGURATIONS = {"lena", "911", "lenabeta", "911beta", "alpha"};
     public static boolean IS_RUNNING = true;
 
     public static void main(String[] args) {

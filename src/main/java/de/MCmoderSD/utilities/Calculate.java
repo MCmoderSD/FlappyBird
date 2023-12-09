@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -81,5 +82,13 @@ public class Calculate {
         if (events.size() <= keys.size()) return true;
         for (double key : keys) if (!events.contains(key)) return true;
         return false;
+    }
+
+    // Check Date
+    public static boolean checkDate(int day, int month) {
+        LocalDate currentDate = LocalDate.now();
+        int currentDay = currentDate.getDayOfMonth();
+        int currentMonth = currentDate.getMonthValue();
+        return day == currentDay && month == currentMonth;
     }
 }

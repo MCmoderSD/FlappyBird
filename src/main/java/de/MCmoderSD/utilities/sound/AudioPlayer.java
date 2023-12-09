@@ -149,7 +149,7 @@ public class AudioPlayer {
         for (WavPlayer wavPlayer : instantWavPlayers) wavPlayer.pause();
     }
 
-    // Resume all paused audio ToDo fix
+    // Resume all paused audio
     public void resumeAll() {
         for (WavPlayer wavPlayer : wavPlayers.values()) wavPlayer.resume();
         for (WavPlayer wavPlayer : instantWavPlayers) wavPlayer.resume();
