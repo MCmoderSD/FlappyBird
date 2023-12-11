@@ -22,6 +22,7 @@ public class Controller {
     // Attributes
     private int score;
 
+    // Constructor
     public Controller(Frame frame, Config config) {
         super();
         this.frame = frame;

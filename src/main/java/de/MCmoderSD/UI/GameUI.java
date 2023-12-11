@@ -28,6 +28,7 @@ public class GameUI extends JPanel {
 
         setPreferredSize(config.getSize());
         setLocation(-config.getWidth(), -config.getHeight());
+        setDoubleBuffered(true);
         setLayout(null);
         setVisible(false);
         frame.add(this);
