@@ -2,10 +2,17 @@ package de.MCmoderSD.UI;
 
 import de.MCmoderSD.core.Game;
 import de.MCmoderSD.main.Config;
-import de.MCmoderSD.objects.*;
+import de.MCmoderSD.objects.Background;
+import de.MCmoderSD.objects.Cloud;
+import de.MCmoderSD.objects.Obstacle;
+import de.MCmoderSD.objects.Player;
+import de.MCmoderSD.objects.SafeZone;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 

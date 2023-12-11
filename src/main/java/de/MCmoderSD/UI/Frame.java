@@ -5,7 +5,9 @@ import de.MCmoderSD.core.Game;
 import de.MCmoderSD.main.Config;
 import de.MCmoderSD.utilities.Calculate;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.BoxLayout;
+import javax.swing.JOptionPane;
 
 public class Frame extends JFrame {
 

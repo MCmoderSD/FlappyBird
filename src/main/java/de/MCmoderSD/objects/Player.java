@@ -2,8 +2,11 @@ package de.MCmoderSD.objects;
 
 import de.MCmoderSD.main.Config;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ImageIcon;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 @SuppressWarnings("unused")

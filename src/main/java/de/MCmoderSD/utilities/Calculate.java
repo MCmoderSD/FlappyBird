@@ -2,8 +2,10 @@ package de.MCmoderSD.utilities;
 
 import de.MCmoderSD.main.Main;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -21,7 +23,7 @@ public class Calculate {
         int x;
         int y;
 
-        if (smallScreenMode) { // ToDo better implementation
+        if (smallScreenMode) {
             x = (screenSize.width - frame.getWidth()) / 2;
             y = 0;
         } else {

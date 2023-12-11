@@ -3,11 +3,15 @@ package de.MCmoderSD.core;
 import de.MCmoderSD.UI.Frame;
 import de.MCmoderSD.main.Config;
 import de.MCmoderSD.main.Main;
-import de.MCmoderSD.objects.*;
+import de.MCmoderSD.objects.Background;
+import de.MCmoderSD.objects.Cloud;
+import de.MCmoderSD.objects.Obstacle;
+import de.MCmoderSD.objects.Player;
+import de.MCmoderSD.objects.SafeZone;
 import de.MCmoderSD.utilities.Calculate;
 import de.MCmoderSD.utilities.sound.AudioPlayer;
 
-import java.awt.*;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Random;
 
