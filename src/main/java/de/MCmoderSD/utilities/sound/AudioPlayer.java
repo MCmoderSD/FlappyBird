@@ -43,6 +43,7 @@ public class AudioPlayer {
 
     // Play audio with loop
     public void play(String audioPath, boolean loop) {
+        if (audioPath.endsWith("empty.wav")) return; // Skip empty sound
         if (audioPath.endsWith(".wav")) {
             if (url != null && !audioPath.startsWith(url)) audioPath = url + audioPath;
             if (wavPlayers.containsKey(audioPath)) {

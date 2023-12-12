@@ -1,7 +1,7 @@
 package de.MCmoderSD.utilities.image;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
+import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -84,15 +84,15 @@ public class ImageReader extends ImageUtility {
         if (!resource.endsWith(".gif"))
             throw new IllegalArgumentException("Unsupported image format: " + resource); // Animation format is not supported
 
+        if (!isAbsolute && resource.startsWith("/")) resource = resource.substring(1); // Remove the first slash
+
         if (imageIconCache.containsKey(resource))
             return imageIconCache.get(resource); // Checks the cache for the Animation
-
-        if (resource.startsWith("/")) resource = resource.substring(1); // Remove the first slash
 
         ImageIcon imageIcon = null;
         try {
             URL url;
-            if (isAbsolute) url = new URL(resource); // Animation is local
+            if (isAbsolute) url = Paths.get(resource).toUri().toURL(); // Animation is local
             else url = getClass().getClassLoader().getResource(resource); // Image is in the JAR file
             imageIcon = new ImageIcon(Objects.requireNonNull(url)); // Load the Animation
         } catch (MalformedURLException e) {
@@ -110,15 +110,15 @@ public class ImageReader extends ImageUtility {
         if (!resource.endsWith(".gif"))
             throw new IllegalArgumentException("Unsupported image format: " + resource); // Animation format is not supported
 
+        if (!isAbsolute && resource.startsWith("/")) resource = resource.substring(1); // Remove the first slash
+
         if (imageIconCache.containsKey(resource))
             return imageIconCache.get(resource); // Checks the cache for the Animation
-
-        if (resource.startsWith("/")) resource = resource.substring(1); // Remove the first slash
 
         ImageIcon imageIcon = null;
         try {
             URL url;
-            if (isAbsolute) url = new URL(resource); // Animation is local
+            if (isAbsolute) url = Paths.get(resource).toUri().toURL(); // Animation is local
             else url = getClass().getClassLoader().getResource(resource); // Image is in the JAR file
             imageIcon = new ImageIcon(Objects.requireNonNull(url)); // Load the Animation
         } catch (MalformedURLException e) {

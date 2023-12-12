@@ -7,9 +7,8 @@ import de.MCmoderSD.utilities.json.JsonNode;
 import de.MCmoderSD.utilities.json.JsonUtility;
 import de.MCmoderSD.utilities.sound.AudioPlayer;
 
-import javax.swing.ImageIcon;
-import java.awt.Color;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -156,7 +155,7 @@ public class Config {
 
         // Load Config
         if (validConfig) config = jsonUtility.load("/config/" + configuration + ".json");
-        else config = jsonUtility.load(configuration);
+        else config = jsonUtility.load(configuration, true);
         database = jsonUtility.load("/config/database.json");
 
         width = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).width;
@@ -196,7 +195,7 @@ public class Config {
         maxFPS = config.get("maxFPS").asInt();
 
 
-        ImageReader imageReader = new ImageReader();
+        ImageReader imageReader = new ImageReader(!validConfig);
 
         // Assets
         BufferedImage background = imageReader.read(config.get("backgroundImage").asText());
