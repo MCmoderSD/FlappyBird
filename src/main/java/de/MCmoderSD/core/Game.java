@@ -3,15 +3,11 @@ package de.MCmoderSD.core;
 import de.MCmoderSD.UI.Frame;
 import de.MCmoderSD.main.Config;
 import de.MCmoderSD.main.Main;
-import de.MCmoderSD.objects.Background;
-import de.MCmoderSD.objects.Cloud;
-import de.MCmoderSD.objects.Obstacle;
-import de.MCmoderSD.objects.Player;
-import de.MCmoderSD.objects.SafeZone;
+import de.MCmoderSD.objects.*;
 import de.MCmoderSD.utilities.Calculate;
 import de.MCmoderSD.utilities.sound.AudioPlayer;
 
-import java.awt.Toolkit;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -372,7 +368,7 @@ public class Game implements Runnable {
             Calculate.systemShutdown(5);
         }
 
-        // Stop Background Music
+        // Stop Background Music ToDo Just works at the first restart so just once
         if (!config.getBackgroundMusic().endsWith("empty.wav") && audioPlayer.isPlaying(config.getBackgroundMusic()))
             audioPlayer.stop(config.getBackgroundMusic());
 
