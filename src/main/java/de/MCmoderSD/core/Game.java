@@ -100,6 +100,8 @@ public class Game implements Runnable {
                 timer += current - now;
                 now = current;
 
+                if (!gameStarted) delta = 0;
+
                 // Tick
                 if (delta >= 1) {
                     if (isLinux) Toolkit.getDefaultToolkit().sync();

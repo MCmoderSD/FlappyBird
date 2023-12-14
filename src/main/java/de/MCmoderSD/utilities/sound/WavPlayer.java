@@ -34,7 +34,7 @@ public class WavPlayer {
             boolean isWindows = System.getProperty("os.name").toLowerCase().contains("windows");
 
             // Remove leading slash on Linux
-            if (!isWindows) audioPath = audioPath.substring(1);
+            if (!isWindows && audioPath.startsWith("/")) audioPath = audioPath.substring(1);
 
             InputStream audioSrc;
             if (audioPath.startsWith("http")) audioSrc = new URL(audioPath).openStream(); // URL
