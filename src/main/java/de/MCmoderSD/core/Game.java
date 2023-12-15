@@ -100,7 +100,6 @@ public class Game implements Runnable {
                 timer += current - now;
                 now = current;
 
-                if (!gameStarted) delta = 0;
 
                 // Tick
                 if (delta >= 1) {
@@ -200,7 +199,7 @@ public class Game implements Runnable {
             safeZones.removeAll(safeZonesToRemove);
 
             // Background Music
-            if (!config.getBackgroundMusic().endsWith("/error/empty.wav") && sound && !audioPlayer.isPlaying(config.getBackgroundMusic()) && !gameOver && !isPaused)
+            if (!gameOver && !isPaused && gameStarted && sound && !config.getBackgroundMusic().endsWith("empty.wav") && !audioPlayer.isPlaying(config.getBackgroundMusic()))
                 audioPlayer.play(config.getBackgroundMusic(), true);
 
             // Background Spawn
@@ -209,10 +208,8 @@ public class Game implements Runnable {
                 backgrounds.add(new Background(config, config.getWidth(), 0));
 
             // Cloud Spawn
-            if (random.nextInt(cloudSpawnChance[1]) < cloudSpawnChance[0]) {
-                Cloud cloud = new Cloud(config, config.getWidth(), (int) (Math.random() * config.getHeight() / 2));
-                clouds.add(cloud);
-            }
+            if (random.nextInt(cloudSpawnChance[1]) < cloudSpawnChance[0])
+                clouds.add(new Cloud(config, config.getWidth(), (int) (Math.random() * config.getHeight() / 2)));
 
             // Obstacle Spawn
             if (obstacleSpawnTimer >= obstacleSpawnRate) {
@@ -262,6 +259,7 @@ public class Game implements Runnable {
                 boolean toLow = false;
                 for (Obstacle obstacle : obstacles)
                     if (obstacle.isTop() && obstacle.getY() + 1 > 0) toLow = true;
+
                 if (!toLow) {
                     obstacles.forEach(Obstacle::fall);
                     safeZones.forEach(SafeZone::fall);

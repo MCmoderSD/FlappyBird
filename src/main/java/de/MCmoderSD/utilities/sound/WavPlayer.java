@@ -72,9 +72,8 @@ public class WavPlayer {
     // Play clip
     public void play() {
         if (clip == null) return;
-        if (clip.isRunning()) {
-            clip.stop(); // Stop the clip before resetting it
-        }
+        if (clip.isRunning()) clip.stop(); // Stop the clip before resetting it
+        if (loop) clip.loop(Clip.LOOP_CONTINUOUSLY);
         clip.setFramePosition(0);
         clip.start();
     }
@@ -88,12 +87,14 @@ public class WavPlayer {
     // Resume clip
     public void resume() {
         if (clip == null || clip.getFramePosition() == 0 || clip.getFramePosition() == clip.getFrameLength()) return;
+        if (loop) clip.loop(Clip.LOOP_CONTINUOUSLY);
         clip.start();
     }
 
     // Stop clip
     public void stop() {
         if (clip == null) return;
+        clip.loop(0);
         clip.stop();
         clip.setFramePosition(0);
     }
