@@ -372,7 +372,7 @@ public class Game implements Runnable {
             Calculate.systemShutdown(5);
         }
 
-        // Stop Background Music ToDo Just works at the first restart so just once
+        // Stop Background Music
         if (!config.getBackgroundMusic().endsWith("empty.wav") && audioPlayer.isPlaying(config.getBackgroundMusic()))
             audioPlayer.stop(config.getBackgroundMusic());
 
