@@ -8,6 +8,7 @@ public class AudioPlayer {
 
     // Attributes
     private final HashMap<String, WavPlayer> wavPlayers; // AudioPath, WavPlayer
+    private final HashMap<String, WavPlayer> loadedWavPlayers; // AudioPath, WavPlayer
     private final ArrayList<WavPlayer> instantWavPlayers; // WavPlayer
 
     // Variables
@@ -17,22 +18,23 @@ public class AudioPlayer {
     public AudioPlayer() {
         wavPlayers = new HashMap<>();
         instantWavPlayers = new ArrayList<>();
+        loadedWavPlayers = new HashMap<>();
     }
 
     // Constructor with url
     public AudioPlayer(String url) {
         this.url = url;
         wavPlayers = new HashMap<>();
+        loadedWavPlayers = new HashMap<>();
         instantWavPlayers = new ArrayList<>();
     }
 
     // Load audio with loop
     public void loadAudio(String audioPath, boolean loop) {
-        if (audioPath.endsWith("empty.wav")) return; // Skip empty sound
         if (audioPath.endsWith(".wav")) {
             if (url != null && !audioPath.startsWith(url)) audioPath = url + audioPath;
             WavPlayer wavPlayer = new WavPlayer(audioPath, loop);
-            wavPlayers.put(audioPath, wavPlayer);
+            loadedWavPlayers.put(audioPath, wavPlayer);
         } else System.err.println("Unsupported file format: " + audioPath);
     }
 
@@ -43,16 +45,19 @@ public class AudioPlayer {
 
     // Play audio with loop
     public void play(String audioPath, boolean loop) {
-        if (audioPath.endsWith("empty.wav")) return; // Skip empty sound
         if (audioPath.endsWith(".wav")) {
             if (url != null && !audioPath.startsWith(url)) audioPath = url + audioPath;
             if (wavPlayers.containsKey(audioPath)) {
-                wavPlayers.get(audioPath).play();
                 if (wavPlayers.get(audioPath).isPlaying()) {
                     WavPlayer wavPlayer = new WavPlayer(audioPath, loop);
                     instantWavPlayers.add(wavPlayer);
                     wavPlayer.play();
-                }
+                } else wavPlayers.get(audioPath).play();
+            } else if (loadedWavPlayers.containsKey(audioPath)) {
+                WavPlayer wavPlayer = loadedWavPlayers.get(audioPath);
+                wavPlayers.put(audioPath, wavPlayer);
+                loadedWavPlayers.remove(audioPath);
+                wavPlayer.play();
             } else {
                 loadAudio(audioPath, false);
                 play(audioPath, loop);

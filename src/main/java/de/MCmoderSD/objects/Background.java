@@ -12,10 +12,10 @@ import java.awt.image.BufferedImage;
 public class Background {
 
     // Attributes
-    private final BufferedImage image;
-    private final Color color;
     private final int width;
     private final int height;
+    private final BufferedImage image;
+    private final Color color;
     private final float speed;
 
     // Variables
@@ -26,11 +26,11 @@ public class Background {
     private float speedModifier;
 
     // Constructors
-    public Background(Config config, int x, int y) {
-        image = config.getBackgroundImage();
-        color = config.getBackgroundColor();
+    public Background(int x, int y) {
+        image = Config.BACKGROUND_IMAGE;
+        color = Config.BACKGROUND_COLOR;
 
-        speed = config.getBackgroundSpeed();
+        speed = Config.BACKGROUND_SPEED;
 
         width = image.getWidth();
         height = image.getHeight();
@@ -41,11 +41,11 @@ public class Background {
         speedModifier = 1;
     }
 
-    public Background(Config config, Point location) {
-        image = config.getBackgroundImage();
-        color = config.getBackgroundColor();
+    public Background(Point location) {
+        image = Config.BACKGROUND_IMAGE;
+        color = Config.BACKGROUND_COLOR;
 
-        speed = config.getBackgroundSpeed();
+        speed = Config.BACKGROUND_SPEED;
 
         width = image.getWidth();
         height = image.getHeight();

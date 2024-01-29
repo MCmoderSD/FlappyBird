@@ -19,31 +19,31 @@ public class Frame extends JFrame {
 
     // Constructor
     public Frame(Config config) {
-        super(config.getTitle());
+        super(Config.TITLE);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setResizable(config.isResizable());
+        setResizable(Config.RESIZABLE);
         setLocationRelativeTo(null);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
-        setIconImage(config.getIcon());
+        setIconImage(Config.ICON);
 
         // Add InputHandler
         new InputHandler(this);
 
         // Create Menu
-        menu = new Menu(this, config);
+        menu = new Menu(this);
 
         // Create GameUI
-        gameUI = new GameUI(this, config);
+        gameUI = new GameUI(this);
 
         // Create Game
         game = new Game(this, config);
 
         // Create Controller
-        controller = new Controller(this, config);
+        controller = new Controller(this);
 
         // Finalize and set visible
         pack();
-        setLocation(Calculate.centerOfJFrame(this, config.isSmallScreenMode()));
+        setLocation(Calculate.centerOfJFrame(this, Config.SMALL_SCREEN_MODE));
         setVisible(true);
     }
 

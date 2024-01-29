@@ -20,21 +20,19 @@ public class GameUI extends JPanel {
 
     // Associations
     private final Frame frame;
-    private final Config config;
 
     // Attributes
     private final JLabel scoreLabel;
     private final JLabel fpsLabel;
 
     // Constructor
-    public GameUI(Frame frame, Config config) {
+    public GameUI(Frame frame) {
         super();
 
         this.frame = frame;
-        this.config = config;
 
-        setPreferredSize(config.getSize());
-        setLocation(-config.getWidth(), -config.getHeight());
+        setPreferredSize(Config.SIZE);
+        setLocation(-Config.WIDTH, -Config.HEIGHT);
         setDoubleBuffered(true);
         setLayout(null);
         setVisible(false);
@@ -43,18 +41,18 @@ public class GameUI extends JPanel {
         Font font = new Font("Roboto", Font.PLAIN, 18);
 
         // Init Score Label
-        scoreLabel = new JLabel(config.getScorePrefix());
+        scoreLabel = new JLabel(Config.SCORE_PREFIX);
         scoreLabel.setFont(font);
-        scoreLabel.setForeground(config.getScoreColor());
-        scoreLabel.setSize(Math.toIntExact(Math.round((config.getWidth() * 0.125))), Math.toIntExact(Math.round((config.getHeight() * 0.05))));
-        scoreLabel.setLocation(config.getWidth() - scoreLabel.getWidth() - 10, 10);
+        scoreLabel.setForeground(Config.SCORE_COLOR);
+        scoreLabel.setSize(Math.toIntExact(Math.round((Config.WIDTH * 0.125))), Math.toIntExact(Math.round((Config.HEIGHT * 0.05))));
+        scoreLabel.setLocation(Config.WIDTH - scoreLabel.getWidth() - 10, 10);
         add(scoreLabel);
 
         // Init FPS Label
-        fpsLabel = new JLabel("FPS: " + config.getMaxFPS());
+        fpsLabel = new JLabel("FPS: " + Config.MAX_FPS);
         fpsLabel.setFont(font);
-        fpsLabel.setForeground(config.getFpsColor());
-        fpsLabel.setSize(Math.toIntExact(Math.round((config.getWidth() * 0.125))), Math.toIntExact(Math.round((config.getHeight() * 0.05))));
+        fpsLabel.setForeground(Config.FPS_COLOR);
+        fpsLabel.setSize(Math.toIntExact(Math.round((Config.WIDTH * 0.125))), Math.toIntExact(Math.round((Config.HEIGHT * 0.05))));
         fpsLabel.setLocation(10, 10);
         fpsLabel.setVisible(false);
         add(fpsLabel);
@@ -102,8 +100,8 @@ public class GameUI extends JPanel {
 
         // Draw Pause or GameOver Image
         if (game.isPaused() || game.isGameOver()) {
-            BufferedImage image = game.isPaused() ? config.getPauseImage() : config.getGameOverImage();
-            g.drawImage(image, (config.getWidth() - image.getWidth()) / 2, (config.getHeight() - image.getHeight()) / 2, null);
+            BufferedImage image = game.isPaused() ? Config.PAUSE_IMAGE : Config.GAME_OVER_IMAGE;
+            g.drawImage(image, (Config.WIDTH - image.getWidth()) / 2, (Config.HEIGHT - image.getHeight()) / 2, null);
         }
 
         // HitBox
@@ -128,9 +126,9 @@ public class GameUI extends JPanel {
             }
         }
 
-        scoreLabel.setText(config.getScorePrefix() + game.getScore());
+        scoreLabel.setText(Config.SCORE_PREFIX + game.getScore());
         fpsLabel.setVisible(game.isShowFps() || game.isDebug());
-        fpsLabel.setText(config.getFpsPrefix() + game.getFps());
+        fpsLabel.setText(Config.FPS_PREFIX + game.getFps());
 
         // Draw UI Elements
         paintComponents(g);

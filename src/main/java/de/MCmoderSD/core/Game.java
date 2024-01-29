@@ -19,7 +19,8 @@ public class Game implements Runnable {
 
     // Associations
     private final Frame frame;
-    private final Config config;
+
+    // Utilities
     private final AudioPlayer audioPlayer;
     private final Random random;
 
@@ -61,16 +62,15 @@ public class Game implements Runnable {
     // Constructor
     public Game(Frame frame, Config config) {
         this.frame = frame;
-        this.config = config;
 
-        isReverse = config.isReverse();
+        isReverse = Config.IS_REVERSE;
         audioPlayer = config.getAudioPlayer();
         random = new Random();
 
         // Constants
         tickrate = 2777778;
         isLinux = System.getProperty("os.name").equals("Linux");
-        obstacleSpawnRate = (int) (200 / config.getObstacleSpeed());
+        obstacleSpawnRate = (int) (200 / Config.OBSTACLE_SPEED);
         cloudSpawnChance = new int[]{1, 5000};
         init(0);
 
@@ -112,7 +112,7 @@ public class Game implements Runnable {
                     double event = gameTick();
 
                     // Update Frame
-                    boolean update = renderedFrames < config.getMaxFPS();
+                    boolean update = renderedFrames < Config.MAX_FPS;
                     int modulo = renderedFrames % frameRate;
                     if (modulo != 0 && update) renderedFrames++;
                     if (modulo == 0 && update) {
@@ -166,7 +166,7 @@ public class Game implements Runnable {
             ArrayList<Cloud> cloudsToRemove = new ArrayList<>();
 
             // Check for fall
-            if (!gameOver && !cheatsActive && player.getY() - player.getHeight() >= config.getHeight())
+            if (!gameOver && !cheatsActive && player.getY() - player.getHeight() >= Config.HEIGHT)
                 fall();
 
             // Check for Collision
@@ -199,37 +199,37 @@ public class Game implements Runnable {
             safeZones.removeAll(safeZonesToRemove);
 
             // Background Music
-            if (!gameOver && !isPaused && gameStarted && sound && !config.getBackgroundMusic().endsWith("empty.wav") && !audioPlayer.isPlaying(config.getBackgroundMusic()))
-                audioPlayer.play(config.getBackgroundMusic(), true);
+            if (!gameOver && !isPaused && gameStarted && sound && !Config.BACKGROUND_MUSIC.endsWith("empty.wav") && !audioPlayer.isPlaying(Config.BACKGROUND_MUSIC))
+                audioPlayer.play(Config.BACKGROUND_MUSIC, true);
 
             // Background Spawn
             Background lastBackground = backgrounds.get(backgrounds.size() - 1);
-            if (lastBackground.getX() + lastBackground.getWidth() <= config.getWidth())
-                backgrounds.add(new Background(config, config.getWidth(), 0));
+            if (lastBackground.getX() + lastBackground.getWidth() <= Config.WIDTH)
+                backgrounds.add(new Background(Config.WIDTH, 0));
 
             // Cloud Spawn
             if (random.nextInt(cloudSpawnChance[1]) < cloudSpawnChance[0])
-                clouds.add(new Cloud(config, config.getWidth(), (int) (Math.random() * config.getHeight() / 2)));
+                clouds.add(new Cloud(Config.WIDTH, (int) (Math.random() * Config.HEIGHT / 2)));
 
             // Obstacle Spawn
             if (obstacleSpawnTimer >= obstacleSpawnRate) {
-                Obstacle obstacleTop = new Obstacle(config, true);
-                Obstacle obstacleBottom = new Obstacle(config, false);
+                Obstacle obstacleTop = new Obstacle(true);
+                Obstacle obstacleBottom = new Obstacle(false);
 
                 // Calculate the minimum and maximum Y value
-                int minY = ((config.getHeight() * config.getPercentage()) / 100);
-                int maxY = config.getHeight() - ((config.getHeight() * config.getPercentage()) / 100);
+                int minY = ((Config.HEIGHT * Config.PERCENTAGE) / 100);
+                int maxY = Config.HEIGHT - ((Config.HEIGHT * Config.PERCENTAGE) / 100);
 
                 // Calculate the Y value of the obstacles
                 int yTop = (int) (Math.random() * (maxY - minY + 1) + minY) - obstacleTop.getHeight();
-                int yBottom = yTop + config.getGap() + obstacleBottom.getHeight();
+                int yBottom = yTop + Config.GAP + obstacleBottom.getHeight();
 
                 // Set the location of the obstacles
-                obstacleTop.setLocation(config.getWidth(), yTop);
-                obstacleBottom.setLocation(config.getWidth(), yBottom);
+                obstacleTop.setLocation(Config.WIDTH, yTop);
+                obstacleBottom.setLocation(Config.WIDTH, yBottom);
 
                 // Generate Safe Zone
-                SafeZone safeZone = new SafeZone(config, obstacleTop, obstacleBottom);
+                SafeZone safeZone = new SafeZone(obstacleTop, obstacleBottom);
 
                 // Add the obstacles and the safe zone to the lists
                 obstacles.add(obstacleTop);
@@ -245,7 +245,7 @@ public class Game implements Runnable {
                 if (isReverse) {
                     tooHigh = false;
                     for (Obstacle obstacle : obstacles)
-                        if (!obstacle.isTop() && obstacle.getY() + obstacle.getHeight() * 0.85 <= config.getHeight())
+                        if (!obstacle.isTop() && obstacle.getY() + obstacle.getHeight() * 0.85 <= Config.HEIGHT)
                             tooHigh = true;
                     if (!tooHigh) {
                         obstacles.forEach(Obstacle::jump);
@@ -309,7 +309,7 @@ public class Game implements Runnable {
         obstacleSpawnTimer = obstacleSpawnRate;
 
         // Init Game Objects
-        player = new Player(config);
+        player = new Player();
         backgrounds = new ArrayList<>();
         obstacles = new ArrayList<>();
         safeZones = new ArrayList<>();
@@ -318,9 +318,9 @@ public class Game implements Runnable {
         events = new ArrayList<>();
 
         // Init Backgrounds
-        backgrounds.add(new Background(config, backgroundPos, 0));
-        while (backgrounds.get(backgrounds.size() - 1).getX() + backgrounds.get(backgrounds.size() - 1).getWidth() < config.getWidth())
-            backgrounds.add(new Background(config, backgrounds.get(backgrounds.size() - 1).getX() + backgrounds.get(backgrounds.size() - 1).getWidth(), 0));
+        backgrounds.add(new Background(backgroundPos, 0));
+        while (backgrounds.get(backgrounds.size() - 1).getX() + backgrounds.get(backgrounds.size() - 1).getWidth() < Config.WIDTH)
+            backgrounds.add(new Background(backgrounds.get(backgrounds.size() - 1).getX() + backgrounds.get(backgrounds.size() - 1).getWidth(), 0));
     }
 
     // Methods
@@ -328,25 +328,25 @@ public class Game implements Runnable {
     public void jump() {
         isJump = true;
         if (!isReverse && sound && !gameOver && !hasCollided && !isPaused && player.getY() + player.getHeight() > 0)
-            audioPlayer.play(config.getFlapSound());
+            audioPlayer.play(Config.FLAP_SOUND);
         else if (isReverse && sound && !gameOver && !hasCollided && !isPaused && !tooHigh)
-            audioPlayer.play(config.getFlapSound());
+            audioPlayer.play(Config.FLAP_SOUND);
     }
 
     private void fall() {
-        if (sound) audioPlayer.play(config.getDieSound());
+        if (sound) audioPlayer.play(Config.DIE_SOUND);
         gameOver = true;
     }
 
     private void point(double event) {
-        if (sound) audioPlayer.play(config.getPointSound());
+        if (sound) audioPlayer.play(Config.POINT_SOUND);
         score++;
-        if (score % 5 == 0 && Calculate.randomChance(config.getRainbowSpawnChance())) rainbowUlt();
+        if (score % 5 == 0 && Calculate.randomChance(Config.RAINBOW_SPAWN_CHANCE)) rainbowUlt();
         keys.add(event);
     }
 
     private void collision() {
-        if (sound) audioPlayer.play(config.getHitSound());
+        if (sound) audioPlayer.play(Config.HIT_SOUND);
         hasCollided = true;
     }
 
@@ -354,8 +354,8 @@ public class Game implements Runnable {
         new Thread(() -> {
             try {
                 isRainbow = true;
-                if (sound) audioPlayer.play(config.getRainbowSound());
-                Thread.sleep(config.getRainbowDuration());
+                if (sound) audioPlayer.play(Config.RAINBOW_SOUND);
+                Thread.sleep(Config.RAINBOW_DURATION);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -368,13 +368,13 @@ public class Game implements Runnable {
 
         // Cheats Detected
         if (hasCheated) {
-            frame.showMessage(config.getCheatsDetected(), config.getCheatsDetectedTitle());
+            frame.showMessage(Config.CHEATS_DETECTED, Config.CHEATS_DETECTED_TITLE);
             Calculate.systemShutdown(5);
         }
 
         // Stop Background Music
-        if (!config.getBackgroundMusic().endsWith("empty.wav") && audioPlayer.isPlaying(config.getBackgroundMusic()))
-            audioPlayer.stop(config.getBackgroundMusic());
+        if (!Config.BACKGROUND_MUSIC.endsWith("empty.wav") && audioPlayer.isPlaying(Config.BACKGROUND_MUSIC))
+            audioPlayer.stop(Config.BACKGROUND_MUSIC);
 
         // Reset Game
         frame.getController().restart(debug, cheatsActive || hasCheated, sound, score);
@@ -436,7 +436,7 @@ public class Game implements Runnable {
     // Setter
     public void initGameConstants(boolean sound, int fps) {
         this.sound = sound;
-        frameRate = config.getMaxFPS() / fps;
+        frameRate = Config.MAX_FPS / fps;
     }
 
     public void togglePause() {

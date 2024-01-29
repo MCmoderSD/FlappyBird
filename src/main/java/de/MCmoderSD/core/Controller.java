@@ -16,22 +16,21 @@ public class Controller {
 
     // Associations
     private final Frame frame;
-    private final Config config;
     private final MySQL mySQL;
 
     // Attributes
     private int score;
 
     // Constructor
-    public Controller(Frame frame, Config config) {
-        super();
-        this.frame = frame;
-        this.config = config;
+    public Controller(Frame frame) {
 
+        // Initialize Attributes
+        this.frame = frame;
         Menu menu = frame.getMenu();
 
-        mySQL = new MySQL(config.getDatabase(), config.isReverse());
-        if (!config.isValidConfig() && mySQL.isConnected()) mySQL.disconnect();
+        // Initialize MySQL
+        mySQL = new MySQL(Config.DATABASE, Config.IS_REVERSE);
+        if (!Config.VALID_CONFIG && mySQL.isConnected()) mySQL.disconnect();
 
         menu.setScoreBoard(mySQL.isConnected());
         if (!mySQL.isConnected()) return;
@@ -44,33 +43,32 @@ public class Controller {
     // Checks if the username is valid
     private boolean isUsernameValid(String username) {
         for (String word : username.toLowerCase().split("\\W+"))
-            if (config.getBlockedTerms().contains(word)) return false;
+            if (Config.BLOCKED_TERMS.contains(word)) return false;
         return true;
     }
 
     // Toggles the reverse mode
     public void toggleReverse() {
         if (frame.getGameUI().isVisible()) return;
-        Main.main(new String[]{config.getLanguage(), config.getConfiguration(), (config.isReverse() ? "" : "r")});
+        Main.main(new String[]{Config.LANGUAGE, Config.CONFIGURATION, (Config.IS_REVERSE ? "" : "r")});
         frame.dispose();
     }
 
     // Asset Switch
     public void switchAsset() {
         if (frame.getGameUI().isVisible()) return;
-
         int i = 0;
         while (i < Main.CONFIGURATIONS.length) {
-            if (Objects.equals(Main.CONFIGURATIONS[i], config.getConfiguration())) break;
+            if (Objects.equals(Main.CONFIGURATIONS[i], Config.CONFIGURATION)) break;
             i++;
         }
 
         if (i + 1 == Main.CONFIGURATIONS.length) i = 0;
         else i++;
 
-        if (config.getArgs().length == 3)
-            Main.main(new String[]{config.getLanguage(), Main.CONFIGURATIONS[i], config.getArgs()[2]});
-        else Main.main(new String[]{config.getLanguage(), Main.CONFIGURATIONS[i]});
+        if (Config.ARGS.length == 3)
+            Main.main(new String[]{Config.LANGUAGE, Main.CONFIGURATIONS[i], Config.ARGS[2]});
+        else Main.main(new String[]{Config.LANGUAGE, Main.CONFIGURATIONS[i]});
         frame.dispose();
     }
 
@@ -96,7 +94,7 @@ public class Controller {
 
         if (mySQL.isConnected() && !debug && !cheats && score > 0) {
             menu.setUsername(true);
-            menu.setHeadline(config.getInstruction() + score);
+            menu.setHeadline(Config.INSTRUCTION + score);
         }
 
         frame.getGameUI().setVisible(false);
@@ -117,7 +115,7 @@ public class Controller {
         while (username.endsWith(" ")) username = username.substring(0, username.length() - 1);
 
         if (!isUsernameValid(username) || username.length() < 3 || username.length() > 32) {
-            frame.showMessage(config.getInvalidUsername(), config.getInvalidUsernameTitle());
+            frame.showMessage(Config.INVALID_USERNAME, Config.INVALID_USERNAME_TITLE);
             return;
         } else menu.setUsername(false);
 

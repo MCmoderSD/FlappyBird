@@ -29,10 +29,10 @@ public class SafeZone {
     private float gravityModifier;
 
     // Constructors
-    public SafeZone(Config config, Obstacle top, Obstacle bottom) {
+    public SafeZone(Obstacle top, Obstacle bottom) {
 
-        color = config.getSafeZoneColor();
-        hitboxColor = config.getSafeZoneHitboxColor();
+        color = Config.SAFE_ZONE_COLOR;
+        hitboxColor = Config.SAFE_ZONE_HITBOX_COLOR;
 
         width = top.getWidth() - top.getWidth() / 10;
         height = bottom.getY() - top.getY() - top.getHeight();
@@ -40,9 +40,9 @@ public class SafeZone {
         x = (float) (top.getX() + top.getWidth() / 20);
         y = top.getY() + top.getHeight();
 
-        jumpHeight = config.getJumpHeight();
-        gravity = config.getGravity();
-        speed = config.getObstacleSpeed();
+        jumpHeight = Config.JUMP_HEIGHT;
+        gravity = Config.GRAVITY;
+        speed = Config.OBSTACLE_SPEED;
 
         speedModifier = 1;
         jumpHeightModifier = 1;

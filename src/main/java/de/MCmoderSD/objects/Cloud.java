@@ -27,18 +27,18 @@ public class Cloud {
     private float speedModifier;
 
     // Constructors
-    public Cloud(Config config, int x, int y) {
-        BufferedImage[] cloudImages = config.getCloudImages();
+    public Cloud(int x, int y) {
+        BufferedImage[] cloudImages = Config.CLOUD_IMAGES;
 
         image = cloudImages[(int) (Math.random() * cloudImages.length)];
 
         width = image.getWidth();
         height = image.getHeight();
 
-        color = config.getCloudColor();
-        hitboxColor = config.getCloudHitboxColor();
+        color = Config.CLOUD_COLOR;
+        hitboxColor = Config.CLOUD_HITBOX_COLOR;
 
-        speed = config.getCloudSpeed();
+        speed = Config.CLOUD_SPEED;
 
         this.x = x;
         this.y = y;
@@ -46,18 +46,18 @@ public class Cloud {
         speedModifier = 1;
     }
 
-    public Cloud(Config config, Point location) {
-        BufferedImage[] cloudImages = config.getCloudImages();
+    public Cloud(Point location) {
+        BufferedImage[] cloudImages = Config.CLOUD_IMAGES;
 
         image = cloudImages[(int) (Math.random() * cloudImages.length)];
 
         width = image.getWidth();
         height = image.getHeight();
 
-        color = config.getCloudColor();
-        hitboxColor = config.getCloudHitboxColor();
+        color = Config.CLOUD_COLOR;
+        hitboxColor = Config.CLOUD_HITBOX_COLOR;
 
-        speed = config.getCloudSpeed();
+        speed = Config.CLOUD_SPEED;
 
         this.x = location.x;
         this.y = location.y;

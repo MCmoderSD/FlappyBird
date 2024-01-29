@@ -26,7 +26,7 @@ public class ScoreBoard extends JPanel {
     private final DefaultTableModel tableModel;
 
     // Constructor
-    public ScoreBoard(Menu menu, Config config) {
+    public ScoreBoard(Menu menu) {
         super();
         setLayout(new BorderLayout());
 
@@ -34,7 +34,7 @@ public class ScoreBoard extends JPanel {
         Font headerFont = new Font("Roboto", Font.BOLD, 22);
 
         // Create table model with three columns
-        tableModel = new DefaultTableModel(new Object[]{config.getRank(), config.getUsername(), config.getScore()}, 0);
+        tableModel = new DefaultTableModel(new Object[]{Config.RANK, Config.USERNAME, Config.SCORE}, 0);
 
         // Create table with the model
         table = new JTable(tableModel) {

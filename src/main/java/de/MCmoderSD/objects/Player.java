@@ -33,22 +33,22 @@ public class Player {
     private float gravityModifier;
 
     // Constructor
-    public Player(Config config) {
-        image = config.getPlayerImage();
-        animation = config.getRainbowAnimation();
+    public Player() {
+        image = Config.PLAYER_IMAGE;
+        animation = Config.RAINBOW_ANIMATION;
 
         width = image.getWidth();
         height = image.getHeight();
 
-        color = config.getPlayerColor();
-        hitboxColor = config.getPlayerHitboxColor();
+        color = Config.PLAYER_COLOR;
+        hitboxColor = Config.PLAYER_HITBOX_COLOR;
 
-        jumpHeight = config.getJumpHeight();
-        gravity = config.getGravity();
+        jumpHeight = Config.JUMP_HEIGHT;
+        gravity = Config.GRAVITY;
 
 
-        x = (float) (config.getWidth() / 4 - width / 2);
-        y = (float) (config.getHeight() - height) / 2;
+        x = (float) (Config.WIDTH / 4 - width / 2);
+        y = (float) (Config.HEIGHT - height) / 2;
 
         jumpHeightModifier = 1;
         fallSpeedModifier = 1;

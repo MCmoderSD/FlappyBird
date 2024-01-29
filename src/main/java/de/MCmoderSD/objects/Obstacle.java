@@ -34,21 +34,21 @@ public class Obstacle {
     private float gravityModifier;
 
     // Constructor
-    public Obstacle(Config config, boolean isTop) {
+    public Obstacle(boolean isTop) {
         this.isTop = isTop;
 
-        image = isTop ? config.getObstacleTopImage() : config.getObstacleBottomImage();
+        image = isTop ? Config.OBSTACLE_TOP_IMAGE : Config.OBSTACLE_BOTTOM_IMAGE;
 
-        color = isTop ? config.getObstacleTopColor() : config.getObstacleBottomColor();
-        hitboxColor = isTop ? config.getObstacleTopHitboxColor() : config.getObstacleBottomHitboxColor();
+        color = isTop ? Config.OBSTACLE_TOP_COLOR : Config.OBSTACLE_BOTTOM_COLOR;
+        hitboxColor = isTop ? Config.OBSTACLE_TOP_HITBOX_COLOR : Config.OBSTACLE_BOTTOM_HITBOX_COLOR;
 
         width = image.getWidth();
         height = image.getHeight();
 
 
-        jumpHeight = config.getJumpHeight();
-        gravity = config.getGravity();
-        speed = config.getObstacleSpeed();
+        jumpHeight = Config.JUMP_HEIGHT;
+        gravity = Config.GRAVITY;
+        speed = Config.OBSTACLE_SPEED;
 
         jumpHeightModifier = 1;
         speedModifier = 1;

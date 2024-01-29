@@ -1,6 +1,6 @@
 package de.MCmoderSD.utilities.json;
 
-import java.awt.Color;
+import java.awt.*;
 
 @SuppressWarnings("unused")
 public class JsonValue {
