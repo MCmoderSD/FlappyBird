@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -15,9 +16,24 @@ public class InputHandler implements KeyListener {
 
     // Associations
     private final Frame frame;
+    private final Game game;
+    private final Controller controller;
 
-    // Constants
-    private final int[] konamiCode = {KeyEvent.VK_UP, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_B, KeyEvent.VK_A};
+    // KeyCodes
+    private final int[] konamiCode = {
+            KeyEvent.VK_UP,
+            KeyEvent.VK_UP,
+            KeyEvent.VK_DOWN,
+            KeyEvent.VK_DOWN,
+            KeyEvent.VK_LEFT,
+            KeyEvent.VK_RIGHT,
+            KeyEvent.VK_LEFT,
+            KeyEvent.VK_RIGHT,
+            KeyEvent.VK_B,
+            KeyEvent.VK_A
+    };
+
+    private final ArrayList<Integer> jumpKeys;
 
     // Attributes
     private boolean f3Pressed;
@@ -26,6 +42,8 @@ public class InputHandler implements KeyListener {
     // Constructor
     public InputHandler(Frame frame) {
         this.frame = frame;
+        game = frame.getGame();
+        controller = frame.getController();
 
         frame.addKeyListener(this);
         frame.addMouseListener(new MouseAdapter() {
@@ -35,6 +53,15 @@ public class InputHandler implements KeyListener {
                 frame.getGame().jump();
             }
         });
+
+        // Init Lists
+        jumpKeys = new ArrayList<>();
+
+        // jumpKeys
+        jumpKeys.add(KeyEvent.VK_SPACE);
+        jumpKeys.add(KeyEvent.VK_UP);
+        jumpKeys.add(KeyEvent.VK_W);
+        jumpKeys.add(KeyEvent.VK_ENTER);
 
         // Request focus
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -54,38 +81,35 @@ public class InputHandler implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        Game game = frame.getGame();
-        Controller controller = frame.getController();
+
+        int key = e.getKeyCode();
 
         // Exit
-        if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Q) System.exit(0);
-        if (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_Q) System.exit(0);
-        if (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_F4) System.exit(0);
+        if (e.isControlDown() && key == KeyEvent.VK_Q) System.exit(0);
+        if (e.isAltDown() && key == KeyEvent.VK_Q) System.exit(0);
+        if (e.isAltDown() && key == KeyEvent.VK_F4) System.exit(0);
 
         // Reverse Toggle
-        if (f3Pressed && e.getKeyCode() == KeyEvent.VK_R) controller.toggleReverse();
+        if (f3Pressed && key == KeyEvent.VK_R) controller.toggleReverse();
 
         // Asset Switch
-        if (f3Pressed && e.getKeyCode() == KeyEvent.VK_C) controller.switchAsset();
+        if (f3Pressed && key == KeyEvent.VK_C) controller.switchAsset();
 
         // Sound Toggle
-        if (e.getKeyCode() == KeyEvent.VK_S) {
+        if (key == KeyEvent.VK_S) {
             if (frame.getGameUI().isVisible()) game.toggleSound();
             else if (frame.getMenu().isVisible()) controller.toggleSound();
         }
 
         // Pause
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) game.togglePause();
-        if (e.getKeyCode() == KeyEvent.VK_P) game.togglePause();
+        if (key == KeyEvent.VK_ESCAPE) game.togglePause();
+        if (key == KeyEvent.VK_P) game.togglePause();
 
-        // Controls
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) game.jump();
-        if (e.getKeyCode() == KeyEvent.VK_UP) game.jump();
-        if (e.getKeyCode() == KeyEvent.VK_W) game.jump();
-        if (e.getKeyCode() == KeyEvent.VK_ENTER) game.jump();
+        // Jump
+        if (jumpKeys.contains(key)) game.jump();
 
         // Konami Code
-        if (e.getKeyCode() == konamiCode[konamiIndex]) {
+        if (key == konamiCode[konamiIndex]) {
             konamiIndex++;
             if (konamiIndex == konamiCode.length) {
                 game.toggleKonami();
@@ -94,9 +118,9 @@ public class InputHandler implements KeyListener {
         } else konamiIndex = 0;
 
         // Debug
-        if (e.getKeyCode() == KeyEvent.VK_F3) f3Pressed = true;
-        if (f3Pressed && e.getKeyCode() == KeyEvent.VK_F) game.toggleFps();
-        if (f3Pressed && e.getKeyCode() == KeyEvent.VK_B) game.toggleHitboxes();
+        if (key == KeyEvent.VK_F3) f3Pressed = true;
+        if (f3Pressed && key == KeyEvent.VK_F) game.toggleFps();
+        if (f3Pressed && key == KeyEvent.VK_B) game.toggleHitboxes();
     }
 
     @Override
