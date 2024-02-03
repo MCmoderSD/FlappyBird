@@ -16,8 +16,6 @@ public class InputHandler implements KeyListener {
 
     // Associations
     private final Frame frame;
-    private final Game game;
-    private final Controller controller;
 
     // KeyCodes
     private final int[] konamiCode = {
@@ -42,8 +40,6 @@ public class InputHandler implements KeyListener {
     // Constructor
     public InputHandler(Frame frame) {
         this.frame = frame;
-        game = frame.getGame();
-        controller = frame.getController();
 
         frame.addKeyListener(this);
         frame.addMouseListener(new MouseAdapter() {
@@ -82,6 +78,9 @@ public class InputHandler implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
 
+        // Variables
+        Controller controller = frame.getController();
+        Game game = frame.getGame();
         int key = e.getKeyCode();
 
         // Exit
