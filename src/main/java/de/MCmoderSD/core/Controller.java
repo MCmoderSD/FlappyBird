@@ -77,7 +77,6 @@ public class Controller {
         Menu menu = frame.getMenu();
 
         frame.getGame().init(menu.getBackgroundPos());
-        frame.getGame().initGameConstants(menu.isSound(), menu.getFps());
 
         // Set GameUI visible
         frame.getMenu().setVisible(false);

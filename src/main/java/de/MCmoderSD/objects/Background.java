@@ -8,6 +8,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
+import static de.MCmoderSD.main.Config.*;
+
 @SuppressWarnings("unused")
 public class Background {
 
@@ -27,10 +29,9 @@ public class Background {
 
     // Constructors
     public Background(int x, int y) {
-        image = Config.BACKGROUND_IMAGE;
-        color = Config.BACKGROUND_COLOR;
-
-        speed = Config.BACKGROUND_SPEED;
+        image = BACKGROUND_IMAGE;
+        color = BACKGROUND_COLOR;
+        speed = BACKGROUND_SPEED;
 
         width = image.getWidth();
         height = image.getHeight();
@@ -42,10 +43,9 @@ public class Background {
     }
 
     public Background(Point location) {
-        image = Config.BACKGROUND_IMAGE;
-        color = Config.BACKGROUND_COLOR;
-
-        speed = Config.BACKGROUND_SPEED;
+        image = BACKGROUND_IMAGE;
+        color = BACKGROUND_COLOR;
+        speed = BACKGROUND_SPEED;
 
         width = image.getWidth();
         height = image.getHeight();

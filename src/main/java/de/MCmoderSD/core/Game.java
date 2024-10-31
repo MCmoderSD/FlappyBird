@@ -1,36 +1,45 @@
 package de.MCmoderSD.core;
 
+import de.MCmoderSD.JavaAudioLibrary.AudioFile;
 import de.MCmoderSD.UI.Frame;
+import de.MCmoderSD.executor.NanoLoop;
 import de.MCmoderSD.main.Config;
-import de.MCmoderSD.main.Main;
+
 import de.MCmoderSD.objects.Background;
 import de.MCmoderSD.objects.Cloud;
 import de.MCmoderSD.objects.Obstacle;
 import de.MCmoderSD.objects.Player;
 import de.MCmoderSD.objects.SafeZone;
 import de.MCmoderSD.utilities.Calculate;
-import de.MCmoderSD.utilities.sound.AudioPlayer;
 
-import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Game implements Runnable {
+import static de.MCmoderSD.main.Config.*;
+
+public class Game {
 
     // Associations
     private final Frame frame;
 
     // Utilities
-    private final AudioPlayer audioPlayer;
     private final Random random;
 
+
+
+    // Game Threads
+    private final NanoLoop tickExecutor;
+    private final NanoLoop renderExecutor;
+    private final NanoLoop debugExecutor;
+
+    // Debug Variables
+    private int fps;
+    private int tps;
+
     // Constants
-    private final double tickrate;
     private final int obstacleSpawnRate;
     private final int[] cloudSpawnChance;
     private final boolean isReverse;
-    private final boolean isLinux;
-    private int frameRate;
     private boolean sound;
 
     // Attributes
@@ -56,100 +65,49 @@ public class Game implements Runnable {
     private boolean isRainbow;
     private double speedModifier;
     private int score;
-    private int fps;
     private int obstacleSpawnTimer;
 
     // Constructor
-    public Game(Frame frame, Config config) {
+    public Game(Frame frame) {
         this.frame = frame;
 
         isReverse = Config.IS_REVERSE;
-        audioPlayer = config.getAudioPlayer();
         random = new Random();
 
+        sound = true;
+
         // Constants
-        tickrate = 2777778;
-        isLinux = System.getProperty("os.name").equals("Linux");
         obstacleSpawnRate = (int) (200 / Config.OBSTACLE_SPEED);
         cloudSpawnChance = new int[]{1, 5000};
         init(0);
 
-        new Thread(this).start();
+        // Game Threads
+        tickExecutor = new NanoLoop(this::tick, 360);
+        renderExecutor = new NanoLoop(this::render, 480);
+        debugExecutor = new NanoLoop(this::debug, 1);
+
+        // Start Threads
+        tickExecutor.start();
+        renderExecutor.start();
+        debugExecutor.start();
     }
 
-    @Override
-    public void run() {
-        while (Main.IS_RUNNING) {
+    public void debug() {
 
-            // Timer Variables
-            double delta = 0;
-            long current;
-            long timer = 0;
-            long now = System.nanoTime();
-            int renderedFrames = 0;
+        // Print Debug Information
+        System.out.println("FPS: " + fps);
+        System.out.println("TPS: " + tps);
 
-            // Wait for start
-            if (isJump && frame.getGameUI().isVisible()) gameStarted = true;
-
-            // Game Loop
-            while (gameStarted) {
-
-                // Timer
-                current = System.nanoTime();
-                delta += (current - now) / (tickrate / speedModifier);
-                timer += current - now;
-                now = current;
-
-
-                // Tick
-                if (delta >= 1) {
-                    if (isLinux) Toolkit.getDefaultToolkit().sync();
-
-
-                    /* <-- Game Loop Start --> */
-
-                    // Game Tick Event
-                    double event = gameTick();
-
-                    // Update Frame
-                    boolean update = renderedFrames < Config.MAX_FPS;
-                    int modulo = renderedFrames % frameRate;
-                    if (modulo != 0 && update) renderedFrames++;
-                    if (modulo == 0 && update) {
-                        if (isLinux) Toolkit.getDefaultToolkit().sync();
-                        frame.repaint();
-                        renderedFrames++;
-                    }
-
-                    // FPS Counter
-                    if (timer >= 1000000000) {
-                        timer = 0;
-                        fps = renderedFrames / frameRate;
-                        renderedFrames = 0;
-                    }
-
-                    // Anti Cheat
-                    events.add(event);
-
-                    /* <-- Game Loop End --> */
-
-
-                    if (isLinux) Toolkit.getDefaultToolkit().sync();
-                    delta--;
-                }
-            }
-
-            // Delay to prevent 100% CPU usage
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        // Reset Variables
+        fps = 0;
+        tps = 0;
     }
 
-    // Game Tick
-    private double gameTick() {
+    public void tick() {
+
+        // Wait for start
+        if (isJump && frame.getGameUI().isVisible()) gameStarted = true;
+
 
         // Generate Event
         double event = random.nextDouble() * System.nanoTime();
@@ -199,11 +157,11 @@ public class Game implements Runnable {
             safeZones.removeAll(safeZonesToRemove);
 
             // Background Music
-            if (!gameOver && !isPaused && gameStarted && sound && !Config.BACKGROUND_MUSIC.endsWith("empty.wav") && !audioPlayer.isPlaying(Config.BACKGROUND_MUSIC))
-                audioPlayer.play(Config.BACKGROUND_MUSIC, true);
+           /*if (!gameOver && !isPaused && gameStarted && sound && !Config.BACKGROUND_MUSIC.endsWith("empty.wav") && !audioPlayer.isPlaying(Config.BACKGROUND_MUSIC))
+                audioPlayer.play(Config.BACKGROUND_MUSIC, true);*/
 
             // Background Spawn
-            Background lastBackground = backgrounds.get(backgrounds.size() - 1);
+            Background lastBackground = backgrounds.getLast();
             if (lastBackground.getX() + lastBackground.getWidth() <= Config.WIDTH)
                 backgrounds.add(new Background(Config.WIDTH, 0));
 
@@ -283,7 +241,20 @@ public class Game implements Runnable {
         }
 
         isJump = false;
-        return event;
+
+
+
+        // Debug
+        tps++;
+    }
+
+    public void render() {
+
+        // Repaint
+        frame.getGameUI().repaint();
+
+        // Debug
+        fps++;
     }
 
     // Init Game Variables
@@ -319,34 +290,39 @@ public class Game implements Runnable {
 
         // Init Backgrounds
         backgrounds.add(new Background(backgroundPos, 0));
-        while (backgrounds.get(backgrounds.size() - 1).getX() + backgrounds.get(backgrounds.size() - 1).getWidth() < Config.WIDTH)
-            backgrounds.add(new Background(backgrounds.get(backgrounds.size() - 1).getX() + backgrounds.get(backgrounds.size() - 1).getWidth(), 0));
+        while (backgrounds.getLast().getX() + backgrounds.getLast().getWidth() < Config.WIDTH)
+            backgrounds.add(new Background(backgrounds.getLast().getX() + backgrounds.getLast().getWidth(), 0));
     }
 
     // Methods
 
     public void jump() {
         isJump = true;
-        if (!isReverse && sound && !gameOver && !hasCollided && !isPaused && player.getY() + player.getHeight() > 0)
-            audioPlayer.play(Config.FLAP_SOUND);
-        else if (isReverse && sound && !gameOver && !hasCollided && !isPaused && !tooHigh)
-            audioPlayer.play(Config.FLAP_SOUND);
+        if (sound && !gameOver && !hasCollided && !isPaused && player.getY() + player.getHeight() > 0) {
+            AudioFile jumpSound = FLAP_SOUND.copy();
+            jumpSound.play();
+        }
     }
 
     private void fall() {
-        if (sound) audioPlayer.play(Config.DIE_SOUND);
+        if (sound) {
+            AudioFile dieSound = DIE_SOUND.copy();
+            dieSound.play();
+        }
         gameOver = true;
     }
 
     private void point(double event) {
-        if (sound) audioPlayer.play(Config.POINT_SOUND);
-        score++;
+        if (sound) {
+            AudioFile pointSound = POINT_SOUND.copy();
+            pointSound.play();
+        }        score++;
         if (score % 5 == 0 && Calculate.randomChance(Config.RAINBOW_SPAWN_CHANCE)) rainbowUlt();
         keys.add(event);
     }
 
     private void collision() {
-        if (sound) audioPlayer.play(Config.HIT_SOUND);
+        //if (sound) audioPlayer.play(Config.HIT_SOUND);
         hasCollided = true;
     }
 
@@ -354,8 +330,11 @@ public class Game implements Runnable {
         new Thread(() -> {
             try {
                 isRainbow = true;
-                if (sound) audioPlayer.play(Config.RAINBOW_SOUND);
-                Thread.sleep(Config.RAINBOW_DURATION);
+                if (sound) {
+                    AudioFile rainbowSound = RAINBOW_SOUND.copy();
+                    rainbowSound.play();
+                }
+                Thread.sleep(RAINBOW_DURATION);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -373,8 +352,7 @@ public class Game implements Runnable {
         }
 
         // Stop Background Music
-        if (!Config.BACKGROUND_MUSIC.endsWith("empty.wav") && audioPlayer.isPlaying(Config.BACKGROUND_MUSIC))
-            audioPlayer.stop(Config.BACKGROUND_MUSIC);
+        //if (!Config.BACKGROUND_MUSIC.endsWith("empty.wav") && audioPlayer.isPlaying(Config.BACKGROUND_MUSIC)) audioPlayer.stop(Config.BACKGROUND_MUSIC);
 
         // Reset Game
         frame.getController().restart(debug, cheatsActive || hasCheated, sound, score);
@@ -429,21 +407,11 @@ public class Game implements Runnable {
         return score;
     }
 
-    public int getFps() {
-        return fps;
-    }
-
-    // Setter
-    public void initGameConstants(boolean sound, int fps) {
-        this.sound = sound;
-        frameRate = Config.MAX_FPS / fps;
-    }
-
     public void togglePause() {
         if (!gameOver) {
             isPaused = !isPaused;
-            if (isPaused) audioPlayer.pauseAll();
-            else audioPlayer.resumeAll();
+            /*if (isPaused) audioPlayer.pauseAll();
+            else audioPlayer.resumeAll();*/
         }
     }
 

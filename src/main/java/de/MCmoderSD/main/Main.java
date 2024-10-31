@@ -7,13 +7,13 @@ public class Main {
 
     // Constants
     public static final String[] CONFIGURATIONS = {"lena", "911", "lenabeta", "911beta", "alpha"};
-    public static boolean IS_RUNNING = true;
 
     public static void main(String[] args) {
-        if (args.length > 1 && Calculate.doesFileExist(args[0]) && Calculate.doesFileExist(args[1]))
-            new Frame(new Config(args)); // Custom
-        else if (Calculate.doesFileExist("/languages/en.json")) new Frame(new Config(args)); // Default
-        else
-            new Frame(new Config(args, "https://raw.githubusercontent.com/MCmoderSD/FlappyBird/v3/src/main/resources")); // Asset streaming
+
+        // Init Config
+        Config.init(args);
+
+        // Init Frame
+        new Frame();
     }
 }

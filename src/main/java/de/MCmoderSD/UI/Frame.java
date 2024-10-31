@@ -9,6 +9,8 @@ import javax.swing.JFrame;
 import javax.swing.BoxLayout;
 import javax.swing.JOptionPane;
 
+import static de.MCmoderSD.main.Config.TITLE;
+
 public class Frame extends JFrame {
 
     // Associations
@@ -18,10 +20,10 @@ public class Frame extends JFrame {
     private final Menu menu;
 
     // Constructor
-    public Frame(Config config) {
-        super(Config.TITLE);
+    public Frame() {
+        super(TITLE);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setResizable(Config.RESIZABLE);
+        setResizable(false);
         setLocationRelativeTo(null);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
         setIconImage(Config.ICON);
@@ -36,7 +38,7 @@ public class Frame extends JFrame {
         gameUI = new GameUI(this);
 
         // Create Game
-        game = new Game(this, config);
+        game = new Game(this);
 
         // Create Controller
         controller = new Controller(this);

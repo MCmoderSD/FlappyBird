@@ -128,7 +128,7 @@ public class GameUI extends JPanel {
 
         scoreLabel.setText(Config.SCORE_PREFIX + game.getScore());
         fpsLabel.setVisible(game.isShowFps() || game.isDebug());
-        fpsLabel.setText(Config.FPS_PREFIX + game.getFps());
+        //fpsLabel.setText(Config.FPS_PREFIX + game.getFps());
 
         // Draw UI Elements
         paintComponents(g);
