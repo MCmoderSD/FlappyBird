@@ -2,6 +2,9 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+src/main/resources/config/database.json
+src/main/resources/META-INF
+out/
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
@@ -11,6 +14,7 @@ target/
 *.iws
 *.iml
 *.ipr
+.idea/
 
 ### Eclipse ###
 .apt_generated
@@ -36,6 +40,3 @@ build/
 
 ### Mac OS ###
 .DS_Store
-
-docs/
-storage/tests/
