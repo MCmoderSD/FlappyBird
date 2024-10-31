@@ -20,6 +20,9 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
 
+import static de.MCmoderSD.main.Config.BACKGROUND_COLOR;
+import static de.MCmoderSD.main.Config.BACKGROUND_IMAGE;
+
 public class Menu extends JPanel {
 
     // Associations
@@ -42,7 +45,7 @@ public class Menu extends JPanel {
         super();
         setLayout(null);
         setPreferredSize(Config.SIZE);
-        setBackground(Config.BACKGROUND_COLOR);
+        setBackground(BACKGROUND_COLOR);
         setVisible(true);
         frame.add(this);
 
@@ -151,9 +154,9 @@ public class Menu extends JPanel {
         backgrounds = frame.getGame().getBackgrounds();
 
         for (Background background : backgrounds) {
-            g.setColor(background.getColor());
+            g.setColor(BACKGROUND_COLOR);
             g.fill(background.getHitbox());
-            g.drawImage(background.getImage(), background.getX(), background.getY(), null);
+            g.drawImage(BACKGROUND_IMAGE, background.getX(), background.getY(), null);
         }
     }
 

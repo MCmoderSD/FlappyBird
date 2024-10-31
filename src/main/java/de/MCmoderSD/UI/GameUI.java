@@ -14,7 +14,10 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
+
 import java.util.ArrayList;
+
+import static de.MCmoderSD.main.Config.*;
 
 public class GameUI extends JPanel {
 
@@ -73,23 +76,22 @@ public class GameUI extends JPanel {
 
         // Draw Background
         for (Background background : backgrounds) {
-            g.setColor(background.getColor());
+            g.setColor(BACKGROUND_COLOR);
             g.fill(background.getHitbox());
-            g.drawImage(background.getImage(), background.getX(), background.getY(), null);
+            g.drawImage(BACKGROUND_IMAGE, background.getX(), background.getY(), null);
         }
 
         // Draw Clouds
         for (Cloud cloud : clouds) {
-            g.setColor(cloud.getColor());
-            //g.fill(cloud.getHitbox());
+            g.setColor(CLOUD_COLOR);
             g.drawImage(cloud.getImage(), cloud.getX(), cloud.getY(), null);
         }
 
         // Draw Player
-        g.setColor(player.getColor());
+        g.setColor(PLAYER_COLOR);
         //g.fill(player.getHitbox());
-        if (game.isRainbow()) g.drawImage(player.getAnimation().getImage(), player.getX(), player.getY(), null);
-        else g.drawImage(player.getImage(), player.getX(), player.getY(), null);
+        if (game.isRainbow()) g.drawImage(RAINBOW_ANIMATION.getImage(), player.getX(), player.getY(), null);
+        else g.drawImage(PLAYER_IMAGE, player.getX(), player.getY(), null);
 
         // Draw Obstacles
         for (Obstacle obstacle : obstacles) {
@@ -108,11 +110,11 @@ public class GameUI extends JPanel {
         if (game.isHitboxes() || game.isDebug()) {
 
             for (Cloud cloud : clouds) {
-                g.setColor(cloud.getHitboxColor());
+                g.setColor(CLOUD_HITBOX_COLOR);
                 g.draw(cloud.getHitbox());
             }
 
-            g.setColor(player.getHitboxColor());
+            g.setColor(PLAYER_HITBOX_COLOR);
             g.draw(player.getHitbox());
 
             for (Obstacle obstacle : obstacles) {
@@ -121,7 +123,7 @@ public class GameUI extends JPanel {
             }
 
             for (SafeZone safeZone : safeZones) {
-                g.setColor(safeZone.getHitboxColor());
+                g.setColor(SAFE_ZONE_HITBOX_COLOR);
                 g.draw(safeZone.getHitbox());
             }
         }

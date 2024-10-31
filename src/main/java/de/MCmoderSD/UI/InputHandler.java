@@ -2,6 +2,7 @@ package de.MCmoderSD.UI;
 
 import de.MCmoderSD.core.Controller;
 import de.MCmoderSD.core.Game;
+import de.MCmoderSD.executor.NanoLoop;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -60,14 +61,7 @@ public class InputHandler implements KeyListener {
         jumpKeys.add(KeyEvent.VK_ENTER);
 
         // Request focus
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(this::requestFocusLoop, 0, 100, TimeUnit.MILLISECONDS);
-    }
-
-    // Request Focus
-    private void requestFocusLoop() {
-        if (frame.getMenu() != null && frame.getMenu().isVisible() && frame.getMenu().canFocus())
-            frame.requestFocusInWindow();
+        NanoLoop nanoLoop = new NanoLoop(frame::requestFocusInWindow, 1);
     }
 
     @Override
@@ -81,15 +75,10 @@ public class InputHandler implements KeyListener {
         // Variables
         Controller controller = frame.getController();
         Game game = frame.getGame();
-        int key = e.getKeyCode();
+        var key = e.getKeyCode();
 
         // Exit
-        if (e.isControlDown() && key == KeyEvent.VK_Q) System.exit(0);
-        if (e.isAltDown() && key == KeyEvent.VK_Q) System.exit(0);
-        if (e.isAltDown() && key == KeyEvent.VK_F4) System.exit(0);
-
-        // Reverse Toggle
-        if (f3Pressed && key == KeyEvent.VK_R) controller.toggleReverse();
+        if ((e.isControlDown() && (key == KeyEvent.VK_C || key == KeyEvent.VK_Q)) || (e.isAltDown() && (key == KeyEvent.VK_F4 || key == KeyEvent.VK_Q))) System.exit(0);;
 
         // Asset Switch
         if (f3Pressed && key == KeyEvent.VK_C) controller.switchAsset();

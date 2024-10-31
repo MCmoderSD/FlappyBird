@@ -14,7 +14,7 @@ out/
 *.iws
 *.iml
 *.ipr
-.idea/
+.idea
 
 ### Eclipse ###
 .apt_generated

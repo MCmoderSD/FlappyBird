@@ -1,14 +1,11 @@
 package de.MCmoderSD.objects;
 
-import de.MCmoderSD.main.Config;
-
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
-@SuppressWarnings("unused")
+import static de.MCmoderSD.main.Config.*;
+
 public class Obstacle {
 
     // Attributes
@@ -17,57 +14,35 @@ public class Obstacle {
     private final BufferedImage image;
     private final Color color;
     private final Color hitboxColor;
-    private final boolean isTop;
-    private final float gravity;
     private final float speed;
-    private final float jumpHeight;
 
     // Variables
     private float x;
     private float y;
-    private float fallSpeed;
-
-    // Modifiers
-    private float jumpHeightModifier;
-    private float speedModifier;
-    private float fallSpeedModifier;
-    private float gravityModifier;
 
     // Constructor
     public Obstacle(boolean isTop) {
-        this.isTop = isTop;
 
-        image = isTop ? Config.OBSTACLE_TOP_IMAGE : Config.OBSTACLE_BOTTOM_IMAGE;
+        image = isTop ? OBSTACLE_TOP_IMAGE : OBSTACLE_BOTTOM_IMAGE;
 
-        color = isTop ? Config.OBSTACLE_TOP_COLOR : Config.OBSTACLE_BOTTOM_COLOR;
-        hitboxColor = isTop ? Config.OBSTACLE_TOP_HITBOX_COLOR : Config.OBSTACLE_BOTTOM_HITBOX_COLOR;
+        color = isTop ? OBSTACLE_TOP_COLOR : OBSTACLE_BOTTOM_COLOR;
+        hitboxColor = isTop ? OBSTACLE_TOP_HITBOX_COLOR : OBSTACLE_BOTTOM_HITBOX_COLOR;
 
         width = image.getWidth();
         height = image.getHeight();
 
-
-        jumpHeight = Config.JUMP_HEIGHT;
-        gravity = Config.GRAVITY;
-        speed = Config.OBSTACLE_SPEED;
-
-        jumpHeightModifier = 1;
-        speedModifier = 1;
-        fallSpeedModifier = 1;
-        gravityModifier = 1;
+        speed = OBSTACLE_SPEED;
     }
 
     // Methods
     public void move() {
-        x -= speed * speedModifier;
+        x -= speed;
     }
 
-    public void jump() {
-        fallSpeed = -(jumpHeight * jumpHeightModifier);
-    }
-
-    public void fall() {
-        fallSpeed += gravity * gravityModifier;
-        y += fallSpeed * fallSpeedModifier;
+    // Setter
+    public void setLocation(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
     // Getter
@@ -77,10 +52,6 @@ public class Obstacle {
 
     public int getHeight() {
         return height;
-    }
-
-    public Dimension getSize() {
-        return new Dimension(width, height);
     }
 
     public BufferedImage getImage() {
@@ -95,94 +66,15 @@ public class Obstacle {
         return hitboxColor;
     }
 
-    public Point getLocation() {
-        return new Point(Math.toIntExact(Math.round(x)), Math.toIntExact(Math.round(y)));
-    }
-
     public Rectangle getHitbox() {
-        return new Rectangle(Math.toIntExact(Math.round(x)), Math.toIntExact(Math.round(y)), width, height);
+        return new Rectangle(getX(), getY(), width, height);
     }
 
     public int getX() {
-        return Math.toIntExact(Math.round(x));
+        return Math.round(x);
     }
 
     public int getY() {
-        return Math.toIntExact(Math.round(y));
-    }
-
-    public float getJumpHeight() {
-        return jumpHeight;
-    }
-
-    public float getGravity() {
-        return gravity;
-    }
-
-    public float getSpeed() {
-        return speed;
-    }
-
-    public float getFallSpeed() {
-        return fallSpeed;
-    }
-
-    public float getSpeedModifier() {
-        return speedModifier;
-    }
-
-    public float getJumpHeightModifier() {
-        return jumpHeightModifier;
-    }
-
-    public float getFallSpeedModifier() {
-        return fallSpeedModifier;
-    }
-
-    public float getGravityModifier() {
-        return gravityModifier;
-    }
-
-    public boolean isTop() {
-        return isTop;
-    }
-
-    // Setter
-    public void setLocation(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public void setLocation(Point location) {
-        this.x = location.x;
-        this.y = location.y;
-    }
-
-    public void setX(float x) {
-        this.x = x;
-    }
-
-    public void setY(float y) {
-        this.y = y;
-    }
-
-    public void setSpeedModifier(float speedModifier) {
-        this.speedModifier = speedModifier;
-    }
-
-    public void setJumpHeightModifier(float jumpHeightModifier) {
-        this.jumpHeightModifier = jumpHeightModifier;
-    }
-
-    public void setFallSpeed(float fallSpeed) {
-        this.fallSpeed = fallSpeed;
-    }
-
-    public void setFallSpeedModifier(float fallSpeedModifier) {
-        this.fallSpeedModifier = fallSpeedModifier;
-    }
-
-    public void setGravityModifier(float gravityModifier) {
-        this.gravityModifier = gravityModifier;
+        return Math.round(y);
     }
 }
