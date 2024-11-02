@@ -2,6 +2,7 @@ package de.MCmoderSD.core;
 
 import de.MCmoderSD.UI.Frame;
 import de.MCmoderSD.UI.Menu;
+import de.MCmoderSD.executor.NanoLoop;
 import de.MCmoderSD.main.Config;
 import de.MCmoderSD.main.Main;
 import de.MCmoderSD.utilities.database.MySQL;
@@ -29,15 +30,13 @@ public class Controller {
         Menu menu = frame.getMenu();
 
         // Initialize MySQL
-        mySQL = new MySQL(Config.DATABASE, Config.IS_REVERSE);
-        if (!Config.VALID_CONFIG && mySQL.isConnected()) mySQL.disconnect();
+        mySQL = new MySQL(Config.DATABASE);
 
         menu.setScoreBoard(mySQL.isConnected());
-        if (!mySQL.isConnected()) return;
+        if (!mySQL.isConnected()) mySQL.connect();
 
         // Update Loop
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
-        scheduler.scheduleAtFixedRate(() -> menu.getScoreBoard().setHashMap(mySQL.pullFromMySQL()), 0, 100, TimeUnit.MILLISECONDS);
+        new NanoLoop(() -> menu.getScoreBoard().setHashMap(mySQL.pullFromMySQL()), 10).start();
     }
 
     // Checks if the username is valid
@@ -45,13 +44,6 @@ public class Controller {
         for (String word : username.toLowerCase().split("\\W+"))
             if (Config.BLOCKED_TERMS.contains(word)) return false;
         return true;
-    }
-
-    // Toggles the reverse mode
-    public void toggleReverse() {
-        if (frame.getGameUI().isVisible()) return;
-        Main.main(new String[]{Config.LANGUAGE, Config.CONFIGURATION, (Config.IS_REVERSE ? "" : "r")});
-        frame.dispose();
     }
 
     // Asset Switch

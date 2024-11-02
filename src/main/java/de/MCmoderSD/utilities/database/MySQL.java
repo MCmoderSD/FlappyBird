@@ -15,9 +15,9 @@ public class MySQL extends Driver {
     private final String table;
 
     // Constructors
-    public MySQL(JsonNode config, boolean isReverse) {
+    public MySQL(JsonNode config) {
         super(config);
-        table = isReverse ? config.get("reversedTable").asText() : config.get("table").asText();
+        table = config.get("table").asText();
         connect();
     }
 

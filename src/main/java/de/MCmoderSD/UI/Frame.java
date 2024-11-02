@@ -2,14 +2,14 @@ package de.MCmoderSD.UI;
 
 import de.MCmoderSD.core.Controller;
 import de.MCmoderSD.core.Game;
-import de.MCmoderSD.main.Config;
 import de.MCmoderSD.utilities.Calculate;
 
 import javax.swing.JFrame;
-import javax.swing.BoxLayout;
 import javax.swing.JOptionPane;
 
-import static de.MCmoderSD.main.Config.TITLE;
+import java.awt.*;
+
+import static de.MCmoderSD.main.Config.*;
 
 public class Frame extends JFrame {
 
@@ -25,8 +25,8 @@ public class Frame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
         setLocationRelativeTo(null);
-        setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
-        setIconImage(Config.ICON);
+        setIconImage(ICON);
+        setLayout(new BorderLayout());
 
         // Add InputHandler
         new InputHandler(this);
@@ -45,7 +45,7 @@ public class Frame extends JFrame {
 
         // Finalize and set visible
         pack();
-        setLocation(Calculate.centerOfJFrame(this, Config.SMALL_SCREEN_MODE));
+        setLocation(Calculate.centerOfJFrame(this, SMALL_SCREEN_MODE));
         setVisible(true);
     }
 

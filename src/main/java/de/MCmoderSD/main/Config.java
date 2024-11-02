@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -25,27 +23,22 @@ public class Config {
     // Constants
     public static String[] ARGS;
     public static String CONFIGURATION;
-    public static boolean VALID_CONFIG;
     public static int WIDTH;
     public static int HEIGHT;
     public static boolean SMALL_SCREEN_MODE;
-    public static boolean RESIZABLE;
     public static Dimension SIZE;
     public static JsonNode DATABASE;
     public static ArrayList<String> BLOCKED_TERMS;
 
     // Game logic constants
-    public static boolean IS_REVERSE;
-    public static int PERCENTAGE;
-    public static int GAP;
+    public static float GAP_SIZE;
+    public static float GAP_PERCENTAGE;
     public static float JUMP_HEIGHT;
     public static float GRAVITY;
     public static float BACKGROUND_SPEED;
     public static float OBSTACLE_SPEED;
     public static float CLOUD_SPEED;
     public static float RAINBOW_SPAWN_CHANCE;
-    public static int RAINBOW_DURATION;
-    public static int MAX_FPS;
 
     // Assets
     public static BufferedImage ICON;
@@ -116,186 +109,121 @@ public class Config {
         ImageLoader imageLoader = new ImageLoader();
         AudioLoader audioLoader = new AudioLoader();
 
-
-        // Language
-        if (args.length == 0) LANGUAGE = "en";
-        else {
-            String arg = args[0].toLowerCase();
-            while (arg.startsWith(" ") || arg.startsWith("-") || arg.startsWith("/")) arg = arg.substring(1);
-            while (arg.endsWith(" ") || arg.endsWith("-") || arg.endsWith("/"))
-                arg = arg.substring(0, arg.length() - 1);
-            LANGUAGE = args[0];
-        }
-
-        if (Calculate.checkDate(11, 9) || Calculate.checkDate(9, 11)) CONFIGURATION = "911";
-        else if (args.length > 1) {
-            String arg = args[1];
-            while (arg.startsWith(" ") || arg.startsWith("-") || arg.startsWith("/")) arg = arg.substring(1);
-            while (arg.endsWith(" ") || arg.endsWith("-") || arg.endsWith("/"))
-                arg = arg.substring(0, arg.length() - 1);
-            CONFIGURATION = args[1];
-        } else CONFIGURATION = "lena";
-
-        if (args.length > 2) {
-            String arg = args[2].toLowerCase();
-            while (arg.startsWith(" ") || arg.startsWith("-") || arg.startsWith("/")) arg = arg.substring(1);
-            IS_REVERSE = arg.startsWith("r");
-        } else IS_REVERSE = false;
-
-        JsonNode config;
-
-        // Check for Valid Config
-        for (var i = 0; i < Main.CONFIGURATIONS.length; i++)
-            if (Objects.equals(Main.CONFIGURATIONS[i], CONFIGURATION)) {
-                VALID_CONFIG = true;
-                break;
-            }
-
-        // Load Config
         try {
 
             // Load Config
-            if (VALID_CONFIG) config = jsonUtility.load("/config/" + CONFIGURATION + ".json");
-            else config = jsonUtility.load(CONFIGURATION, true);
+            JsonNode config = jsonUtility.load("/config/lena.json");
 
             // Load Database Config
             DATABASE = jsonUtility.load("/config/database.json");
 
-        } catch (IOException | URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-
-        // Screen
-        WIDTH = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).width;
-        HEIGHT = Calculate.calculateMaxDimension(config.get("width").asInt(), config.get("height").asInt()).height;
-        SMALL_SCREEN_MODE = WIDTH != config.get("width").asInt() || HEIGHT != config.get("height").asInt();
-
-        // Resizable
-        RESIZABLE = config.get("resizable").asBoolean();
-        SIZE = new Dimension(WIDTH, HEIGHT);
+            // Size
+            JsonNode settings = config.get("settings");
+            WIDTH = Calculate.calculateMaxDimension(settings.get("width").asInt(), settings.get("height").asInt()).width;
+            HEIGHT = Calculate.calculateMaxDimension(settings.get("width").asInt(), settings.get("height").asInt()).height;
+            SMALL_SCREEN_MODE = WIDTH != settings.get("width").asInt() || HEIGHT != settings.get("height").asInt();
+            SIZE = new Dimension(WIDTH, HEIGHT);
 
 
-        // Blocked Terms
-        BLOCKED_TERMS = new ArrayList<>();
-
-        try {
-            String blockedTermsPath = config.get("blockedTermsPath").asText();
-            InputStream inputStream;
-
-            // Load Blocked Terms
-            if (blockedTermsPath.startsWith("/")) inputStream = Config.class.getResourceAsStream(blockedTermsPath); // Relative path
-            else inputStream = Files.newInputStream(Paths.get(blockedTermsPath)); // Absolute path
-
-            // Initialize BufferedReader
-            BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
-
-            // Read Blocked Terms
+            // Blocked Terms
+            BLOCKED_TERMS = new ArrayList<>();
+            InputStream inputStream = Config.class.getResourceAsStream("/data/blockedTerms");
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
             String line;
-            while ((line = reader.readLine()) != null) BLOCKED_TERMS.add(line);
+            while ((line = bufferedReader.readLine()) != null) BLOCKED_TERMS.add(line);
+            bufferedReader.close();
+            inputStream.close();
 
-            // Close BufferedReader
-            reader.close();
+            // Game logic constants
+            GAP_SIZE = Float.parseFloat(settings.get("gapSize").asText());
+            GAP_PERCENTAGE = Float.parseFloat(settings.get("gapPercentage").asText());
+            JUMP_HEIGHT = Float.parseFloat(settings.get("jumpHeight").asText());
+            GRAVITY = Float.parseFloat(settings.get("gravity").asText());
+            BACKGROUND_SPEED = Float.parseFloat(settings.get("backgroundSpeed").asText());
+            OBSTACLE_SPEED = Float.parseFloat(settings.get("obstacleSpeed").asText());
+            CLOUD_SPEED = Float.parseFloat(settings.get("cloudSpeed").asText());
+            RAINBOW_SPAWN_CHANCE = Float.parseFloat(settings.get("rainbowSpawnChance").asText());
 
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
+            // Assets
+            JsonNode assets = config.get("assets");
 
-        PERCENTAGE = config.get("percentage").asInt();
-        GAP = config.get("gap").asInt();
-        JUMP_HEIGHT = Float.parseFloat(config.get("jumpHeight").asText());
-        GRAVITY = Float.parseFloat(config.get("gravity").asText());
-        BACKGROUND_SPEED = Float.parseFloat(config.get("backgroundSpeed").asText());
-        OBSTACLE_SPEED = Float.parseFloat(config.get("obstacleSpeed").asText());
-        CLOUD_SPEED = Float.parseFloat(config.get("cloudSpeed").asText());
-        RAINBOW_SPAWN_CHANCE = Float.parseFloat(config.get("rainbowSpawnChance").asText());
-        RAINBOW_DURATION = config.get("rainbowDuration").asInt();
-        MAX_FPS = config.get("maxFPS").asInt();
-
-        // Assets
-        try {
-
-            BufferedImage background = imageLoader.load(config.get("backgroundImage").asText());
-            int backgroundWidth = (int) (((double) background.getWidth() / background.getHeight()) * HEIGHT);
-
-            ICON = imageLoader.load(config.get("icon").asText());
-            BACKGROUND_IMAGE = scaleImage(background, (backgroundWidth), HEIGHT);
-            PLAYER_IMAGE = imageLoader.load(config.get("playerImage").asText());
-            OBSTACLE_TOP_IMAGE = imageLoader.load(config.get("obstacleTopImage").asText());
-            OBSTACLE_BOTTOM_IMAGE = imageLoader.load(config.get("obstacleBottomImage").asText());
-            GAME_OVER_IMAGE = scaleImage(imageLoader.load(config.get("gameOverImage").asText()), Math.min(WIDTH, HEIGHT), Math.min(WIDTH, HEIGHT));
-            PAUSE_IMAGE = scaleImage(imageLoader.load(config.get("pauseImage").asText()), Math.min(WIDTH, HEIGHT), Math.min(WIDTH, HEIGHT));
+            // Images
+            JsonNode images = assets.get("images");
+            ICON = imageLoader.load(images.get("icon").asText());
+            BACKGROUND_IMAGE = imageLoader.load(images.get("background").asText());
+            PLAYER_IMAGE = imageLoader.load(images.get("player").asText());
+            OBSTACLE_TOP_IMAGE = imageLoader.load(images.get("obstacleTop").asText());
+            OBSTACLE_BOTTOM_IMAGE = imageLoader.load(images.get("obstacleBottom").asText());
+            GAME_OVER_IMAGE = scaleImage(imageLoader.load(images.get("gameOver").asText()), Math.min(WIDTH, HEIGHT), Math.min(WIDTH, HEIGHT));
+            PAUSE_IMAGE = scaleImage(imageLoader.load(images.get("pause").asText()), Math.min(WIDTH, HEIGHT), Math.min(WIDTH, HEIGHT));
 
             // Cloud
-            JsonNode clouds = jsonUtility.load(config.get("clouds").asText());
+            JsonNode clouds = images.get("clouds");
             CLOUD_IMAGES = new BufferedImage[clouds.size()];
-            for (int i = 0; i < clouds.size(); i++)
-                CLOUD_IMAGES[i] = imageLoader.load(clouds.get("variant" + i).asText());
+            for (var i = 0; i < clouds.size(); i++) CLOUD_IMAGES[i] = imageLoader.load(clouds.get(Integer.toString(i)).asText());
 
             // Animations
-            RAINBOW_ANIMATION = AnimationLoader.loadAnimation(config.get("rainbowAnimation").asText(), false);
+            RAINBOW_ANIMATION = AnimationLoader.loadAnimation(assets.get("animations").get("rainbow").asText(), false);
 
+            // Colors
+            JsonNode colors = assets.get("colors");
+            PLAYER_COLOR = getColor(colors.get("player").asText());
+            PLAYER_HITBOX_COLOR = getColor(colors.get("playerHitbox").asText());
+            CLOUD_COLOR = getColor(colors.get("cloud").asText());
+            CLOUD_HITBOX_COLOR = getColor(colors.get("cloudHitbox").asText());
+            OBSTACLE_TOP_COLOR = getColor(colors.get("obstacleTop").asText());
+            OBSTACLE_TOP_HITBOX_COLOR = getColor(colors.get("obstacleTopHitbox").asText());
+            OBSTACLE_BOTTOM_COLOR = getColor(colors.get("obstacleBottom").asText());
+            OBSTACLE_BOTTOM_HITBOX_COLOR = getColor(colors.get("obstacleBottomHitbox").asText());
+            OBSTACLE_HITBOX_COLOR = getColor(colors.get("obstacleHitbox").asText());
+            SAFE_ZONE_COLOR = getColor(colors.get("safeZone").asText());
+            SAFE_ZONE_HITBOX_COLOR = getColor(colors.get("safeZoneHitbox").asText());
+            BACKGROUND_COLOR = getColor(colors.get("background").asText());
+            FONT_COLOR = getColor(colors.get("font").asText());
+            SCORE_COLOR = getColor(colors.get("score").asText());
+            FPS_COLOR = getColor(colors.get("fps").asText());
+
+            // Sounds
+            JsonNode sounds = assets.get("sounds");
+            DIE_SOUND = audioLoader.load(sounds.get("die").asText());
+            FLAP_SOUND = audioLoader.load(sounds.get("flap").asText());
+            HIT_SOUND = audioLoader.load(sounds.get("hit").asText());
+            POINT_SOUND = audioLoader.load(sounds.get("point").asText());
+            RAINBOW_SOUND = audioLoader.load(sounds.get("rainbow").asText());
+
+            // Music
+            BACKGROUND_MUSIC = audioLoader.load(assets.get("music").get("background").asText());
+
+            // Messages
+            LANGUAGE = "en";
+            JsonNode messages = jsonUtility.load("/languages/" + LANGUAGE + ".json");
+            TITLE = messages.get("title").asText();
+            SCORE = messages.get("score").asText();
+            USERNAME = messages.get("username").asText();
+            USERNAME_TOOL_TIP = messages.get("usernameToolTip").asText();
+            RANK = messages.get("rank").asText();
+            SCORE_PREFIX = messages.get("scorePrefix").asText();
+            FPS_PREFIX = messages.get("fpsPrefix").asText();
+            START = messages.get("start").asText();
+            START_TOOL_TIP = messages.get("startToolTip").asText();
+            SOUND = messages.get("sound").asText();
+            SOUND_TOOL_TIP = messages.get("soundToolTip").asText();
+            FPS_TOOL_TIP = messages.get("fpsToolTip").asText();
+            CHEATS_DETECTED = messages.get("cheatsDetected").asText();
+            CHEATS_DETECTED_TITLE = messages.get("cheatsDetectedTitle").asText();
+            INSTRUCTION = messages.get("instruction").asText();
+            CONFIRM = messages.get("confirm").asText();
+            CONFIRM_TOOL_TIP = messages.get("confirmToolTip").asText();
+            INVALID_USERNAME = messages.get("invalidUsername").asText();
+            INVALID_USERNAME_TITLE = messages.get("invalidUsernameTitle").asText();
 
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
 
-        // Colors
-        PLAYER_COLOR = getColor(config.get("playerColor").asText());
-        PLAYER_HITBOX_COLOR = getColor(config.get("playerHitboxColor").asText());
-        CLOUD_COLOR = getColor(config.get("cloudColor").asText());
-        CLOUD_HITBOX_COLOR = getColor(config.get("cloudHitboxColor").asText());
-        OBSTACLE_TOP_COLOR = getColor(config.get("obstacleTopColor").asText());
-        OBSTACLE_TOP_HITBOX_COLOR = getColor(config.get("obstacleTopHitboxColor").asText());
-        OBSTACLE_BOTTOM_COLOR = getColor(config.get("obstacleBottomColor").asText());
-        OBSTACLE_BOTTOM_HITBOX_COLOR = getColor(config.get("obstacleBottomHitboxColor").asText());
-        OBSTACLE_HITBOX_COLOR = getColor(config.get("obstacleHitboxColor").asText());
-        SAFE_ZONE_COLOR = getColor(config.get("safeZoneColor").asText());
-        SAFE_ZONE_HITBOX_COLOR = getColor(config.get("safeZoneHitboxColor").asText());
-        BACKGROUND_COLOR = getColor(config.get("backgroundColor").asText());
-        FONT_COLOR = getColor(config.get("fontColor").asText());
-        SCORE_COLOR = getColor(config.get("scoreColor").asText());
-        FPS_COLOR = getColor(config.get("fpsColor").asText());
-
-        // Sounds
-        try {
-            DIE_SOUND = audioLoader.load(config.get("dieSound").asText());
-            FLAP_SOUND = audioLoader.load(config.get("flapSound").asText());
-            HIT_SOUND = audioLoader.load(config.get("hitSound").asText());
-            POINT_SOUND = audioLoader.load(config.get("pointSound").asText());
-            RAINBOW_SOUND = audioLoader.load(config.get("rainbowSound").asText());
-            BACKGROUND_MUSIC = audioLoader.load(config.get("backgroundMusic").asText());
-        } catch (IOException | URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-
-
-        JsonNode messages;
-        try {
-            messages = jsonUtility.load("/languages/" + LANGUAGE + ".json");
-        } catch (IOException | URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-
-        // Messages
-        TITLE = messages.get("title").asText();
-        SCORE = messages.get("score").asText();
-        USERNAME = messages.get("username").asText();
-        USERNAME_TOOL_TIP = messages.get("usernameToolTip").asText();
-        RANK = messages.get("rank").asText();
-        SCORE_PREFIX = messages.get("scorePrefix").asText();
-        FPS_PREFIX = messages.get("fpsPrefix").asText();
-        START = messages.get("start").asText();
-        START_TOOL_TIP = messages.get("startToolTip").asText();
-        SOUND = messages.get("sound").asText();
-        SOUND_TOOL_TIP = messages.get("soundToolTip").asText();
-        FPS_TOOL_TIP = messages.get("fpsToolTip").asText();
-        CHEATS_DETECTED = messages.get("cheatsDetected").asText();
-        CHEATS_DETECTED_TITLE = messages.get("cheatsDetectedTitle").asText();
-        INSTRUCTION = messages.get("instruction").asText();
-        CONFIRM = messages.get("confirm").asText();
-        CONFIRM_TOOL_TIP = messages.get("confirmToolTip").asText();
-        INVALID_USERNAME = messages.get("invalidUsername").asText();
-        INVALID_USERNAME_TITLE = messages.get("invalidUsernameTitle").asText();
+        // Rescale Background Image
+        var aspectRatio = (float) BACKGROUND_IMAGE.getWidth() / BACKGROUND_IMAGE.getHeight();
+        BACKGROUND_IMAGE = scaleImage(BACKGROUND_IMAGE,  Math.round(WIDTH * aspectRatio), HEIGHT);
     }
 
     // Helper Methods

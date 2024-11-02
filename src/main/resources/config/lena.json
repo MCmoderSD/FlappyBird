@@ -1,46 +1,66 @@
 {
-  "width": 800,
-  "height": 800,
-  "resizable": false,
-  "blockedTermsPath": "/data/blockedTerms",
-  "percentage": 25,
-  "gap": 200,
-  "jumpHeight": 1.5,
-  "gravity": 0.00981,
-  "backgroundSpeed": 0.15,
-  "obstacleSpeed": 0.25,
-  "cloudSpeed": 0.1,
-  "rainbowSpawnChance": 0.3,
-  "rainbowDuration": 7000,
-  "maxFPS": 360,
-  "icon": "/Images/Icon.png",
-  "backgroundImage": "/Images/Background.png",
-  "playerImage": "/Images/Lena/Bird.png",
-  "obstacleTopImage": "/Images/Lena/ObstacleTop.png",
-  "obstacleBottomImage": "/Images/Lena/ObstacleBottom.png",
-  "gameOverImage": "/Images/Lena/GameOver.png",
-  "pauseImage": "/Images/Lena/GamePaused.png",
-  "clouds": "/Images/Lena/Clouds/variantList.json",
-  "rainbowAnimation": "/Animations/Lena/rainbowBird.gif",
-  "playerColor": "#ff0000",
-  "playerHitboxColor": "#00ff00",
-  "cloudColor": "#0000ff",
-  "cloudHitboxColor": "#ffff00",
-  "obstacleTopColor": "#ff00ff",
-  "obstacleTopHitboxColor": "#ff0000",
-  "obstacleBottomColor": "#ffffff",
-  "obstacleBottomHitboxColor": "#ff0000",
-  "obstacleHitboxColor": "#ff0000",
-  "safeZoneColor": "#00ff00",
-  "safeZoneHitboxColor": "#00ff00",
-  "backgroundColor": "#ffffff",
-  "fontColor": "#000000",
-  "scoreColor": "#ffff00",
-  "fpsColor": "#00ff00",
-  "dieSound": "/Sounds/mono/die.wav",
-  "flapSound": "/Sounds/mono/flap.wav",
-  "hitSound": "/Sounds/mono/hit.wav",
-  "pointSound": "/Sounds/mono/point.wav",
-  "rainbowSound": "/Sounds/mono/rainbow.wav",
-  "backgroundMusic": "/error/empty.wav"
+  "settings": {
+    "width": 800,
+    "height": 800,
+    "gapSize": 0.25,
+    "gapPercentage": 0.2,
+    "jumpHeight": 1.5,
+    "gravity": 0.00981,
+    "backgroundSpeed": 0.15,
+    "obstacleSpeed": 0.25,
+    "cloudSpeed": 0.1,
+    "rainbowSpawnChance": 0.3
+  },
+
+  "assets": {
+    "images": {
+      "icon": "/Images/Icon.png",
+      "background": "/Images/Background.png",
+      "player": "/Images/Lena/Bird.png",
+      "obstacleTop": "/Images/Lena/ObstacleTop.png",
+      "obstacleBottom": "/Images/Lena/ObstacleBottom.png",
+      "gameOver": "/Images/Lena/GameOver.png",
+      "pause": "/Images/Lena/GamePaused.png",
+      "clouds": {
+        "0": "/Images/Lena/Clouds/cloudVariant1.png",
+        "1": "/Images/Lena/Clouds/cloudVariant2.png",
+        "2": "/Images/Lena/Clouds/cloudVariant3.png",
+        "3": "/Images/Lena/Clouds/cloudVariant4.png",
+        "4": "/Images/Lena/Clouds/cloudVariant5.png",
+        "5": "/Images/Lena/Clouds/cloudVariant6.png",
+        "6": "/Images/Lena/Clouds/cloudVariant7.png",
+        "7": "/Images/Lena/Clouds/cloudVariant8.png"
+      }
+    },
+    "animations": {
+      "rainbow": "/Animations/Lena/rainbowBird.gif"
+    },
+    "sounds": {
+      "die": "/Sounds/mono/die.wav",
+      "flap": "/Sounds/mono/flap.wav",
+      "hit": "/Sounds/mono/hit.wav",
+      "point": "/Sounds/mono/point.wav",
+      "rainbow": "/Sounds/mono/rainbow.wav"
+    },
+    "music": {
+      "background": "/error/empty.wav"
+    },
+    "colors": {
+      "player": "#ff0000",
+      "playerHitbox": "#00ff00",
+      "cloud": "#0000ff",
+      "cloudHitbox": "#ffff00",
+      "obstacleTop": "#ff00ff",
+      "obstacleTopHitbox": "#ff0000",
+      "obstacleBottom": "#ffffff",
+      "obstacleBottomHitbox": "#ff0000",
+      "obstacleHitbox": "#ff0000",
+      "safeZone": "#00ff00",
+      "safeZoneHitbox": "#00ff00",
+      "background": "#ffffff",
+      "font": "#000000",
+      "score": "#ffff00",
+      "fps": "#00ff00"
+    }
+  }
 }

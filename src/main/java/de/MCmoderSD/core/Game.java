@@ -2,6 +2,7 @@ package de.MCmoderSD.core;
 
 import de.MCmoderSD.JavaAudioLibrary.AudioFile;
 import de.MCmoderSD.UI.Frame;
+import de.MCmoderSD.UI.GameUI;
 import de.MCmoderSD.executor.NanoLoop;
 
 import de.MCmoderSD.objects.Background;
@@ -29,9 +30,10 @@ public class Game {
     private int fps;
     private int tps;
 
+    private final ArrayList<AudioFile> sounds = new ArrayList<>();
+
     // Constants
     private final int obstacleSpawnRate;
-    private final boolean isReverse;
     private boolean sound;
 
     // Attributes
@@ -46,6 +48,7 @@ public class Game {
     private boolean hasCollided;
     private boolean gameOver;
     private boolean showFps;
+    private boolean showTps;
     private boolean hitboxes;
     private boolean debug;
     private boolean cheatsActive;
@@ -58,12 +61,10 @@ public class Game {
     public Game(Frame frame) {
         this.frame = frame;
 
-        isReverse = IS_REVERSE;
-
         sound = true;
 
         // Constants
-        obstacleSpawnRate = (int) (200 / OBSTACLE_SPEED);
+        obstacleSpawnRate = Math.round(200 / OBSTACLE_SPEED);
         init(0);
 
         // Game Threads
@@ -79,9 +80,17 @@ public class Game {
 
     public void debug() {
 
+        // Variables
+        GameUI gameUI = frame.getGameUI();
+
+
         // Print Debug Information
         System.out.println("FPS: " + fps);
         System.out.println("TPS: " + tps);
+
+        // Update FPS and TPS
+        gameUI.setFPS(fps);
+        gameUI.setTPS(tps);
 
         // Reset Variables
         fps = 0;
@@ -105,9 +114,6 @@ public class Game {
         // Check for Collision
         if (!hasCollided && !gameOver && !isRainbow && !cheatsActive) for (Obstacle obstacle : obstacles) if (player.getHitbox().intersects(obstacle.getHitbox())) collision();
 
-
-
-
         // Check for Safe Zone
         SafeZone collisionSafeZone = null;
         if (!gameOver) for (SafeZone safeZone : safeZones) if (player.getHitbox().intersects(safeZone.getHitbox())) {
@@ -119,14 +125,12 @@ public class Game {
         // Remove Safe Zone
         if (collisionSafeZone != null) safeZones.remove(collisionSafeZone);
 
-
-
         // Background Spawn
         Background lastBackground = backgrounds.getLast();
         if (lastBackground.getX() + lastBackground.getWidth() <= WIDTH) backgrounds.add(new Background(WIDTH, 0));
 
         // Cloud Spawn
-        // ToDo Cloud Spawn
+        if (clouds.size() < 3) spawnClouds();
 
         // Obstacle Spawn
         if (obstacleSpawnTimer >= obstacleSpawnRate) spawnObstacles();
@@ -135,7 +139,7 @@ public class Game {
         // Player Movement
         if (!gameOver && !hasCollided && isJump && player.getY() + player.getHeight() > 0) player.jump();
 
-        if (!isReverse || hasCollided) player.fall();
+        if (!hasCollided) player.fall();
 
         if (!(gameOver || hasCollided)) {
 
@@ -169,12 +173,13 @@ public class Game {
         Obstacle obstacleBottom = new Obstacle(false);
 
         // Calculate the minimum and maximum Y value
-        var minY = ((HEIGHT * PERCENTAGE) / 100);
-        var maxY = HEIGHT - ((HEIGHT * PERCENTAGE) / 100);
+        var minY = HEIGHT * GAP_PERCENTAGE;
+        var maxY = HEIGHT - minY;
+        var gap = Math.round(HEIGHT * GAP_SIZE);
 
         // Calculate the Y value of the obstacles
-        var yTop = (int) (Math.random() * (maxY - minY + 1) + minY) - obstacleTop.getHeight();
-        var yBottom = yTop + GAP + obstacleBottom.getHeight();
+        var yTop =  Math.round((float) (Math.random() * (maxY - minY) + minY) - obstacleTop.getHeight());
+        var yBottom = yTop + gap + obstacleBottom.getHeight();
 
         // Set the location of the obstacles
         obstacleTop.setLocation(WIDTH, yTop);
@@ -211,6 +216,10 @@ public class Game {
         clouds.removeAll(cloudsToRemove);
         obstacles.removeAll(obstaclesToRemove);
         safeZones.removeAll(safeZonesToRemove);
+
+        // Remove Sounds
+        if (!sound) return;
+        sounds.removeIf(sound -> !sound.isPlaying());
     }
 
     public void render() {
@@ -260,22 +269,30 @@ public class Game {
         isJump = true;
         if (sound && !gameOver && !hasCollided && !isPaused && player.getY() + player.getHeight() > 0) {
             AudioFile jumpSound = FLAP_SOUND.copy();
+            sounds.add(jumpSound);
             jumpSound.play();
         }
     }
 
     private void fall() {
-        if (sound) {
-            AudioFile dieSound = DIE_SOUND.copy();
-            dieSound.play();
-        }
+
+        // Set Flag
         gameOver = true;
+
+        // Play Die Sound
+        if (!sound) return;
+        AudioFile dieSound = DIE_SOUND.copy();
+        sounds.add(dieSound);
+        dieSound.play();
     }
 
     private void point() {
 
         // Increase Score
         score++;
+
+        // Update UI
+        frame.getGameUI().setScore(score);
 
         // Rainbow Spawn
         if (score % 5 == 0 && Calculate.randomChance(RAINBOW_SPAWN_CHANCE)) rainbowUlt();
@@ -285,27 +302,35 @@ public class Game {
 
         // Play Point Sound
         AudioFile pointSound = POINT_SOUND.copy();
+        sounds.add(pointSound);
         pointSound.play();
     }
 
     private void collision() {
-        //if (sound) audioPlayer.play(HIT_SOUND);
+
+        // Set Flag
         hasCollided = true;
+
+        // Play Hit Sound
+        if (!sound) return;
+        AudioFile hitSound = HIT_SOUND.copy();
+        sounds.add(hitSound);
+        hitSound.play();
     }
 
     private void rainbowUlt() {
         new Thread(() -> {
             try {
                 isRainbow = true;
-                if (sound) {
-                    AudioFile rainbowSound = RAINBOW_SOUND.copy();
-                    rainbowSound.play();
-                }
-                Thread.sleep(RAINBOW_DURATION);
+                AudioFile rainbowSound = RAINBOW_SOUND.copy();
+                sounds.add(rainbowSound);
+                if (sound) rainbowSound.play();
+                Thread.sleep((long) rainbowSound.getDuration());
+                isRainbow = false;
             } catch (InterruptedException e) {
+                isRainbow = false;
                 throw new RuntimeException(e);
             }
-            isRainbow = false;
         }).start();
     }
 
@@ -358,18 +383,6 @@ public class Game {
         return gameOver;
     }
 
-    public boolean isShowFps() {
-        return showFps;
-    }
-
-    public boolean isHitboxes() {
-        return hitboxes;
-    }
-
-    public boolean isDebug() {
-        return debug;
-    }
-
     public int getScore() {
         return score;
     }
@@ -377,8 +390,12 @@ public class Game {
     public void togglePause() {
         if (!gameOver) {
             isPaused = !isPaused;
-            /*if (isPaused) audioPlayer.pauseAll();
-            else audioPlayer.resumeAll();*/
+            if (!sound) return;
+
+            for (AudioFile sound : sounds) {
+                if (isPaused) sound.pause();
+                else sound.resume();
+            }
         }
     }
 
@@ -389,10 +406,17 @@ public class Game {
 
     public void toggleFps() {
         showFps = !showFps;
+        frame.getGameUI().setFPSVisible(showFps);
+    }
+
+    public void toggleTps() {
+        showTps = !showTps;
+        frame.getGameUI().setTPSVisible(showTps);
     }
 
     public void toggleHitboxes() {
         hitboxes = !hitboxes;
+        frame.getGameUI().setHitbox(hitboxes);
     }
 
     public void toggleSound() {

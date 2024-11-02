@@ -9,9 +9,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+
+import static java.awt.event.KeyEvent.*;
 
 public class InputHandler implements KeyListener {
 
@@ -20,16 +19,16 @@ public class InputHandler implements KeyListener {
 
     // KeyCodes
     private final int[] konamiCode = {
-            KeyEvent.VK_UP,
-            KeyEvent.VK_UP,
-            KeyEvent.VK_DOWN,
-            KeyEvent.VK_DOWN,
-            KeyEvent.VK_LEFT,
-            KeyEvent.VK_RIGHT,
-            KeyEvent.VK_LEFT,
-            KeyEvent.VK_RIGHT,
-            KeyEvent.VK_B,
-            KeyEvent.VK_A
+            VK_UP,
+            VK_UP,
+            VK_DOWN,
+            VK_DOWN,
+            VK_LEFT,
+            VK_RIGHT,
+            VK_LEFT,
+            VK_RIGHT,
+            VK_B,
+            VK_A
     };
 
     private final ArrayList<Integer> jumpKeys;
@@ -55,13 +54,13 @@ public class InputHandler implements KeyListener {
         jumpKeys = new ArrayList<>();
 
         // jumpKeys
-        jumpKeys.add(KeyEvent.VK_SPACE);
-        jumpKeys.add(KeyEvent.VK_UP);
-        jumpKeys.add(KeyEvent.VK_W);
-        jumpKeys.add(KeyEvent.VK_ENTER);
+        jumpKeys.add(VK_SPACE);
+        jumpKeys.add(VK_UP);
+        jumpKeys.add(VK_W);
+        jumpKeys.add(VK_ENTER);
 
         // Request focus
-        NanoLoop nanoLoop = new NanoLoop(frame::requestFocusInWindow, 1);
+        new NanoLoop(frame::requestFocusInWindow, 1).start();
     }
 
     @Override
@@ -78,20 +77,20 @@ public class InputHandler implements KeyListener {
         var key = e.getKeyCode();
 
         // Exit
-        if ((e.isControlDown() && (key == KeyEvent.VK_C || key == KeyEvent.VK_Q)) || (e.isAltDown() && (key == KeyEvent.VK_F4 || key == KeyEvent.VK_Q))) System.exit(0);;
+        if ((e.isControlDown() && (key == VK_C || key == VK_Q)) || (e.isAltDown() && (key == VK_F4 || key == VK_Q))) System.exit(0);
 
         // Asset Switch
-        if (f3Pressed && key == KeyEvent.VK_C) controller.switchAsset();
+        if (f3Pressed && key == VK_C) controller.switchAsset();
 
         // Sound Toggle
-        if (key == KeyEvent.VK_S) {
+        if (key == VK_S) {
             if (frame.getGameUI().isVisible()) game.toggleSound();
             else if (frame.getMenu().isVisible()) controller.toggleSound();
         }
 
         // Pause
-        if (key == KeyEvent.VK_ESCAPE) game.togglePause();
-        if (key == KeyEvent.VK_P) game.togglePause();
+        if (key == VK_ESCAPE) game.togglePause();
+        if (key == VK_P) game.togglePause();
 
         // Jump
         if (jumpKeys.contains(key)) game.jump();
@@ -106,15 +105,19 @@ public class InputHandler implements KeyListener {
         } else konamiIndex = 0;
 
         // Debug
-        if (key == KeyEvent.VK_F3) f3Pressed = true;
-        if (f3Pressed && key == KeyEvent.VK_F) game.toggleFps();
-        if (f3Pressed && key == KeyEvent.VK_B) game.toggleHitboxes();
+        if (key == VK_F3) f3Pressed = true;
+
+        if (!f3Pressed) return;
+
+        if (key == VK_F) game.toggleFps();
+        if (key == VK_T) game.toggleTps();
+        if (key == VK_B) game.toggleHitboxes();
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
 
         // Debug
-        if (e.getKeyCode() == KeyEvent.VK_F3) f3Pressed = false;
+        if (e.getKeyCode() == VK_F3) f3Pressed = false;
     }
 }
